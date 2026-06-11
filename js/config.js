@@ -21,7 +21,7 @@ const APPROVAL_NODES_CONFIG = {
     },
     "建设单位": {
         "fields": [
-            { "name": "计划经营部审核意见", "is_person": false, "type": "VARCHAR", "length": "500" },
+            { "name": "建设单位审批意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "分管领导", "is_person": true, "type": "VARCHAR", "length": "50" },
             { "name": "分管领导id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "分管领导日期", "is_person": false, "type": "DATE", "length": "" }
