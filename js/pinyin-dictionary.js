@@ -124,4 +124,4 @@ const COMMON_TRANSLATIONS = {
 };
 
 // 排除字段
-const EXCLUDED_FIELDS = ["注", "致", "附", "："];
+const EXCLUDED_FIELDS = ["注",  "附", "："];
