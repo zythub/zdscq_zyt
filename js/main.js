@@ -312,7 +312,6 @@ function updatePreviewTable(fields) {
     });
 }
 // 更新统计信息
-// 更新统计信息
 function updateStats(fields) {
     const idFields = fields.filter(f => f.source.endsWith('_id')).length;
     const dateFields = fields.filter(f => f.source.endsWith('_date')).length;

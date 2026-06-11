@@ -37,7 +37,7 @@ function simpleFallback(text) {
         .replace(/^_|_$/g, '');
 }
 
-// 翻译字段名 - 简化版
+// 翻译字段名 - 使用拼音首字母
 function translateField(chineseField) {
     // 清理字段
     let field = chineseField.trim()
@@ -49,48 +49,7 @@ function translateField(chineseField) {
         return null;
     }
     
-    // 1. 完全匹配字典
-    if (TRANSLATION_DICT[field]) {
-        return TRANSLATION_DICT[field];
-    }
-    
-    // 2. 检查是否包含字典中的关键词
-    for (const [key, value] of Object.entries(TRANSLATION_DICT)) {
-        if (field.includes(key)) {
-            return value;
-        }
-    }
-    
-    // 3. 使用拼音转换
-    return toPinyinAcronym(field);
-}
-
-
-// 翻译字段名
-function translateField(chineseField) {
-    // 清理字段
-    let field = chineseField.trim()
-        .replace(/\s+/g, '')
-        .replace(/[:：]/g, '');
-    
-    // 排除指定字段
-    if (EXCLUDED_FIELDS.includes(field)) {
-        return null;
-    }
-    
-    // 完全匹配
-    if (TRANSLATION_DICT[field]) {
-        return TRANSLATION_DICT[field];
-    }
-    
-    // 部分匹配
-    for (const [key, value] of Object.entries(TRANSLATION_DICT)) {
-        if (field.includes(key)) {
-            return value;
-        }
-    }
-    
-    // 使用拼音缩写
+    // 直接使用拼音首字母生成简短字段名
     return toPinyinAcronym(field);
 }
 
@@ -120,6 +79,12 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "") {
             if (node.fields) {
                 for (const field of node.fields) {
                     const chineseName = field.name;
+                    
+                    // 跳过 id 字段（人员字段会自动生成）
+                    if (chineseName.includes('id') || chineseName.includes('ID')) {
+                        continue;
+                    }
+                    
                     let englishName = translateField(chineseName);
                     
                     // 如果翻译失败（返回null），跳过这个字段
@@ -128,26 +93,53 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "") {
                     }
                     
                     // 处理重复字段名
-                    let originalEnglishName = englishName;
+                    let baseEnglishName = englishName;
                     if (usedEnglishNames.has(englishName)) {
                         let suffix = 1;
                         while (usedEnglishNames.has(`${englishName}_${suffix}`)) {
                             suffix++;
                         }
-                        englishName = `${englishName}_${suffix}`;
+                        baseEnglishName = `${englishName}_${suffix}`;
                     }
                     
-                    usedEnglishNames.add(englishName);
-                    
-                    allFields.push({
-                        'chinese': chineseName,
-                        'english': englishName,
-                        'type': field.type,
-                        'length': field.length,
-                        'is_person': field.is_person,
-                        'is_custom': false,
-                        'source': `node_${nodeId}`
-                    });
+                    // 人员字段：先生成 ID 字段（不加后缀），再生成姓名字段
+                    if (field.is_person) {
+                        usedEnglishNames.add(baseEnglishName);
+                        allFields.push({
+                            'chinese': chineseName,
+                            'english': baseEnglishName,
+                            'type': 'VARCHAR',
+                            'length': '50',
+                            'is_person': false,
+                            'is_custom': false,
+                            'source': `node_${nodeId}`
+                        });
+                        
+                        // 再生成姓名字段（加 _name 后缀）
+                        const nameFieldName = baseEnglishName + '_name';
+                        usedEnglishNames.add(nameFieldName);
+                        allFields.push({
+                            'chinese': chineseName + '姓名',
+                            'english': nameFieldName,
+                            'type': field.type,
+                            'length': field.length,
+                            'is_person': field.is_person,
+                            'is_custom': false,
+                            'source': `node_${nodeId}`
+                        });
+                    } else {
+                        // 非人员字段：直接添加
+                        usedEnglishNames.add(baseEnglishName);
+                        allFields.push({
+                            'chinese': chineseName,
+                            'english': baseEnglishName,
+                            'type': field.type,
+                            'length': field.length,
+                            'is_person': field.is_person,
+                            'is_custom': false,
+                            'source': `node_${nodeId}`
+                        });
+                    }
                 }
             }
         }
@@ -175,69 +167,72 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "") {
         }
         
         // 处理重复字段名
-        const originalEnglishName = englishName;
+        let baseEnglishName = englishName;
         if (usedEnglishNames.has(englishName)) {
             let suffix = 1;
             while (usedEnglishNames.has(`${englishName}_${suffix}`)) {
                 suffix++;
             }
-            englishName = `${englishName}_${suffix}`;
+            baseEnglishName = `${englishName}_${suffix}`;
         }
         
-        usedEnglishNames.add(englishName);
-        
-        allFields.push({
-            'chinese': chineseName,
-            'english': englishName,
-            'type': fieldType,
-            'length': fieldLength,
-            'is_person': isPerson,
-            'is_custom': true,
-            'source': 'custom'
-        });
-        
-        // 如果是人员字段，添加对应的_id字段
+        // 人员字段：先生成 ID 字段（不加后缀），再生成姓名字段
         if (isPerson) {
-            let idFieldName = englishName + "_id";
-            if (usedEnglishNames.has(idFieldName)) {
-                let suffix = 1;
-                while (usedEnglishNames.has(`${englishName}_${suffix}_id`)) {
-                    suffix++;
-                }
-                idFieldName = `${englishName}_${suffix}_id`;
-            }
-            
-            usedEnglishNames.add(idFieldName);
-            
+            usedEnglishNames.add(baseEnglishName);
             allFields.push({
-                'chinese': chineseName + "ID",
-                'english': idFieldName,
+                'chinese': chineseName,
+                'english': baseEnglishName,
                 'type': 'VARCHAR',
                 'length': '50',
                 'is_person': false,
                 'is_custom': true,
                 'source': 'custom_id'
             });
+            
+            // 再生成姓名字段（加 _name 后缀）
+            const nameFieldName = baseEnglishName + '_name';
+            usedEnglishNames.add(nameFieldName);
+            allFields.push({
+                'chinese': chineseName + '姓名',
+                'english': nameFieldName,
+                'type': fieldType,
+                'length': fieldLength,
+                'is_person': isPerson,
+                'is_custom': true,
+                'source': 'custom'
+            });
+        } else {
+            // 非人员字段：直接添加
+            usedEnglishNames.add(baseEnglishName);
+            allFields.push({
+                'chinese': chineseName,
+                'english': baseEnglishName,
+                'type': fieldType,
+                'length': fieldLength,
+                'is_person': isPerson,
+                'is_custom': true,
+                'source': 'custom'
+            });
         }
         
         // 如果需要日期字段，添加对应的_date字段
         if (hasDate && !['DATE', 'DATETIME'].includes(fieldType)) {
-            let dateFieldName = originalEnglishName + "_date";
+            let dateFieldName = baseEnglishName + "_date";
             
             // 如果主字段名被修改了，使用修改后的名字
-            if (englishName !== originalEnglishName) {
-                const suffix = englishName.replace(originalEnglishName, '').replace(/^_/, '');
+            if (englishName !== baseEnglishName) {
+                const suffix = englishName.replace(baseEnglishName, '').replace(/^_/, '');
                 if (suffix) {
-                    dateFieldName = `${originalEnglishName}_${suffix}_date`;
+                    dateFieldName = `${baseEnglishName}_${suffix}_date`;
                 }
             }
             
             if (usedEnglishNames.has(dateFieldName)) {
                 let suffix = 1;
-                while (usedEnglishNames.has(`${originalEnglishName}_${suffix}_date`)) {
+                while (usedEnglishNames.has(`${baseEnglishName}_${suffix}_date`)) {
                     suffix++;
                 }
-                dateFieldName = `${originalEnglishName}_${suffix}_date`;
+                dateFieldName = `${baseEnglishName}_${suffix}_date`;
             }
             
             usedEnglishNames.add(dateFieldName);
