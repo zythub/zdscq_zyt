@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>数据库字段定义生成器（by:zyt）</title>
+    <title>数据库字段定义生成器（纯前端版）</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="css/style.css?v=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
     <!-- 引入pinyin-pro库 -->
     <script src="lib/pinyin-pro.min.js"></script>
     <!-- 引入SheetJS库 -->
@@ -24,18 +24,9 @@
           <div class="subtitle">配置字段，一键生成Excel定义文件</div>
         </div>
         <div class="header-right">
-          <div class="table-name-group">
-            <input
-              type="text"
-              id="tableNameInput"
-              class="table-name-input"
-              placeholder="输入表名称"
-              value="工程审批表"
-            />
-            <button class="btn btn-primary" onclick="previewFields()">
-              <i class="fas fa-sync-alt"></i> 刷新预览
-            </button>
-          </div>
+          <button class="btn btn-primary" onclick="previewFields()">
+            <i class="fas fa-sync-alt"></i> 刷新预览
+          </button>
         </div>
       </div>
 
@@ -107,7 +98,7 @@
               <div class="checkbox-group">
                 <div class="checkbox-item">
                   <input type="checkbox" id="customIsPerson" />
-                  <label for="customIsPerson">人员字段（自动生成_id）</label>
+                  <label for="customIsPerson">人员字段（自动生成_name）</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="customHasDate" />
@@ -177,30 +168,31 @@
 
       <!-- 底部操作栏 -->
       <div class="footer">
-        <div class="stats-summary" id="statsPanel" style="display: none">
-          <div class="stat-item">
-            <span class="stat-value" id="statTotal">0</span>
-            <span class="stat-label">总字段</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="statId">0</span>
-            <span class="stat-label">ID字段</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="statDate">0</span>
-            <span class="stat-label">日期字段</span>
-          </div>
-        </div>
-
         <div class="download-section">
-            <h4>请输入保存的文件名：</h4>
-          <input
-            type="text"
-            id="downloadName"
-            class="download-input"
-            placeholder="下载文件名"
-            value="字段定义表"
-          />
+            <div class="export-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>表名称：</label>
+                        <input
+                            type="text"
+                            id="tableNameInput"
+                            class="download-input"
+                            placeholder="输入表名称（英文/拼音）"
+                            value="gcspb"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label>表中文名：</label>
+                        <input
+                            type="text"
+                            id="tableChineseName"
+                            class="download-input"
+                            placeholder="输入表的中文名称"
+                            value="工程审批表"
+                        />
+                    </div>
+                </div>
+            </div>
           <button class="btn-success" onclick="generateExcel()">
             <i class="fas fa-file-excel"></i> 生成Excel文件
           </button>
