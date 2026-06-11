@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数据库字段定义生成器（by:zyt）</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- 引入pinyin-pro库 -->
+    <script src="lib/pinyin-pro.min.js"></script>
+    <!-- 引入SheetJS库 -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- 紧凑型头部 -->
+      <div class="header">
+        <div class="header-left">
+          <h1>数据库字段定义生成器</h1>
+          <div class="subtitle">配置字段，一键生成Excel定义文件</div>
+        </div>
+        <div class="header-right">
+          <div class="table-name-group">
+            <input
+              type="text"
+              id="tableNameInput"
+              class="table-name-input"
+              placeholder="输入表名称"
+              value="工程审批表"
+            />
+            <button class="btn btn-primary" onclick="previewFields()">
+              <i class="fas fa-sync-alt"></i> 刷新预览
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 主内容区域 - 三列布局 -->
+      <div class="main-content">
+        <!-- 左侧：审批节点选择 (22%) -->
+        <div class="left-panel">
+          <div class="left-panel-content">
+            <div class="panel-title">
+              <i class="fas fa-sitemap"></i> 审批节点
+            </div>
+            <div class="approval-nodes-grid" id="approvalNodes">
+              <!-- 动态加载 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 中间：自定义字段 (28%) -->
+        <div class="center-panel">
+          <div class="center-panel-content">
+            <div class="panel-title">
+              <i class="fas fa-plus-circle"></i> 自定义字段
+            </div>
+
+            <!-- 自定义字段表单 -->
+            <div class="custom-field-form">
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="customChineseName"
+                  class="form-control"
+                  placeholder="输入中文字段名"
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    id="customEnglishName"
+                    class="form-control"
+                    placeholder="英文字段名（自动）"
+                  />
+                </div>
+                <div class="form-group">
+                  <select id="customFieldType" class="form-control">
+                    <option value="VARCHAR">VARCHAR</option>
+                    <option value="DATE">DATE</option>
+                    <option value="DATETIME">DATETIME</option>
+                    <option value="INT">INT</option>
+                    <option value="DECIMAL">DECIMAL</option>
+                    <option value="TEXT">TEXT</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    id="customFieldLength"
+                    class="form-control"
+                    value="50"
+                    placeholder="长度"
+                  />
+                </div>
+              </div>
+
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="customIsPerson" />
+                  <label for="customIsPerson">人员字段（自动生成_id）</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="customHasDate" />
+                  <label for="customHasDate"
+                    >需要日期字段（自动生成_date）</label
+                  >
+                </div>
+              </div>
+
+              <button class="btn-add" onclick="addCustomField()">
+                <i class="fas fa-plus"></i> 添加字段
+              </button>
+            </div>
+
+            <!-- 已添加的自定义字段列表 -->
+            <div class="panel-title">
+              <i class="fas fa-list"></i> 已添加字段
+            </div>
+            <div id="customFieldsList" class="custom-fields-list">
+              <div class="empty-state" id="emptyCustomFields">
+                <i class="fas fa-file-alt"></i>
+                <p>尚未添加自定义字段</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：预览区域 -->
+        <div class="right-panel">
+          <div class="right-panel-content">
+            <div class="panel-title"><i class="fas fa-eye"></i> 字段预览</div>
+
+            <div class="preview-table-container">
+              <div class="preview-table">
+                <table id="previewTable">
+                  <thead>
+                    <tr>
+                      <th>顺序号</th>
+                      <th>中文字段</th>
+                      <th>英文字段</th>
+                      <th>类型</th>
+                      <th>长度</th>
+                    </tr>
+                  </thead>
+                  <tbody id="previewTableBody">
+                    <tr>
+                      <td
+                        colspan="5"
+                        style="text-align: center; padding: 40px; color: #999"
+                      >
+                        <div class="empty-state">
+                          <i class="fas fa-table"></i>
+                          <p>暂无字段数据</p>
+                          <p style="font-size: 13px; margin-top: 8px">
+                            请选择审批节点或添加自定义字段
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部操作栏 -->
+      <div class="footer">
+        <div class="stats-summary" id="statsPanel" style="display: none">
+          <div class="stat-item">
+            <span class="stat-value" id="statTotal">0</span>
+            <span class="stat-label">总字段</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="statId">0</span>
+            <span class="stat-label">ID字段</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="statDate">0</span>
+            <span class="stat-label">日期字段</span>
+          </div>
+        </div>
+
+        <div class="download-section">
+            <h4>请输入保存的文件名：</h4>
+          <input
+            type="text"
+            id="downloadName"
+            class="download-input"
+            placeholder="下载文件名"
+            value="字段定义表"
+          />
+          <button class="btn-success" onclick="generateExcel()">
+            <i class="fas fa-file-excel"></i> 生成Excel文件
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 配置数据 -->
+    <script src="js/config.js"></script>
+    <!-- 工具函数 -->
+    <script src="js/utils.js"></script>
+    <!-- 主逻辑 -->
+    <script src="js/main.js"></script>
+  </body>
+</html>

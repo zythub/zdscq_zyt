@@ -1,0 +1,649 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-size: 16px;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 10px;
+  height: 100vh;
+}
+
+.container {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 紧凑头部 */
+.header {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+  padding: 12px 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-left .subtitle {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+.header-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.table-name-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.table-name-input {
+  width: 200px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 16px;
+}
+
+.table-name-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* 主内容区域 - 三列布局，调整宽度比例 */
+.main-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  background: #f8f9fa;
+}
+
+/* 左侧：审批节点选择 - 缩小宽度 */
+.left-panel {
+  width: 22%;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.left-panel-content {
+  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 中间：自定义字段 - 缩小宽度 */
+.center-panel {
+  width: 28%;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.center-panel-content {
+  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 右侧：预览区域 - 增大宽度 */
+.right-panel {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.right-panel-content {
+  padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-title {
+  font-size: 16px;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.panel-title i {
+  margin-right: 8px;
+  color: #3498db;
+  font-size: 16px;
+}
+
+/* 审批节点网格 - 更加紧凑 */
+.approval-nodes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.approval-node-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: white;
+}
+
+.approval-node-card:hover {
+  border-color: #3498db;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.15);
+}
+
+.approval-node-card.selected {
+  border-color: #2ecc71;
+  background: linear-gradient(135deg, #f8fff9 0%, #e8f5e9 100%);
+}
+
+.node-header {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.node-checkbox {
+  transform: scale(1.05);
+  margin: 0;
+}
+
+.node-title {
+  flex: 1;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.node-info {
+  font-size: 16px;
+  color: #666;
+  background: #f8f9fa;
+  padding: 6px 10px;
+  border-top: 1px solid #eee;
+}
+
+/* 自定义字段表单 - 更加紧凑 */
+.custom-field-form {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin: 0;
+}
+
+.btn-add {
+  width: 100%;
+  padding: 8px;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 5px;
+}
+
+.btn-add:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+}
+
+/* 自定义字段列表 - 更加紧凑 */
+.custom-fields-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 150px;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  padding: 8px;
+  background: #fafafa;
+}
+
+.custom-field-item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.custom-field-item:hover {
+  border-color: #3498db;
+  box-shadow: 0 1px 5px rgba(52, 152, 219, 0.1);
+}
+
+.custom-field-info {
+  flex: 1;
+  min-width: 0; /* 防止内容溢出 */
+}
+
+.custom-field-chinese {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 2px;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-field-english {
+  font-family: "Consolas", "Monaco", monospace;
+  color: #3498db;
+  font-size: 16px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-field-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 16px;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badge-primary {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-warning {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 3px;
+  margin-left: 5px;
+  flex-shrink: 0;
+}
+
+.btn-remove:hover {
+  color: #c0392b;
+}
+
+/* 预览表格 - 更宽，显示更完整 */
+.preview-table-container {
+  flex: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-table {
+  flex: 1;
+  overflow: auto;
+}
+
+.preview-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  table-layout: fixed;
+}
+
+.preview-table thead {
+  position: sticky;
+  top: 0;
+  background: #2c3e50;
+  color: white;
+  z-index: 10;
+}
+
+/* 调整列宽，让英文字段显示更完整 */
+/* 在 style.css 中修改列宽 */
+.preview-table th:nth-child(1) { width: 50px; }   /* # */
+.preview-table th:nth-child(2) { width: 180px; }  /* 中文字段 - 增大 */
+.preview-table th:nth-child(3) { width: 220px; }  /* 英文字段 - 增大 */
+.preview-table th:nth-child(4) { width: 100px; }  /* 类型 */
+.preview-table th:nth-child(5) { width: 80px; }   /* 长度 */
+
+/* 移除之前多余的列宽设置 */
+.preview-table th {
+  padding: 8px 6px;
+  text-align: left;
+  font-weight: 500;
+  border-right: 1px solid #3a506b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+}
+
+.preview-table th:last-child {
+  border-right: none;
+}
+
+.preview-table td {
+  padding: 6px;
+  border-bottom: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  height: 28px;
+}
+
+.preview-table td:last-child {
+  border-right: none;
+}
+
+/* 鼠标悬停显示完整内容 */
+.preview-table td:hover {
+  overflow: visible;
+  position: relative;
+  z-index: 5;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  min-width: auto;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.preview-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.preview-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+
+.type-badge {
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 16px;
+  padding: 1px 5px;
+  background: #f5f5f5;
+  border-radius: 3px;
+  color: #333;
+}
+
+.person-badge {
+  color: #e74c3c;
+  font-size: 16px;
+}
+
+/* 底部操作栏 */
+.footer {
+  background: #f8f9fa;
+  padding: 10px 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.stats-summary {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #3498db;
+  display: block;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 16px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.download-section {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.download-input {
+  width: 200px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+}
+
+/* 滚动条样式 */
+.left-panel-content::-webkit-scrollbar,
+.center-panel-content::-webkit-scrollbar,
+.right-panel-content .preview-table::-webkit-scrollbar,
+.custom-fields-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.left-panel-content::-webkit-scrollbar-track,
+.center-panel-content::-webkit-scrollbar-track,
+.right-panel-content .preview-table::-webkit-scrollbar-track,
+.custom-fields-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.left-panel-content::-webkit-scrollbar-thumb,
+.center-panel-content::-webkit-scrollbar-thumb,
+.right-panel-content .preview-table::-webkit-scrollbar-thumb,
+.custom-fields-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+/* 空状态提示 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  color: #999;
+  text-align: center;
+}
+
+.empty-state i {
+  font-size: 36px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-wrap: wrap;
+  }
+
+  .left-panel,
+  .center-panel,
+  .right-panel {
+    width: 100%;
+    height: 350px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .table-name-group {
+    width: 100%;
+  }
+
+  .table-name-input {
+    width: 100%;
+  }
+}
