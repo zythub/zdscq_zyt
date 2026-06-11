@@ -93,6 +93,7 @@ const BASE_FIELDS = [
     ["project_name", "工程名称"],
     ["number", "编号"],
     ["bdh", "表单号"],
+    ["zhi", "致"],
     ["organization_name", "单位名称"],
     ["contract_number", "合同编号"],
     ["contract_name", "合同名称"],
@@ -255,4 +256,4 @@ const TRANSLATION_DICT = {
 };
 
 // 排除字段
-const EXCLUDED_FIELDS = ["注", "致", "附"];
+const EXCLUDED_FIELDS = ["注",  "附"];
