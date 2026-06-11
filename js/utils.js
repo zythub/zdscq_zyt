@@ -103,8 +103,8 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "") {
     for (const [engName, chiName] of BASE_FIELDS) {
         usedEnglishNames.add(engName);
         allFields.push({
-            'english': engName,
             'chinese': chiName,
+            'english': engName,
             'type': 'VARCHAR',
             'length': '50',
             'is_person': false,
