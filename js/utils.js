@@ -253,7 +253,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "") {
 }
 
 // 生成Excel文件
-function generateExcelFile(tableName, allFields, downloadName) {
+function generateExcelFile(tableName, tableChineseName, allFields, downloadName) {
     // 创建工作簿
     const wb = XLSX.utils.book_new();
     
@@ -265,7 +265,7 @@ function generateExcelFile(tableName, allFields, downloadName) {
         '备注'
     ], [
         `tud_${toPinyinAcronym(tableName) || 'custom_table'}`,
-        tableName || '自定义表',
+        tableChineseName || tableName || '自定义表',
         '',
         ''
     ]];

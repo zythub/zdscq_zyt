@@ -63,8 +63,20 @@ document.addEventListener("DOMContentLoaded", function () {
 // 初始化审批节点卡片
 function initializeNodeCards() {
   const nodeCards = document.querySelectorAll(".approval-node-card");
+  
   nodeCards.forEach((card) => {
     const checkbox = card.querySelector(".node-checkbox");
+    
+    // 点击卡片任意位置切换选择
+    card.addEventListener("click", function (e) {
+      // 如果点击的是checkbox本身，不处理（让checkbox自己处理）
+      if (e.target !== checkbox) {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event("change"));
+      }
+    });
+    
+    // checkbox状态变化处理
     checkbox.addEventListener("change", function () {
       if (this.checked) {
         card.classList.add("selected");
@@ -83,29 +95,14 @@ function loadApprovalNodes() {
 
   const nodes = APPROVAL_NODES_CONFIG;
   for (const [nodeId, nodeData] of Object.entries(nodes)) {
-    // 提取字段描述
-    const fieldDescriptions = nodeData.fields
-      .filter(
-        (field) => !field.name.includes("id") && !field.name.includes("ID"),
-      )
-      .map((f) => f.name.replace("日期", "").replace("意见", ""))
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .slice(0, 2);
-
-    const descriptionText =
-      fieldDescriptions.join("、") + (fieldDescriptions.length > 0 ? "等" : "");
-
     // 创建节点卡片
     const card = document.createElement("div");
     card.className = "approval-node-card";
-    card.onclick = () => toggleNodeSelection(nodeId);
+    card.dataset.nodeId = nodeId;
 
     card.innerHTML = `
-            <div class="node-header">
-                <input type="checkbox" class="node-checkbox" id="node_${nodeId}" value="${nodeId}">
-                <label for="node_${nodeId}" class="node-title">${nodeId}</label>
-            </div>
-            <div class="node-info">${descriptionText}</div>
+            <input type="checkbox" class="node-checkbox" id="node_${nodeId}" value="${nodeId}">
+            <span class="node-title">${nodeId}</span>
         `;
 
     approvalNodesGrid.appendChild(card);
@@ -140,18 +137,18 @@ function addCustomField() {
   const hasDate = document.getElementById("customHasDate").checked;
 
   if (!chineseName) {
-    alert("请输入中文字段名");
+    showNotification("请输入中文字段名", "warning");
     return;
   }
 
   if (!englishName) {
-    alert("请输入或等待自动生成英文字段名");
+    showNotification("请输入或等待自动生成英文字段名", "warning");
     return;
   }
 
   // 如果字段类型已经是日期，就不能再添加日期字段
   if (hasDate && (fieldType === "DATE" || fieldType === "DATETIME")) {
-    alert("字段类型已经是日期类型，无需再添加日期字段");
+    showNotification("字段类型已经是日期类型，无需再添加日期字段", "warning");
     return;
   }
 
@@ -254,7 +251,6 @@ function previewFields() {
             // 生成所有字段
             const allFields = generateAllFields(selectedNodes, customFields, tableName);
             updatePreviewTable(allFields);
-            updateStats(allFields);
             
             // 如果有字段，显示成功消息
             if (allFields.length > 0) {
@@ -311,30 +307,18 @@ function updatePreviewTable(fields) {
         tbody.appendChild(row);
     });
 }
-// 更新统计信息
-function updateStats(fields) {
-    const idFields = fields.filter(f => f.source.endsWith('_id')).length;
-    const dateFields = fields.filter(f => f.source.endsWith('_date')).length;
-    const personFields = fields.filter(f => f.is_person).length;
-    const totalFields = fields.length;
-    
-    // 更新底部统计
-    document.getElementById('statTotal').textContent = totalFields;
-    document.getElementById('statId').textContent = idFields;
-    document.getElementById('statDate').textContent = dateFields;
-    
-    // 显示统计面板
-    document.getElementById('statsPanel').style.display = 'flex';
-}
 // 生成Excel文件
 function generateExcel() {
   const selectedNodes = getSelectedNodes();
   const tableName =
-    document.getElementById("tableNameInput").value || "自定义表";
-  const downloadName = document.getElementById("downloadName").value.trim();
+    document.getElementById("tableNameInput").value || "custom_table";
+  const tableChineseName = 
+    document.getElementById("tableChineseName").value || tableName;
+  // 使用表中文名作为下载文件名
+  const downloadName = tableChineseName || "字段定义表";
 
   if (selectedNodes.length === 0 && customFields.length === 0) {
-    alert("请至少选择一个审批节点或添加一个自定义字段");
+    showNotification("请至少选择一个审批节点或添加一个自定义字段", "warning");
     return;
   }
 
@@ -355,7 +339,7 @@ function generateExcel() {
     const allFields = generateAllFields(selectedNodes, customFields, tableName);
 
     // 生成Excel文件并下载
-    const fileName = generateExcelFile(tableName, allFields, downloadName);
+    const fileName = generateExcelFile(tableName, tableChineseName, allFields, downloadName);
 
     // 显示成功消息
     showNotification(`Excel文件生成成功：${fileName}`, "success");
@@ -371,27 +355,40 @@ function generateExcel() {
 
 // 显示通知
 function showNotification(message, type) {
+  const colors = {
+    success: "#2ecc71",
+    error: "#e74c3c",
+    warning: "#f39c12"
+  };
+  const icons = {
+    success: "check-circle",
+    error: "exclamation-circle",
+    warning: "info-circle"
+  };
   const notification = document.createElement("div");
   notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        padding: 12px 16px;
-        background: ${type === "success" ? "#2ecc71" : "#e74c3c"};
+        padding: 14px 18px;
+        background: ${colors[type] || colors.error};
         color: white;
-        border-radius: 4px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.18);
         z-index: 1000;
         animation: slideIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        min-width: 200px;
     `;
   notification.innerHTML = `
-        <i class="fas fa-${type === "success" ? "check-circle" : "exclamation-circle"}"></i>
-        <span style="margin-left: 8px;">${message}</span>
+        <i class="fas fa-${icons[type] || icons.error}" style="font-size: 16px;"></i>
+        <span style="margin-left: 10px; font-size: 14px;">${message}</span>
     `;
   document.body.appendChild(notification);
 
   setTimeout(() => {
     notification.style.animation = "slideOut 0.3s ease";
     setTimeout(() => notification.remove(), 300);
-  }, 3000);
+  }, 3500);
 }
