@@ -78,6 +78,7 @@ const BASE_FIELDS = [
     ["number", "编号"],
     ["bdh", "表单号"],
     ["zhi", "致"],
+    ["qcdw", "起草单位"],
     ["organization_name", "单位名称"],
     ["company_code", "单位代码"],
     ["contract_name", "合同名称"],
