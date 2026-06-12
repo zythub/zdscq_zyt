@@ -37,12 +37,12 @@ const APPROVAL_NODES_CONFIG = {
             { "name": "工程部日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
-    "安建环部": {
+    "安健环部": {
         "fields": [
-            { "name": "安建环部审核意见", "is_person": false, "type": "VARCHAR", "length": "500" },
-            { "name": "安建环部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "安建环部部门负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "安建环部日期", "is_person": false, "type": "DATE", "length": "" }
+            { "name": "安健环部审核意见", "is_person": false, "type": "VARCHAR", "length": "500" },
+            { "name": "安健环部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
+            { "name": "安健环部部门负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
+            { "name": "安健环部日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
     "计划经营部": {
@@ -91,7 +91,7 @@ const APPROVAL_NODES_CONFIG = {
             { "name": "设备代保管单位日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
-    "代保管单位": {
+        "代保管单位": {
         "fields": [
             { "name": "代保管单位负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
             { "name": "代保管单位意见", "is_person": false, "type": "VARCHAR", "length": "500" },
@@ -198,11 +198,11 @@ const TRANSLATION_DICT = {
     "物资部主任": "wzb_leader",
     "物资部日期": "wzb_date",
 
-    // 安建环部相关
-    "安建环部审核意见": "ajh_opinion",
-    "安建环部专业工程师": "ajh_engineer",
-    "安建环部部门负责人": "ajh_leader",
-    "安建环部日期": "ajh_date",
+    // 安健环部相关
+    "安健环部审核意见": "ajh_opinion",
+    "安健环部专业工程师": "ajh_engineer",
+    "安健环部部门负责人": "ajh_leader",
+    "安健环部日期": "ajh_date",
 
     // 设备代保管单位相关
     "设备代保管单位负责人": "sbdb_leader",
