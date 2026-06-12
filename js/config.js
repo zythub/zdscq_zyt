@@ -82,6 +82,13 @@ const APPROVAL_NODES_CONFIG = {
             { "name": "设备代保管单位意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "设备代保管单位日期", "is_person": false, "type": "DATE", "length": "" }
         ]
+    },
+        "代保管单位": {
+        "fields": [
+            { "name": "代保管单位负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
+            { "name": "代保管单位意见", "is_person": false, "type": "VARCHAR", "length": "500" },
+            { "name": "代保管单位日期", "is_person": false, "type": "DATE", "length": "" }
+        ]
     }
 };
 

@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>数据库字段定义生成器 v1.2.0</title>
+    <title>数据库字段定义生成器 v1.3.0</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="css/style.css?v=1.2.0" />
+    <link rel="stylesheet" href="css/style.css?v=1.3.0" />
     <!-- 引入pinyin-pro库 -->
     <script src="lib/pinyin-pro.min.js"></script>
     <!-- 引入SheetJS库 -->
@@ -20,7 +20,7 @@
       <!-- 紧凑型头部 -->
       <div class="header">
         <div class="header-left">
-          <h1>数据库字段定义生成器 <span class="version">v1.2.0</span></h1>
+          <h1>数据库字段定义生成器 <span class="version">v1.3.0</span></h1>
           <div class="subtitle">配置字段，一键生成Excel定义文件</div>
         </div>
         <div class="header-center">
@@ -121,10 +121,12 @@
                   <label for="customIsPerson">人员字段（自动生成_name）</label>
                 </div>
                 <div class="checkbox-item">
+                  <input type="checkbox" id="customHasOpinion" />
+                  <label for="customHasOpinion">需要意见字段（自动生成_yj）</label>
+                </div>
+                <div class="checkbox-item">
                   <input type="checkbox" id="customHasDate" />
-                  <label for="customHasDate"
-                    >需要日期字段（自动生成_date）</label
-                  >
+                  <label for="customHasDate">需要日期字段（自动生成_date）</label>
                 </div>
               </div>
 
@@ -224,10 +226,10 @@
     </div>
 
     <!-- 配置数据 -->
-    <script src="js/config.js?v=1.2.0"></script>
+    <script src="js/config.js?v=1.5.0"></script>
     <!-- 工具函数 -->
-    <script src="js/utils.js?v=1.2.0"></script>
+    <script src="js/utils.js?v=1.5.0"></script>
     <!-- 主逻辑 -->
-    <script src="js/main.js?v=1.2.0"></script>
+    <script src="js/main.js?v=1.5.0"></script>
   </body>
 </html>

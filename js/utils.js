@@ -95,6 +95,14 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
         }
     }
     
+    // 处理DATE/TEXT/DATETIME类型长度为空的辅助函数
+    function normalizeLength(type, length) {
+        if (type === 'DATE' || type === 'TEXT' || type === 'DATETIME') {
+            return '';
+        }
+        return length || '';
+    }
+
     // 2. 添加自定义字段（在基础字段后面）
     // 先收集自定义字段，分为非人员字段和人员字段
     const customNonPersonFields = [];
@@ -107,6 +115,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
         const fieldLength = customField.length || '50';
         const isPerson = customField.is_person || false;
         const hasDate = customField.has_date || false;
+        const hasOpinion = customField.has_opinion || false;
         
         if (!chineseName) {
             continue;
@@ -131,14 +140,18 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
         }
         
         if (isPerson) {
-            // 人员字段：收集起来，后面统一添加
+            // 人员字段：收集起来，后面统一添加（意见 → ID → 姓名 → 日期）
             customPersonFields.push({
                 chineseName,
                 baseEnglishName,
                 fieldType,
                 fieldLength,
-                hasDate
+                hasDate,
+                hasOpinion
             });
+            if (hasOpinion) {
+                usedEnglishNames.add(baseEnglishName + 'yj');
+            }
             usedEnglishNames.add(baseEnglishName);
             usedEnglishNames.add(baseEnglishName + '_name');
             if (hasDate && fieldType !== 'DATE' && fieldType !== 'DATETIME') {
@@ -151,11 +164,26 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
                 'chinese': chineseName,
                 'english': baseEnglishName,
                 'type': fieldType,
-                'length': fieldLength,
+                'length': normalizeLength(fieldType, fieldLength),
                 'is_person': false,
                 'is_custom': true,
                 'source': 'custom'
             });
+            
+            // 如果勾选了意见字段，添加意见字段
+            if (hasOpinion) {
+                const opinionFieldName = baseEnglishName + 'yj';
+                usedEnglishNames.add(opinionFieldName);
+                customNonPersonFields.push({
+                    'chinese': chineseName + '意见',
+                    'english': opinionFieldName,
+                    'type': 'VARCHAR',
+                    'length': '500',
+                    'is_person': false,
+                    'is_custom': true,
+                    'source': 'custom'
+                });
+            }
             
             // 如果勾选了日期字段且不是DATE类型，添加日期字段
             if (hasDate && fieldType !== 'DATE' && fieldType !== 'DATETIME') {
@@ -179,8 +207,21 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
         allFields.push(field);
     }
     
-    // 再添加人员自定义字段（ID、姓名、日期放在一起）
+    // 再添加人员自定义字段（意见 → ID → 姓名 → 日期）
     for (const personField of customPersonFields) {
+        // 意见字段
+        if (personField.hasOpinion) {
+            allFields.push({
+                'chinese': personField.chineseName + '意见',
+                'english': personField.baseEnglishName + 'yj',
+                'type': 'VARCHAR',
+                'length': '500',
+                'is_person': false,
+                'is_custom': true,
+                'source': 'custom'
+            });
+        }
+        
         // ID字段
         allFields.push({
             'chinese': personField.chineseName,
@@ -197,7 +238,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
             'chinese': personField.chineseName + '姓名',
             'english': personField.baseEnglishName + '_name',
             'type': personField.fieldType,
-            'length': personField.fieldLength,
+            'length': normalizeLength(personField.fieldType, personField.fieldLength),
             'is_person': true,
             'is_custom': true,
             'source': 'custom'
@@ -252,7 +293,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
                     }
                     
                     if (field.is_person) {
-                        // 人员字段：收集起来，后面统一添加
+                        // 人员字段：收集起来，后面统一添加（意见 → ID → 姓名 → 日期）
                         nodePersonFields.push({
                             chineseName,
                             baseEnglishName,
@@ -269,7 +310,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
                             'chinese': chineseName,
                             'english': baseEnglishName,
                             'type': field.type,
-                            'length': field.length,
+                            'length': normalizeLength(field.type, field.length),
                             'is_person': false,
                             'is_custom': false,
                             'source': `node_${nodeId}`
@@ -285,7 +326,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
         allFields.push(field);
     }
     
-    // 再添加人员节点字段（ID、姓名放在一起）
+    // 再添加人员节点字段（ID → 姓名）
     for (const personField of nodePersonFields) {
         // ID字段
         allFields.push({
@@ -303,7 +344,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
             'chinese': personField.chineseName + '姓名',
             'english': personField.baseEnglishName + '_name',
             'type': personField.fieldType,
-            'length': personField.fieldLength,
+            'length': normalizeLength(personField.fieldType, personField.fieldLength),
             'is_person': true,
             'is_custom': false,
             'source': `node_${personField.nodeId}`

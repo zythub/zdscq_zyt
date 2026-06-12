@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("change", function () {
       if (this.checked) {
         document.getElementById("customHasDate").checked = true;
+        document.getElementById("customHasOpinion").checked = true;
       }
     });
 
@@ -46,13 +47,25 @@ document.addEventListener("DOMContentLoaded", function () {
           );
           document.getElementById("customIsPerson").checked = isPersonField;
 
-          // 如果是人员字段，自动勾选日期字段
+          // 如果是人员字段，自动勾选日期字段和意见字段
           if (isPersonField) {
             document.getElementById("customHasDate").checked = true;
+            document.getElementById("customHasOpinion").checked = true;
           }
         }
       }
     });
+
+  // 输入框回车添加字段
+  const addFieldOnEnter = function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addCustomField();
+    }
+  };
+  document.getElementById("customChineseName").addEventListener("keypress", addFieldOnEnter);
+  document.getElementById("customEnglishName").addEventListener("keypress", addFieldOnEnter);
+  document.getElementById("customFieldLength").addEventListener("keypress", addFieldOnEnter);
 
   // 自动填充示例自定义字段
   setTimeout(() => {
@@ -183,6 +196,7 @@ function addCustomField() {
   const fieldLength = document.getElementById("customFieldLength").value.trim();
   const isPerson = document.getElementById("customIsPerson").checked;
   const hasDate = document.getElementById("customHasDate").checked;
+  const hasOpinion = document.getElementById("customHasOpinion").checked;
 
   if (!chineseName) {
     showNotification("请输入中文字段名", "warning");
@@ -210,6 +224,7 @@ function addCustomField() {
     length: fieldLength,
     is_person: isPerson,
     has_date: hasDate,
+    has_opinion: hasOpinion,
   };
 
   // 添加到数组
@@ -223,10 +238,17 @@ function addCustomField() {
   fieldItem.className = "custom-field-item";
   fieldItem.id = "customField_" + fieldId;
 
-  // 显示字段标签
-  let badges = `<span class="badge">${fieldType}(${fieldLength})</span>`;
+  // 显示字段标签 - DATE/TEXT类型不显示长度
+  let displayLength = fieldLength;
+  if (fieldType === "DATE" || fieldType === "TEXT" || fieldType === "DATETIME") {
+    displayLength = "";
+  }
+  let badges = `<span class="badge">${fieldType}${displayLength ? "(" + displayLength + ")" : ""}</span>`;
   if (isPerson) {
     badges += '<span class="badge badge-warning">人员</span>';
+  }
+  if (hasOpinion) {
+    badges += '<span class="badge badge-info">意见</span>';
   }
   if (hasDate) {
     badges += '<span class="badge badge-primary">日期</span>';
@@ -253,6 +275,7 @@ function addCustomField() {
   document.getElementById("customFieldLength").value = "50";
   document.getElementById("customIsPerson").checked = false;
   document.getElementById("customHasDate").checked = false;
+  document.getElementById("customHasOpinion").checked = false;
 
   // 自动预览
   setTimeout(previewFields, 100);
