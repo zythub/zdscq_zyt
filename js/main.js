@@ -157,7 +157,7 @@ function switchToMainTable() {
   currentTableMode = 'main';
   document.getElementById('mainTableMode').classList.add('active');
   document.getElementById('subTableMode').classList.remove('active');
-  document.querySelector('.left-panel').style.display = 'block';
+  document.querySelector('.left-panel').style.display = 'flex';
   previewFields();
 }
 
