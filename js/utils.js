@@ -53,26 +53,137 @@ function translateField(chineseField) {
     return toPinyinAcronym(field);
 }
 
+// 子表默认字段
+const SUB_TABLE_FIELDS = [
+    { english: 'ay_serial', chinese: '序号', type: 'INT', length: '' },
+    { english: 'zb_id', chinese: '主表_id', type: 'VARCHAR', length: '50' }
+];
+
 // 生成所有字段
-function generateAllFields(selectedNodes, customFieldsList, tableName = "") {
+function generateAllFields(selectedNodes, customFieldsList, tableName = "", tableMode = 'main') {
     const allFields = [];
     const usedEnglishNames = new Set();
     
-    // 1. 添加基础字段
-    for (const [engName, chiName] of BASE_FIELDS) {
-        usedEnglishNames.add(engName);
-        allFields.push({
-            'chinese': chiName,
-            'english': engName,
-            'type': 'VARCHAR',
-            'length': '50',
-            'is_person': false,
-            'is_custom': false,
-            'source': 'system'
-        });
+    // 根据模式添加基础字段
+    if (tableMode === 'main') {
+        // 主表模式：添加标准基础字段
+        for (const [engName, chiName] of BASE_FIELDS) {
+            usedEnglishNames.add(engName);
+            allFields.push({
+                'chinese': chiName,
+                'english': engName,
+                'type': 'VARCHAR',
+                'length': '50',
+                'is_person': false,
+                'is_custom': false,
+                'source': 'system'
+            });
+        }
+    } else {
+        // 子表模式：添加子表默认字段
+        for (const field of SUB_TABLE_FIELDS) {
+            usedEnglishNames.add(field.english);
+            allFields.push({
+                'chinese': field.chinese,
+                'english': field.english,
+                'type': field.type,
+                'length': field.length,
+                'is_person': false,
+                'is_custom': false,
+                'source': 'system'
+            });
+        }
     }
     
-    // 2. 添加选中的审批节点字段
+    // 2. 添加自定义字段（在基础字段后面）
+    for (const customField of customFieldsList) {
+        const chineseName = (customField.chinese_name || '').trim();
+        let englishName = (customField.english_name || '').trim();
+        const fieldType = customField.type || 'VARCHAR';
+        const fieldLength = customField.length || '50';
+        const isPerson = customField.is_person || false;
+        const hasDate = customField.has_date || false;
+        
+        if (!chineseName) {
+            continue;
+        }
+        
+        // 如果没有提供英文名，自动生成
+        if (!englishName) {
+            englishName = translateField(chineseName);
+            if (englishName === null) {
+                continue;
+            }
+        }
+        
+        // 处理重复字段名
+        let baseEnglishName = englishName;
+        if (usedEnglishNames.has(englishName)) {
+            let suffix = 1;
+            while (usedEnglishNames.has(`${englishName}_${suffix}`)) {
+                suffix++;
+            }
+            baseEnglishName = `${englishName}_${suffix}`;
+        }
+        
+        // 人员字段：先生成 ID 字段（不加后缀），再生成姓名字段
+        if (isPerson) {
+            usedEnglishNames.add(baseEnglishName);
+            allFields.push({
+                'chinese': chineseName,
+                'english': baseEnglishName,
+                'type': 'VARCHAR',
+                'length': '50',
+                'is_person': false,
+                'is_custom': true,
+                'source': 'custom'
+            });
+            
+            // 再生成姓名字段（加 _name 后缀）
+            const nameFieldName = baseEnglishName + '_name';
+            usedEnglishNames.add(nameFieldName);
+            allFields.push({
+                'chinese': chineseName + '姓名',
+                'english': nameFieldName,
+                'type': fieldType,
+                'length': fieldLength,
+                'is_person': isPerson,
+                'is_custom': true,
+                'source': 'custom'
+            });
+        } else {
+            // 非人员字段：直接添加
+            usedEnglishNames.add(baseEnglishName);
+            allFields.push({
+                'chinese': chineseName,
+                'english': baseEnglishName,
+                'type': fieldType,
+                'length': fieldLength,
+                'is_person': false,
+                'is_custom': true,
+                'source': 'custom'
+            });
+        }
+        
+        // 如果勾选了日期字段且不是DATE类型，添加日期字段
+        if (hasDate && fieldType !== 'DATE' && fieldType !== 'DATETIME') {
+            const dateFieldName = baseEnglishName + '_date';
+            if (!usedEnglishNames.has(dateFieldName)) {
+                usedEnglishNames.add(dateFieldName);
+                allFields.push({
+                    'chinese': chineseName + '日期',
+                    'english': dateFieldName,
+                    'type': 'DATE',
+                    'length': '',
+                    'is_person': false,
+                    'is_custom': true,
+                    'source': 'custom'
+                });
+            }
+        }
+    }
+    
+    // 3. 添加选中的审批节点字段（在自定义字段后面）
     for (const nodeId of selectedNodes) {
         if (APPROVAL_NODES_CONFIG[nodeId]) {
             const node = APPROVAL_NODES_CONFIG[nodeId];
@@ -142,110 +253,6 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "") {
                     }
                 }
             }
-        }
-    }
-    
-    // 3. 添加自定义字段
-    for (const customField of customFieldsList) {
-        const chineseName = (customField.chinese_name || '').trim();
-        let englishName = (customField.english_name || '').trim();
-        const fieldType = customField.type || 'VARCHAR';
-        const fieldLength = customField.length || '50';
-        const isPerson = customField.is_person || false;
-        const hasDate = customField.has_date || false;
-        
-        if (!chineseName) {
-            continue;
-        }
-        
-        // 如果没有提供英文名，自动生成
-        if (!englishName) {
-            englishName = translateField(chineseName);
-            if (englishName === null) {
-                continue;
-            }
-        }
-        
-        // 处理重复字段名
-        let baseEnglishName = englishName;
-        if (usedEnglishNames.has(englishName)) {
-            let suffix = 1;
-            while (usedEnglishNames.has(`${englishName}_${suffix}`)) {
-                suffix++;
-            }
-            baseEnglishName = `${englishName}_${suffix}`;
-        }
-        
-        // 人员字段：先生成 ID 字段（不加后缀），再生成姓名字段
-        if (isPerson) {
-            usedEnglishNames.add(baseEnglishName);
-            allFields.push({
-                'chinese': chineseName,
-                'english': baseEnglishName,
-                'type': 'VARCHAR',
-                'length': '50',
-                'is_person': false,
-                'is_custom': true,
-                'source': 'custom_id'
-            });
-            
-            // 再生成姓名字段（加 _name 后缀）
-            const nameFieldName = baseEnglishName + '_name';
-            usedEnglishNames.add(nameFieldName);
-            allFields.push({
-                'chinese': chineseName + '姓名',
-                'english': nameFieldName,
-                'type': fieldType,
-                'length': fieldLength,
-                'is_person': isPerson,
-                'is_custom': true,
-                'source': 'custom'
-            });
-        } else {
-            // 非人员字段：直接添加
-            usedEnglishNames.add(baseEnglishName);
-            allFields.push({
-                'chinese': chineseName,
-                'english': baseEnglishName,
-                'type': fieldType,
-                'length': fieldLength,
-                'is_person': isPerson,
-                'is_custom': true,
-                'source': 'custom'
-            });
-        }
-        
-        // 如果需要日期字段，添加对应的_date字段
-        if (hasDate && !['DATE', 'DATETIME'].includes(fieldType)) {
-            let dateFieldName = baseEnglishName + "_date";
-            
-            // 如果主字段名被修改了，使用修改后的名字
-            if (englishName !== baseEnglishName) {
-                const suffix = englishName.replace(baseEnglishName, '').replace(/^_/, '');
-                if (suffix) {
-                    dateFieldName = `${baseEnglishName}_${suffix}_date`;
-                }
-            }
-            
-            if (usedEnglishNames.has(dateFieldName)) {
-                let suffix = 1;
-                while (usedEnglishNames.has(`${baseEnglishName}_${suffix}_date`)) {
-                    suffix++;
-                }
-                dateFieldName = `${baseEnglishName}_${suffix}_date`;
-            }
-            
-            usedEnglishNames.add(dateFieldName);
-            
-            allFields.push({
-                'chinese': chineseName + "日期",
-                'english': dateFieldName,
-                'type': 'DATE',
-                'length': '',
-                'is_person': false,
-                'is_custom': true,
-                'source': 'custom_date'
-            });
         }
     }
     

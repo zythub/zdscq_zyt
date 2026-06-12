@@ -3,9 +3,7 @@ const APPROVAL_NODES_CONFIG = {
     "施工单位": {
         "fields": [
             { "name": "经办人", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "经办人id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "项目经理", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "项目经理id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
@@ -13,9 +11,7 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "项目监理机构审查意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "专业监理工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "专业监理工程师id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "总监理工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "总监理工程师id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "监理日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
@@ -23,7 +19,6 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "建设单位审批意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "建设单位代表", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "建设单位代表id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "建设单位日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
@@ -31,7 +26,6 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "造价咨询单位意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "造价咨询单位负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "造价咨询单位负责人id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "造价咨询单位日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
@@ -39,9 +33,7 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "工程部审核意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "工程部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "工程部专业工程师id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "工程部部门负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "工程部部门负责人id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "工程部日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
@@ -49,9 +41,7 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "计划经营部审核意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "计划经营部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "计划经营部专业工程师id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "计划经营部部门负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "计划经营部部门负责人id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "计划经营部日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
@@ -59,9 +49,7 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "建设单位物资部意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "物资部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "物资部专业工程师id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "物资部主任", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "物资部主任id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "物资部日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
@@ -69,18 +57,14 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "安建环部审核意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "安建环部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "安建环部专业工程师id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "安建环部部门负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "安建环部部门负责人id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "安建环部日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
     "设备代保管单位": {
         "fields": [
             { "name": "设备代保管单位负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "设备代保管单位负责人id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "设备代保管单位意见", "is_person": false, "type": "VARCHAR", "length": "500" },
-            { "name": "设备代保管单位id", "is_person": false, "type": "VARCHAR", "length": "50" },
             { "name": "设备代保管单位日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     }
@@ -93,8 +77,6 @@ const BASE_FIELDS = [
     ["project_name", "工程名称"],
     ["number", "编号"],
     ["bdh", "表单号"],
-    ["company_code", "单位代码"],
-    ["qcdw", "起草单位"],
     ["zhi", "致"],
     ["organization_name", "单位名称"],
     ["contract_number", "合同编号"],

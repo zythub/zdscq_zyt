@@ -39,6 +39,12 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
 .header-left h1 {
   font-size: 18px;
   font-weight: 600;
@@ -54,8 +60,50 @@ body {
 
 .header-right {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
+}
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.mode-label {
+  font-size: 13px;
+  opacity: 0.85;
+  padding-left: 4px;
+}
+
+.mode-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.mode-btn.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn {
@@ -141,12 +189,9 @@ body {
 .panel-title {
   font-size: 15px;
   color: #2d3748;
-  margin-bottom: 14px;
   display: flex;
   align-items: center;
   font-weight: 600;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #e8ecef;
 }
 
 .panel-title i {
@@ -184,6 +229,32 @@ body {
   color: #4a5568;
   font-weight: 500;
   cursor: pointer;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e8ecef;
+}
+
+.btn-clear {
+  padding: 5px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  color: #718096;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  background: #fff5f5;
+  border-color: #fc8181;
+  color: #e53e3e;
 }
 
 .approval-nodes-grid {

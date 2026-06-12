@@ -23,6 +23,23 @@
           <h1>数据库字段定义生成器</h1>
           <div class="subtitle">配置字段，一键生成Excel定义文件</div>
         </div>
+        <div class="header-center">
+          <div class="mode-switch">
+            <span class="mode-label">表类型：</span>
+            <button 
+              class="mode-btn active" 
+              id="mainTableMode" 
+              onclick="switchToMainTable()">
+              <i class="fas fa-table"></i> 主表
+            </button>
+            <button 
+              class="mode-btn" 
+              id="subTableMode" 
+              onclick="switchToSubTable()">
+              <i class="fas fa-list-alt"></i> 子表
+            </button>
+          </div>
+        </div>
         <div class="header-right">
           <button class="btn btn-primary" onclick="previewFields()">
             <i class="fas fa-sync-alt"></i> 刷新预览
@@ -35,8 +52,11 @@
         <!-- 左侧：审批节点选择 (22%) -->
         <div class="left-panel">
           <div class="left-panel-content">
-            <div class="panel-title">
-              <i class="fas fa-sitemap"></i> 审批节点
+            <div class="panel-header">
+              <div class="panel-title">
+                <i class="fas fa-sitemap"></i> 审批节点
+              </div>
+              <button class="btn-clear" onclick="clearSelectedNodes()">清空</button>
             </div>
             <div class="approval-nodes-grid" id="approvalNodes">
               <!-- 动态加载 -->
@@ -114,8 +134,11 @@
             </div>
 
             <!-- 已添加的自定义字段列表 -->
-            <div class="panel-title">
-              <i class="fas fa-list"></i> 已添加字段
+            <div class="panel-header">
+              <div class="panel-title">
+                <i class="fas fa-list"></i> 已添加字段
+              </div>
+              <button class="btn-clear" onclick="clearCustomFields()">清空</button>
             </div>
             <div id="customFieldsList" class="custom-fields-list">
               <div class="empty-state" id="emptyCustomFields">

@@ -1,6 +1,9 @@
 // 存储自定义字段
 let customFields = [];
 
+// 当前表模式：'main' 主表模式，'sub' 子表模式
+let currentTableMode = 'main';
+
 // 页面加载完成后初始化
 document.addEventListener("DOMContentLoaded", function () {
   loadApprovalNodes();
@@ -127,6 +130,51 @@ function getSelectedNodes() {
   return Array.from(checkboxes).map((cb) => cb.value);
 }
 
+// 清空选中的节点
+function clearSelectedNodes() {
+  const checkboxes = document.querySelectorAll(".node-checkbox:checked");
+  checkboxes.forEach(cb => {
+    cb.checked = false;
+    cb.dispatchEvent(new Event("change"));
+  });
+}
+
+// 切换到主表模式
+function switchToMainTable() {
+  currentTableMode = 'main';
+  document.getElementById('mainTableMode').classList.add('active');
+  document.getElementById('subTableMode').classList.remove('active');
+  document.querySelector('.left-panel').style.display = 'block';
+  previewFields();
+}
+
+// 切换到子表模式
+function switchToSubTable() {
+  currentTableMode = 'sub';
+  document.getElementById('subTableMode').classList.add('active');
+  document.getElementById('mainTableMode').classList.remove('active');
+  document.querySelector('.left-panel').style.display = 'none';
+  // 清空所有选中的节点（子表不需要节点字段）
+  clearSelectedNodes();
+  previewFields();
+}
+
+// 清空自定义字段
+function clearCustomFields() {
+  customFields = [];
+  
+  // 清空DOM中的字段列表
+  const customFieldsList = document.getElementById('customFieldsList');
+  customFieldsList.innerHTML = `
+    <div class="empty-state" id="emptyCustomFields">
+      <i class="fas fa-file-alt"></i>
+      <p>尚未添加自定义字段</p>
+    </div>
+  `;
+  
+  previewFields();
+}
+
 // 添加自定义字段
 function addCustomField() {
   const chineseName = document.getElementById("customChineseName").value.trim();
@@ -227,9 +275,8 @@ function removeCustomField(fieldId) {
 }
 
 // 预览字段
-// 在 main.js 中修改 previewFields 函数
 function previewFields() {
-    const selectedNodes = getSelectedNodes();
+    const selectedNodes = currentTableMode === 'sub' ? [] : getSelectedNodes();
     const tableName = document.getElementById('tableNameInput').value || '未命名表';
     
     // 显示加载状态 - 保持与最终相同的列数
@@ -248,8 +295,8 @@ function previewFields() {
     // 使用setTimeout模拟异步处理
     setTimeout(() => {
         try {
-            // 生成所有字段
-            const allFields = generateAllFields(selectedNodes, customFields, tableName);
+            // 生成所有字段（传入当前模式）
+            const allFields = generateAllFields(selectedNodes, customFields, tableName, currentTableMode);
             updatePreviewTable(allFields);
             
             // 如果有字段，显示成功消息
@@ -309,7 +356,7 @@ function updatePreviewTable(fields) {
 }
 // 生成Excel文件
 function generateExcel() {
-  const selectedNodes = getSelectedNodes();
+  const selectedNodes = currentTableMode === 'sub' ? [] : getSelectedNodes();
   const tableName =
     document.getElementById("tableNameInput").value || "custom_table";
   const tableChineseName = 
@@ -317,8 +364,11 @@ function generateExcel() {
   // 使用表中文名作为下载文件名
   const downloadName = tableChineseName || "字段定义表";
 
-  if (selectedNodes.length === 0 && customFields.length === 0) {
-    showNotification("请至少选择一个审批节点或添加一个自定义字段", "warning");
+  // 生成所有字段（基础字段 + 自定义字段 + 节点字段）
+  const allFields = generateAllFields(selectedNodes, customFields, tableName, currentTableMode);
+  
+  if (allFields.length === 0) {
+    showNotification("没有可导出的字段", "warning");
     return;
   }
 
@@ -335,9 +385,6 @@ function generateExcel() {
   document.querySelector(".btn-success").disabled = true;
 
   try {
-    // 生成所有字段
-    const allFields = generateAllFields(selectedNodes, customFields, tableName);
-
     // 生成Excel文件并下载
     const fileName = generateExcelFile(tableName, tableChineseName, allFields, downloadName);
 
