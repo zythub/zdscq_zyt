@@ -66,7 +66,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
     
     // 根据模式添加基础字段
     if (tableMode === 'main') {
-        // 主表模式：添加标准基础字段
+        // 主表模式：添加基础字段前部分
         for (const [engName, chiName] of BASE_FIELDS) {
             usedEnglishNames.add(engName);
             allFields.push({
@@ -96,6 +96,10 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
     }
     
     // 2. 添加自定义字段（在基础字段后面）
+    // 先收集自定义字段，分为非人员字段和人员字段
+    const customNonPersonFields = [];
+    const customPersonFields = [];
+    
     for (const customField of customFieldsList) {
         const chineseName = (customField.chinese_name || '').trim();
         let englishName = (customField.english_name || '').trim();
@@ -126,51 +130,38 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
             baseEnglishName = `${englishName}_${suffix}`;
         }
         
-        // 人员字段：先生成 ID 字段（不加后缀），再生成姓名字段
         if (isPerson) {
+            // 人员字段：收集起来，后面统一添加
+            customPersonFields.push({
+                chineseName,
+                baseEnglishName,
+                fieldType,
+                fieldLength,
+                hasDate
+            });
             usedEnglishNames.add(baseEnglishName);
-            allFields.push({
+            usedEnglishNames.add(baseEnglishName + '_name');
+            if (hasDate && fieldType !== 'DATE' && fieldType !== 'DATETIME') {
+                usedEnglishNames.add(baseEnglishName + '_date');
+            }
+        } else {
+            // 非人员字段：直接添加
+            usedEnglishNames.add(baseEnglishName);
+            customNonPersonFields.push({
                 'chinese': chineseName,
                 'english': baseEnglishName,
-                'type': 'VARCHAR',
-                'length': '50',
+                'type': fieldType,
+                'length': fieldLength,
                 'is_person': false,
                 'is_custom': true,
                 'source': 'custom'
             });
             
-            // 再生成姓名字段（加 _name 后缀）
-            const nameFieldName = baseEnglishName + '_name';
-            usedEnglishNames.add(nameFieldName);
-            allFields.push({
-                'chinese': chineseName + '姓名',
-                'english': nameFieldName,
-                'type': fieldType,
-                'length': fieldLength,
-                'is_person': isPerson,
-                'is_custom': true,
-                'source': 'custom'
-            });
-        } else {
-            // 非人员字段：直接添加
-            usedEnglishNames.add(baseEnglishName);
-            allFields.push({
-                'chinese': chineseName,
-                'english': baseEnglishName,
-                'type': fieldType,
-                'length': fieldLength,
-                'is_person': false,
-                'is_custom': true,
-                'source': 'custom'
-            });
-        }
-        
-        // 如果勾选了日期字段且不是DATE类型，添加日期字段
-        if (hasDate && fieldType !== 'DATE' && fieldType !== 'DATETIME') {
-            const dateFieldName = baseEnglishName + '_date';
-            if (!usedEnglishNames.has(dateFieldName)) {
+            // 如果勾选了日期字段且不是DATE类型，添加日期字段
+            if (hasDate && fieldType !== 'DATE' && fieldType !== 'DATETIME') {
+                const dateFieldName = baseEnglishName + '_date';
                 usedEnglishNames.add(dateFieldName);
-                allFields.push({
+                customNonPersonFields.push({
                     'chinese': chineseName + '日期',
                     'english': dateFieldName,
                     'type': 'DATE',
@@ -183,7 +174,54 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
         }
     }
     
+    // 先添加非人员自定义字段
+    for (const field of customNonPersonFields) {
+        allFields.push(field);
+    }
+    
+    // 再添加人员自定义字段（ID、姓名、日期放在一起）
+    for (const personField of customPersonFields) {
+        // ID字段
+        allFields.push({
+            'chinese': personField.chineseName,
+            'english': personField.baseEnglishName,
+            'type': 'VARCHAR',
+            'length': '50',
+            'is_person': false,
+            'is_custom': true,
+            'source': 'custom'
+        });
+        
+        // 姓名字段
+        allFields.push({
+            'chinese': personField.chineseName + '姓名',
+            'english': personField.baseEnglishName + '_name',
+            'type': personField.fieldType,
+            'length': personField.fieldLength,
+            'is_person': true,
+            'is_custom': true,
+            'source': 'custom'
+        });
+        
+        // 日期字段
+        if (personField.hasDate && personField.fieldType !== 'DATE' && personField.fieldType !== 'DATETIME') {
+            allFields.push({
+                'chinese': personField.chineseName + '日期',
+                'english': personField.baseEnglishName + '_date',
+                'type': 'DATE',
+                'length': '',
+                'is_person': false,
+                'is_custom': true,
+                'source': 'custom'
+            });
+        }
+    }
+    
     // 3. 添加选中的审批节点字段（在自定义字段后面）
+    // 同样先收集，分为非人员字段和人员字段
+    const nodeNonPersonFields = [];
+    const nodePersonFields = [];
+    
     for (const nodeId of selectedNodes) {
         if (APPROVAL_NODES_CONFIG[nodeId]) {
             const node = APPROVAL_NODES_CONFIG[nodeId];
@@ -213,45 +251,79 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
                         baseEnglishName = `${englishName}_${suffix}`;
                     }
                     
-                    // 人员字段：先生成 ID 字段（不加后缀），再生成姓名字段
                     if (field.is_person) {
+                        // 人员字段：收集起来，后面统一添加
+                        nodePersonFields.push({
+                            chineseName,
+                            baseEnglishName,
+                            fieldType: field.type,
+                            fieldLength: field.length,
+                            nodeId
+                        });
                         usedEnglishNames.add(baseEnglishName);
-                        allFields.push({
-                            'chinese': chineseName,
-                            'english': baseEnglishName,
-                            'type': 'VARCHAR',
-                            'length': '50',
-                            'is_person': false,
-                            'is_custom': false,
-                            'source': `node_${nodeId}`
-                        });
-                        
-                        // 再生成姓名字段（加 _name 后缀）
-                        const nameFieldName = baseEnglishName + '_name';
-                        usedEnglishNames.add(nameFieldName);
-                        allFields.push({
-                            'chinese': chineseName + '姓名',
-                            'english': nameFieldName,
-                            'type': field.type,
-                            'length': field.length,
-                            'is_person': field.is_person,
-                            'is_custom': false,
-                            'source': `node_${nodeId}`
-                        });
+                        usedEnglishNames.add(baseEnglishName + '_name');
                     } else {
                         // 非人员字段：直接添加
                         usedEnglishNames.add(baseEnglishName);
-                        allFields.push({
+                        nodeNonPersonFields.push({
                             'chinese': chineseName,
                             'english': baseEnglishName,
                             'type': field.type,
                             'length': field.length,
-                            'is_person': field.is_person,
+                            'is_person': false,
                             'is_custom': false,
                             'source': `node_${nodeId}`
                         });
                     }
                 }
+            }
+        }
+    }
+    
+    // 先添加非人员节点字段
+    for (const field of nodeNonPersonFields) {
+        allFields.push(field);
+    }
+    
+    // 再添加人员节点字段（ID、姓名放在一起）
+    for (const personField of nodePersonFields) {
+        // ID字段
+        allFields.push({
+            'chinese': personField.chineseName,
+            'english': personField.baseEnglishName,
+            'type': 'VARCHAR',
+            'length': '50',
+            'is_person': false,
+            'is_custom': false,
+            'source': `node_${personField.nodeId}`
+        });
+        
+        // 姓名字段
+        allFields.push({
+            'chinese': personField.chineseName + '姓名',
+            'english': personField.baseEnglishName + '_name',
+            'type': personField.fieldType,
+            'length': personField.fieldLength,
+            'is_person': true,
+            'is_custom': false,
+            'source': `node_${personField.nodeId}`
+        });
+    }
+    
+    // 4. 主表模式下添加基础字段后部分（在节点字段后面）
+    if (tableMode === 'main') {
+        for (const [engName, chiName] of BASE_FIELDS_END) {
+            if (!usedEnglishNames.has(engName)) {
+                usedEnglishNames.add(engName);
+                allFields.push({
+                    'chinese': chiName,
+                    'english': engName,
+                    'type': 'VARCHAR',
+                    'length': '50',
+                    'is_person': false,
+                    'is_custom': false,
+                    'source': 'system'
+                });
             }
         }
     }

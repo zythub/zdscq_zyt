@@ -301,7 +301,7 @@ function previewFields() {
             
             // 如果有字段，显示成功消息
             if (allFields.length > 0) {
-                showNotification(`已生成 ${allFields.length} 个字段`, 'success');
+                showNotification('生成成功', 'success');
             }
         } catch (error) {
             console.error('预览失败:', error);

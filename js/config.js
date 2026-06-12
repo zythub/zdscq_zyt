@@ -70,7 +70,7 @@ const APPROVAL_NODES_CONFIG = {
     }
 };
 
-// 基础字段
+// 基础字段（前部分）
 const BASE_FIELDS = [
     ["specialty", "专业"],
     ["unit", "机组"],
@@ -79,8 +79,14 @@ const BASE_FIELDS = [
     ["bdh", "表单号"],
     ["zhi", "致"],
     ["organization_name", "单位名称"],
-    ["contract_number", "合同编号"],
+    ["company_code", "单位代码"],
     ["contract_name", "合同名称"],
+    ["contract_number", "合同编号"]
+];
+
+
+// 基础字段（后部分，放在节点字段后面）
+const BASE_FIELDS_END = [
     ["fdd_dzqz_file_id", "签章文件id"],
     ["fdd_dzqz_status", "签章状态"],
     ["flow_instance_id", "流程实例ID"],
