@@ -68,20 +68,20 @@ const APPROVAL_NODES_CONFIG = {
             { "name": "职能部门日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
-    "物资部": {
-        "fields": [
-            { "name": "建设单位物资部意见", "is_person": false, "type": "VARCHAR", "length": "500" },
-            { "name": "物资部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "物资部主任", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "物资部日期", "is_person": false, "type": "DATE", "length": "" }
-        ]
-    },
     "档案部": {
         "fields": [
             { "name": "档案部审核意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "档案部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
             { "name": "档案部部门负责人", "is_person": true, "type": "VARCHAR", "length": "50" },
             { "name": "档案部日期", "is_person": false, "type": "DATE", "length": "" }
+        ]
+    },
+    "物资部": {
+        "fields": [
+            { "name": "建设单位物资部意见", "is_person": false, "type": "VARCHAR", "length": "500" },
+            { "name": "物资部专业工程师", "is_person": true, "type": "VARCHAR", "length": "50" },
+            { "name": "物资部主任", "is_person": true, "type": "VARCHAR", "length": "50" },
+            { "name": "物资部日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
     "设备代保管单位": {
