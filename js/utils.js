@@ -259,14 +259,15 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
     }
     
     // 3. 添加选中的审批节点字段（在自定义字段后面）
-    // 同样先收集，分为非人员字段和人员字段
-    const nodeNonPersonFields = [];
-    const nodePersonFields = [];
-    
+    // 按节点分组处理，每个节点的非人员字段和人员字段放在一起
     for (const nodeId of selectedNodes) {
         if (APPROVAL_NODES_CONFIG[nodeId]) {
             const node = APPROVAL_NODES_CONFIG[nodeId];
             if (node.fields) {
+                // 收集该节点的非人员字段和人员字段
+                const nodeNonPersonFields = [];
+                const nodePersonFields = [];
+                
                 for (const field of node.fields) {
                     const chineseName = field.name;
                     
@@ -293,7 +294,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
                     }
                     
                     if (field.is_person) {
-                        // 人员字段：收集起来，后面统一添加（意见 → ID → 姓名 → 日期）
+                        // 人员字段：收集起来
                         nodePersonFields.push({
                             chineseName,
                             baseEnglishName,
@@ -304,7 +305,7 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
                         usedEnglishNames.add(baseEnglishName);
                         usedEnglishNames.add(baseEnglishName + '_name');
                     } else {
-                        // 非人员字段：直接添加
+                        // 非人员字段：收集起来
                         usedEnglishNames.add(baseEnglishName);
                         nodeNonPersonFields.push({
                             'chinese': chineseName,
@@ -317,38 +318,38 @@ function generateAllFields(selectedNodes, customFieldsList, tableName = "", tabl
                         });
                     }
                 }
+                
+                // 先添加该节点的非人员字段
+                for (const field of nodeNonPersonFields) {
+                    allFields.push(field);
+                }
+                
+                // 再添加该节点的人员字段（ID → 姓名）
+                for (const personField of nodePersonFields) {
+                    // ID字段
+                    allFields.push({
+                        'chinese': personField.chineseName,
+                        'english': personField.baseEnglishName,
+                        'type': 'VARCHAR',
+                        'length': '50',
+                        'is_person': false,
+                        'is_custom': false,
+                        'source': `node_${personField.nodeId}`
+                    });
+                    
+                    // 姓名字段
+                    allFields.push({
+                        'chinese': personField.chineseName + '姓名',
+                        'english': personField.baseEnglishName + '_name',
+                        'type': personField.fieldType,
+                        'length': normalizeLength(personField.fieldType, personField.fieldLength),
+                        'is_person': true,
+                        'is_custom': false,
+                        'source': `node_${personField.nodeId}`
+                    });
+                }
             }
         }
-    }
-    
-    // 先添加非人员节点字段
-    for (const field of nodeNonPersonFields) {
-        allFields.push(field);
-    }
-    
-    // 再添加人员节点字段（ID → 姓名）
-    for (const personField of nodePersonFields) {
-        // ID字段
-        allFields.push({
-            'chinese': personField.chineseName,
-            'english': personField.baseEnglishName,
-            'type': 'VARCHAR',
-            'length': '50',
-            'is_person': false,
-            'is_custom': false,
-            'source': `node_${personField.nodeId}`
-        });
-        
-        // 姓名字段
-        allFields.push({
-            'chinese': personField.chineseName + '姓名',
-            'english': personField.baseEnglishName + '_name',
-            'type': personField.fieldType,
-            'length': normalizeLength(personField.fieldType, personField.fieldLength),
-            'is_person': true,
-            'is_custom': false,
-            'source': `node_${personField.nodeId}`
-        });
     }
     
     // 4. 主表模式下添加基础字段后部分（在节点字段后面）
