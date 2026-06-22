@@ -150,7 +150,7 @@ const TRANSLATION_DICT = {
     // 施工单位相关
     "经办人": "operator",
     "项目经理": "project_manager",
-    "日期": "date",
+    "经办人日期": "date",
     "年": "year",
     "月": "month",
     "日": "day",
