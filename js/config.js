@@ -4,7 +4,7 @@ const APPROVAL_NODES_CONFIG = {
         "fields": [
             { "name": "经办人", "is_person": true, "type": "VARCHAR", "length": "50" },
             { "name": "项目经理", "is_person": true, "type": "VARCHAR", "length": "50" },
-            { "name": "日期", "is_person": false, "type": "DATE", "length": "" }
+            { "name": "经办人日期", "is_person": false, "type": "DATE", "length": "" }
         ]
     },
     "监理单位": {
