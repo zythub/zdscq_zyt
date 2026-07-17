@@ -11,6 +11,7 @@ const APPROVAL_NODES_CONFIG = {
     "监理单位": {
         "fields": [
             { "name": "项目监理机构审查意见", "is_person": false, "type": "VARCHAR", "length": "500" },
+            { "name": "专业监理工程师意见", "is_person": false, "type": "VARCHAR", "length": "500" },
             { "name": "专业监理工程师", "is_person": true, "type": "VARCHAR", "length": "800" },
             { "name": "安全监理工程师", "is_person": true, "type": "VARCHAR", "length": "800" },
             { "name": "总监理工程师", "is_person": true, "type": "VARCHAR", "length": "800" },
