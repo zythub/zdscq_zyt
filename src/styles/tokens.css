@@ -1,0 +1,170 @@
+/* =========================================================================
+   zdscq · 设计令牌 (Design Tokens)
+   方向：工业精密风 (Industrial Precision)
+   —— 冷调中性灰（带蓝味）+ 克制钢蓝强调色，强调精确、可信、高效。
+   明暗双主题；语义令牌在 .dark 下重定义，原语令牌保持不变。
+   ========================================================================= */
+
+:root {
+  /* ---- 原语调色板：冷调中性 ---- */
+  --gray-50: #f7f9fb;
+  --gray-100: #eef2f6;
+  --gray-200: #e2e8ee;
+  --gray-300: #cdd7e0;
+  --gray-400: #aab6c3;
+  --gray-500: #8a98a8;
+  --gray-600: #6f7e8c;
+  --gray-700: #4a5868;
+  --gray-800: #324050;
+  --gray-900: #1f2a37;
+
+  /* ---- 强调色：钢蓝（steel teal-blue），刻意避开 AI 紫蓝渐变 ---- */
+  --accent-50: #e6f3f6;
+  --accent-100: #cfe7ee;
+  --accent-200: #9fcfdc;
+  --accent-400: #2da3c4;
+  --accent-500: #0f6f8f;
+  --accent-600: #0c5e7a;
+  --accent-700: #0a4f67;
+
+  /* ---- 语义颜色 ---- */
+  --success: #1f9d5b;
+  --success-soft: #e7f6ee;
+  --warning: #b9790f;
+  --warning-soft: #fbf1e0;
+  --error: #d23b54;
+  --error-soft: #fbe7eb;
+  --info: #2f6fb0;
+  --info-soft: #e7f0f8;
+
+  /* ---- 语义令牌：浅色 ---- */
+  --bg: var(--gray-50);
+  --surface-1: #ffffff;
+  --surface-2: var(--gray-100);
+  --surface-3: var(--gray-200);
+  --surface-inset: var(--gray-100);
+
+  --border: var(--gray-200);
+  --border-strong: var(--gray-300);
+
+  --text-1: var(--gray-900);
+  --text-2: var(--gray-700);
+  --text-3: var(--gray-500);
+
+  --primary: var(--accent-500);
+  --primary-hover: var(--accent-600);
+  --primary-pressed: var(--accent-700);
+  --primary-soft: var(--accent-50);
+  --primary-contrast: #ffffff;
+
+  /* ---- 间距尺度（4pt 体系） ---- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+
+  /* ---- 圆角 ---- */
+  --r-xs: 5px;
+  --r-sm: 7px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  /* ---- 字体 ---- */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
+  --font-mono: 'SFMono-Regular', 'JetBrains Mono', Consolas, 'Liberation Mono',
+    Menlo, monospace;
+
+  /* 字号比例（模块化，5 级，对比清晰） */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-base: 14px;
+  --fs-md: 15px;
+  --fs-lg: 17px;
+  --fs-xl: 20px;
+  --fs-2xl: 25px;
+
+  --lh-tight: 1.25;
+  --lh-base: 1.5;
+
+  /* ---- 阴影 / 提升（克制） ---- */
+  --shadow-1: 0 1px 2px rgba(31, 42, 55, 0.06), 0 1px 1px rgba(31, 42, 55, 0.04);
+  --shadow-2: 0 6px 20px rgba(31, 42, 55, 0.1);
+  --shadow-pop: 0 10px 34px rgba(31, 42, 55, 0.16);
+
+  /* ---- 缓动 ---- */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 120ms;
+  --dur-mid: 220ms;
+  --dur-slow: 360ms;
+
+  /* ---- 层级 ---- */
+  --z-base: 1;
+  --z-sticky: 20;
+  --z-popover: 1000;
+  --z-drawer: 2000;
+  --z-toast: 3000;
+
+  color-scheme: light;
+}
+
+/* ============================ 深色主题 ============================ */
+:root.dark {
+  --gray-50: #0c1014;
+  --gray-100: #141a21;
+  --gray-200: #1c242d;
+  --gray-300: #28323c;
+  --gray-400: #3a4754;
+  --gray-500: #6f7e8c;
+  --gray-600: #aab6c3;
+  --gray-700: #c2ccd6;
+  --gray-800: #dde4ea;
+  --gray-900: #eef2f6;
+
+  --accent-50: #0f2e38;
+  --accent-100: #143a47;
+  --accent-200: #1c5566;
+  --accent-400: #2da3c4;
+  --accent-500: #38b3d4;
+  --accent-600: #2da3c4;
+  --accent-700: #1f8aa8;
+
+  --success: #3fbf7a;
+  --success-soft: #12281d;
+  --warning: #e0a23a;
+  --warning-soft: #2c2310;
+  --error: #ef6277;
+  --error-soft: #2e141a;
+  --info: #5a9bdb;
+  --info-soft: #102233;
+
+  --bg: #0a0e12;
+  --surface-1: #151b22;
+  --surface-2: #1c242d;
+  --surface-3: #242e39;
+  --surface-inset: #11171d;
+
+  --border: #28323c;
+  --border-strong: #3a4754;
+
+  --text-1: #eef2f6;
+  --text-2: #aab6c3;
+  --text-3: #6f7e8c;
+
+  --primary: var(--accent-500);
+  --primary-hover: var(--accent-400);
+  --primary-pressed: var(--accent-600);
+  --primary-soft: var(--accent-50);
+  --primary-contrast: #06181d;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}

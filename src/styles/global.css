@@ -1,0 +1,196 @@
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--text-1);
+  background: var(--bg);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 聚焦可见性：键盘导航时的清晰焦点环 */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+
+/* ---------- 滚动条：纤细、克制 ---------- */
+.scroll-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) transparent;
+}
+.scroll-y::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+.scroll-y::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-y::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.scroll-y::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+  background-clip: padding-box;
+}
+
+/* ============================ 工具类 ============================ */
+
+/* 面板：三栏容器、配置抽屉内区块的统一外框 */
+.panel {
+  min-width: 0;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-shadow: var(--shadow-1);
+}
+
+/* 面板标题：带一条左侧强调短杠，建立清晰层级 */
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 2px var(--s-3);
+  flex-shrink: 0;
+}
+.panel-head::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+.panel-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: 0.01em;
+}
+
+/* 浅色软底（选中态/说明框/预览框） */
+.soft {
+  background: var(--surface-2);
+}
+.soft-accent {
+  background: var(--primary-soft);
+}
+
+/* 行级悬停：轻量、有反馈 */
+.hoverable {
+  transition: background var(--dur-fast) var(--ease-out-quart),
+    border-color var(--dur-fast) var(--ease-out-quart);
+}
+.hoverable:hover {
+  background: var(--surface-2);
+}
+
+/* 等宽字体（字段名、映射） */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* 次级文字 */
+.muted {
+  color: var(--text-3);
+}
+.dim {
+  color: var(--text-2);
+}
+
+/* 细分隔线 */
+.divider {
+  height: 1px;
+  background: var(--border);
+  border: 0;
+  margin: var(--s-2) 0;
+}
+
+/* 空状态文案 */
+.empty-hint {
+  padding: var(--s-7) var(--s-4);
+  text-align: center;
+  color: var(--text-3);
+  font-size: var(--fs-base);
+  line-height: 1.7;
+}
+
+/* ============================ 动画 ============================ */
+
+/* 入场：自下而上轻微浮起，用于面板/区块 */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise-in {
+  animation: rise-in var(--dur-slow) var(--ease-out-expo) both;
+}
+
+/* 新增字段高亮（2.4s 后由 JS 移除 class） */
+@keyframes row-flash {
+  0% {
+    background-color: var(--primary-soft);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+.row-flash {
+  animation: row-flash 2.4s var(--ease-out-quart);
+}
+
+/* 顶栏品牌强调线扫过（仅首次加载） */
+@keyframes accent-sweep {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* 尊重用户的减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
