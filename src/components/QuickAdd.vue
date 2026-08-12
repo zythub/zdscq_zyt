@@ -195,7 +195,7 @@ function summarize(f: CustomFieldInput): string {
             </div>
             <div class="muted" style="font-size: 11px">{{ summarize(f) }}</div>
           </div>
-          <NButton size="tiny" quaternary type="error" @click="removeCustomField(f.uid)">删</NButton>
+          <NButton size="tiny" quaternary type="error" @click="removeCustomField(f.uid)">删除</NButton>
         </div>
       </div>
     </div>

@@ -50,6 +50,14 @@ const lightOverrides: GlobalThemeOverrides = {
     fontWeightStrong: '600',
     fontFamily:
       '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+    // 整体放大一档，使 tiny/small 控件更易读
+    fontSize: '18px',
+    fontSizeTiny: '16px',
+    fontSizeSmall: '17px',
+    fontSizeMedium: '18px',
+    fontSizeLarge: '18px',
+    fontSizeHuge: '22px',
+    lineHeight: '1.5',
   },
   Card: { borderRadius: '10px' },
   Dialog: { borderRadius: '12px' },
@@ -79,6 +87,14 @@ const darkOverrides: GlobalThemeOverrides = {
     fontWeightStrong: '600',
     fontFamily:
       '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+    // 整体放大一档，使 tiny/small 控件更易读
+    fontSize: '15px',
+    fontSizeTiny: '13px',
+    fontSizeSmall: '14px',
+    fontSizeMedium: '15px',
+    fontSizeLarge: '17px',
+    fontSizeHuge: '20px',
+    lineHeight: '1.5',
   },
   Card: { borderRadius: '10px' },
   Dialog: { borderRadius: '12px' },
@@ -102,7 +118,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
               align-items: center;
               gap: 10px;
               padding: 6px 14px;
-              font-size: 13px;
+              font-size: 14px;
               background: var(--primary-soft);
               color: var(--text-1);
             "

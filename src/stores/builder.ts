@@ -3,6 +3,7 @@ import { config } from './config';
 import { generateFields } from '@/core/generator';
 import { buildTableName } from '@/core/identifier';
 import type { CustomFieldInput, FieldType, GeneratedField, TableMode } from '@/types';
+import type { DesignerFieldType } from '@/core/word/designer';
 
 const SESSION_KEY = 'zdscq:session:v1';
 
@@ -84,6 +85,73 @@ export function addCustomField(partial: Partial<CustomFieldInput>): CustomFieldI
 export function removeCustomField(uid: string): void {
   const idx = session.customFields.findIndex((f) => f.uid === uid);
   if (idx >= 0) session.customFields.splice(idx, 1);
+}
+
+/**
+ * 把「从 Word / 文字」解析出的主表字段直接接入生成器主流程：
+ * 写入 session.customFields，随即出现在主字段表、可像普通字段一样编辑/排序/导出 Excel。
+ * - DesignerFieldType(表单组件类型) → 生成器的 DB 字段类型
+ * - 自动识别人员/日期/意见后缀，复用原生成器"人员字段展开"逻辑
+ * - 与已存在的 customFields 去重；若某字段英文名已被「生成器基础字段」占用
+ *   （如书签里打了 编号/number、工程名称/project_name 等），直接跳过，避免重复导入
+ * - 若主表字段里没有「备注」，自动补一个 备注(bz, TEXT)
+ * @returns 实际新增的英文名列表（用于表格高亮）
+ */
+const DESIGNER_TO_DB: Record<DesignerFieldType, { type: FieldType; length: number | null }> = {
+  input: { type: 'VARCHAR', length: 50 },
+  textarea: { type: 'TEXT', length: null },
+  date: { type: 'DATE', length: null },
+  checkbox: { type: 'VARCHAR', length: 50 },
+  select: { type: 'VARCHAR', length: 50 },
+  radio: { type: 'VARCHAR', length: 50 },
+};
+
+export function addFieldsFromWord(
+  items: Array<{ english: string; label: string; type: DesignerFieldType }>
+): string[] {
+  const existing = new Set(session.customFields.map((f) => f.englishName));
+  // 生成器自己会产出这些基础字段（来自配置中心 baseline）：书签若已打「编号 / 工程名称 / 单位名称 …」
+  // 等，必须跳过，否则会和生成器基础字段在主表清单里重复出现。
+  const reserved = new Set<string>([
+    ...config.value.baseFieldsStart.map((f) => f.english),
+    ...config.value.baseFieldsEnd.map((f) => f.english),
+  ]);
+  const added: string[] = [];
+
+  for (const it of items) {
+    // 已存在 或 已由生成器基础字段提供 → 跳过，杜绝重复导入
+    if (existing.has(it.english) || reserved.has(it.english)) continue;
+    const m = DESIGNER_TO_DB[it.type] ?? DESIGNER_TO_DB.input;
+    const f = addCustomField({
+      chineseName: it.label,
+      englishName: it.english,
+      type: m.type,
+      length: m.length,
+      scale: null,
+      isPerson: it.english.endsWith('_name'),
+      hasDate: /_(rq|date)$/.test(it.english),
+      hasOpinion: /_yj$/.test(it.english),
+    });
+    existing.add(f.englishName);
+    added.push(f.englishName);
+  }
+
+  // 默认「备注」字段：主表没有时补一个（用户要求的固定基础字段；bz 不在生成器基础字段内，不会被 reserved 吃掉）
+  if (!existing.has('bz') && !reserved.has('bz')) {
+    const f = addCustomField({
+      chineseName: '备注',
+      englishName: 'bz',
+      type: 'TEXT',
+      length: null,
+      scale: null,
+      isPerson: false,
+      hasDate: false,
+      hasOpinion: false,
+    });
+    added.push(f.englishName);
+  }
+
+  return added;
 }
 
 export function toggleNode(id: string): void {

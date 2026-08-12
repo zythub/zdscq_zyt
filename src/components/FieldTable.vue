@@ -41,12 +41,19 @@ const visible = computed(() => {
 
 const hasManualOrder = computed(() => session.manualOrder.length > 0);
 
-function onDragStart(i: number): void {
+function onDragStart(i: number, e: DragEvent): void {
   if (filter.value.trim()) {
     message.warning('筛选状态下不能拖拽排序，请先清空筛选');
+    e.preventDefault();
     return;
   }
   dragIndex.value = i;
+  // 让拖拽影像显示整行，而不只是手柄那一个格子
+  const rowEl = (e.currentTarget as HTMLElement).closest('.ft-row') as HTMLElement | null;
+  if (rowEl && e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setDragImage(rowEl, 0, 0);
+  }
 }
 
 function onDragOver(i: number, e: DragEvent): void {
@@ -163,18 +170,23 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         :key="f.key"
         class="ft-row hoverable"
         :class="[severityClass(f), { 'row-flash': recentlyAdded.has(f.english) }]"
-        draggable="true"
         :style="{
           gridTemplateColumns: gridTemplate,
           opacity: dragIndex === i ? 0.4 : 1,
           borderTop: overIndex === i && dragIndex !== null ? '2px solid var(--success)' : undefined,
         }"
-        @dragstart="onDragStart(i)"
         @dragover="onDragOver(i, $event)"
         @drop="onDrop(i)"
-        @dragend="onDragEnd"
       >
-        <div style="padding: 4px 8px; opacity: 0.45; cursor: grab; user-select: none">
+        <!-- 仅此格作为拖拽手柄，其余单元格可正常编辑，避免拖拽抢先 -->
+        <div
+          class="drag-handle"
+          draggable="true"
+          title="拖拽排序"
+          @dragstart="(e: DragEvent) => onDragStart(i, e)"
+          @dragend="onDragEnd"
+          style="padding: 4px 8px; opacity: 0.45; cursor: grab; user-select: none; touch-action: none"
+        >
           {{ i + 1 }}
         </div>
 
@@ -271,7 +283,7 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
                 {{ f.originLabel }}
               </NTag>
             </template>
-            <div style="max-width: 280px; font-size: 12px; line-height: 1.6">
+            <div style="max-width: 280px; font-size: 13px; line-height: 1.6">
               <div v-for="(w, wi) in f.warnings" :key="wi">{{ w.message }}</div>
             </div>
           </NPopover>
@@ -311,7 +323,7 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
   position: sticky;
   top: 0;
   z-index: 2;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-2);
   background: var(--surface-1);
@@ -320,7 +332,7 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
 .ft-row {
   display: grid;
   align-items: center;
-  font-size: 14px;
+  font-size: 15px;
   border-bottom: 1px solid var(--border);
   background: transparent;
 }
@@ -332,6 +344,14 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
 }
 .ft-row:hover {
   background: var(--surface-2);
+}
+/* 拖拽手柄：仅在手柄格上触发拖拽，编辑单元格不受影响 */
+.drag-handle {
+  transition: opacity var(--dur-fast) var(--ease-out-quart), color var(--dur-fast);
+}
+.drag-handle:hover {
+  opacity: 0.85 !important;
+  color: var(--primary);
 }
 /* 来源列：固定在右侧，水平滚动时始终可见 */
 .sticky-col {
