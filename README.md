@@ -1,6 +1,12 @@
-# 数据库字段定义生成器
+# 开发效率提升工具集
 
-把「审批节点 + 自定义字段」组合成一张数据库表的字段定义，并导出为下游导入工具要求的 Excel。
+面向开发、实施与运维人员的小工具集合（GitHub Pages 纯静态站点，无需后端）。当前内置：
+
+- **字段生成器**：审批节点 + 自定义字段组合成表结构，导出下游导入工具要求的 Excel。
+- **新增字段 SQL**：批量生成 `dy_table_field` 的 INSERT / ALTER / COMMENT SQL。
+- **书签生成表单**：提取 Word 书签，复用命名规则，生成表单设计器 JSON。
+
+第三方工具（如常用的在线工具站）在 `src/stores/externalTools.ts` 的 `EXTERNAL_TOOLS` 数组里写死内置，侧边栏会与内置工具一起平铺展示，外链条目在新窗口打开。
 
 在线地址：<https://zythub.github.io/zdscq_zyt/>（GitHub Pages，纯静态，无需后端）
 

@@ -11,7 +11,7 @@ import {
   zhCN,
 } from 'naive-ui';
 import type { GlobalThemeOverrides } from 'naive-ui';
-import AppBody from '@/components/AppBody.vue';
+import ToolLayout from '@/layouts/ToolLayout.vue';
 import { acknowledgeBaseline, baselineUpdated, overrideCount } from '@/stores/config';
 
 const isDark = ref(localStorage.getItem('zdscq:theme') === 'dark');
@@ -110,7 +110,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
   <NConfigProvider :theme="theme" :theme-overrides="themeOverrides" :locale="zhCN" :date-locale="dateZhCN">
     <NMessageProvider>
       <NDialogProvider>
-        <NLayout style="height: 100vh">
+        <NLayout style="height: 100vh; display: flex; flex-direction: column">
           <div
             v-if="baselineUpdated"
             style="
@@ -121,6 +121,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
               font-size: 14px;
               background: var(--primary-soft);
               color: var(--text-1);
+              flex-shrink: 0;
             "
           >
             <span>
@@ -128,7 +129,9 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
             </span>
             <NButton size="tiny" @click="acknowledgeBaseline">知道了</NButton>
           </div>
-          <AppBody :is-dark="isDark" @toggle-theme="toggleTheme" />
+          <div style="flex: 1; min-height: 0">
+            <ToolLayout :is-dark="isDark" @toggle-theme="toggleTheme" />
+          </div>
         </NLayout>
       </NDialogProvider>
     </NMessageProvider>
