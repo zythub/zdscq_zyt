@@ -27,10 +27,7 @@ function open(url: string): void {
 
 <template>
   <div class="page">
-    <div class="head">
-      <h2>工具箱</h2>
-      <p>以下第三方工具禁止站内嵌入（跨站 iframe 被浏览器拦截），点击卡片在新窗口打开。</p>
-    </div>
+ 
 
     <div class="grid">
       <button
