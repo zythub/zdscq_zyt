@@ -188,7 +188,7 @@ const sqlText = computed(() => {
       const len = r.length != null ? r.length : 'NULL';
       return (
         `INSERT INTO "dy_table_field" VALUES (\n` +
-        `  '${r.id}', 'b70680fc3ec48136fe3cc4ab3a23a741',\n` +
+        `  '${r.id}', (select id from dy_table where name = '${r.tableName}'),\n` +
         `  '${r.fieldName}',\n` +
         `  '${r.fieldDesc}',\n` +
         `  '${r.dbType}', ${len}, NULL, 1, NULL,\n` +
@@ -320,8 +320,8 @@ async function copySql(): Promise<void> {
       </div>
 
       <NAlert type="warning" :show-icon="true" style="margin: 12px 0">
-        排序号（默认 <b>50</b>）请按目标表结构调整；其余字段（table_id、创建人/时间等）保持模板原值。
-        ALTER 列类型已按字段类型自动生成（varchar / text / date …），如需修改请手动调整。
+        排序号（默认 <b>50</b>）请按目标表结构调整；table_id 已改为按「表名」动态查 (select id from dy_table where name = '表名')，请确保该表名在 dy_table 中存在。
+        创建人/时间保持模板原值；ALTER 列类型已按字段类型自动生成（varchar / text / date …），如需修改请手动调整。
       </NAlert>
 
       <div class="out-head">
