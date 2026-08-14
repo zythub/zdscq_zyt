@@ -12,6 +12,7 @@ interface SessionState {
   tableChineseName: string;
   dataLinkName: string;
   tableComment: string;
+  englishTableName: string;
   selectedNodeIds: string[];
   customFields: CustomFieldInput[];
   /** 用户手动改过的字段属性，key = english 名，避免重算时丢失 */
@@ -26,6 +27,7 @@ function defaultSession(): SessionState {
     tableChineseName: '',
     dataLinkName: '',
     tableComment: '',
+    englishTableName: '',
     selectedNodeIds: [],
     customFields: [],
     edits: {},
@@ -187,22 +189,34 @@ export const fields = computed<GeneratedField[]>(() => {
 
   if (!session.manualOrder.length) return merged;
 
-  // 应用手动排序；未在排序列表中的（新增字段）追加到末尾
+  // 应用手动排序；system 固定字段（基础字段）不参与重排，归位到前置/后置区段；
+  // 未在手动排序列表中的自定义/节点字段追加到中间段末尾
   const pos = new Map(session.manualOrder.map((name, i) => [name, i]));
-  const known: GeneratedField[] = [];
-  const fresh: GeneratedField[] = [];
+  const head: GeneratedField[] = [];
+  const tail: GeneratedField[] = [];
+  const body: GeneratedField[] = [];
+  let seenNonSystem = false;
   for (const f of merged) {
-    if (pos.has(f.english)) known.push(f);
-    else fresh.push(f);
+    if (f.origin === 'system') {
+      if (!seenNonSystem) head.push(f);
+      else tail.push(f);
+    } else {
+      seenNonSystem = true;
+      body.push(f);
+    }
   }
+  const known = body.filter((f) => pos.has(f.english));
+  const fresh = body.filter((f) => !pos.has(f.english));
   known.sort((a, b) => (pos.get(a.english) ?? 0) - (pos.get(b.english) ?? 0));
-  return [...known, ...fresh];
+  return [...head, ...known, ...fresh, ...tail];
 });
 
 /** 完整表名（带前缀），底部实时展示 */
-export const fullTableName = computed(() =>
-  buildTableName(session.tableChineseName, config.value.naming)
-);
+export const fullTableName = computed(() => {
+  const manual = session.englishTableName.trim();
+  if (manual) return manual;
+  return buildTableName(session.tableChineseName, config.value.naming);
+});
 
 export const problemCount = computed(() => {
   let errors = 0;

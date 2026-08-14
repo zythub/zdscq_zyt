@@ -15,4 +15,12 @@ export interface ExternalTool {
  * - icon 可用 emoji（如 '🔗'），缺省显示 🔗
  * - 侧边栏会与内置工具一起平铺展示，外链条目带 ↗ 标记、新窗口打开
  */
-export const EXTERNAL_TOOLS: ExternalTool[] = [];
+export const EXTERNAL_TOOLS: ExternalTool[] = [
+  {
+    id: 'toolbox-123apps',
+    name: '工具箱',
+    url: 'https://123apps.com/cn/',
+    desc: '123apps 在线工具集合：音频、视频、图片、PDF、文档等格式转换与处理',
+    icon: '🧰',
+  },
+];

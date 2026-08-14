@@ -133,7 +133,7 @@ function parseBatch(): void {
       fieldDesc: label,
       dbType: db.dbType,
       length: db.length,
-      sort: 47,
+      sort: 50,
       id: randId(),
       warn: r.warnings.join('；'),
     };
@@ -151,7 +151,7 @@ function addRow(): void {
     fieldDesc: '',
     dbType: 'VARCHAR',
     length: 255,
-    sort: 47,
+    sort: 50,
     id: randId(),
     warn: '',
   });
@@ -312,7 +312,7 @@ async function copySql(): Promise<void> {
       </div>
 
       <NAlert type="warning" :show-icon="true" style="margin: 12px 0">
-        排序号（默认 <b>47</b>）请按目标表结构调整；其余字段（table_id、创建人/时间等）保持模板原值。
+        排序号（默认 <b>50</b>）请按目标表结构调整；其余字段（table_id、创建人/时间等）保持模板原值。
         ALTER 列类型已按字段类型自动生成（varchar / text / date …），如需修改请手动调整。
       </NAlert>
 
@@ -404,9 +404,9 @@ async function copySql(): Promise<void> {
 }
 /* 列宽：序号 / 类型 / 长度 / 排序 / 操作 固定较窄；数据列自动撑开 */
 .ft .c-idx { width: 48px; min-width: 48px; }
-.ft .c-type { width: 120px; min-width: 120px; }
+.ft .c-type { width: 150px; min-width: 150px; }
 .ft .c-len { width: 92px; min-width: 92px; }
-.ft .c-sort { width: 120px; min-width: 120px; }
+.ft .c-sort { width: 92px; min-width: 92px; }
 .ft .c-act { width: 60px; min-width: 60px; }
 .ft .c-table { min-width: 150px; }
 .ft .c-field { min-width: 170px; }

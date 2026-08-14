@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   NButton,
   NCheckbox,
@@ -93,6 +93,28 @@ function submit(): void {
   };
   void added;
 }
+
+/** 自动识别人员/意见/日期：输入中文名即自动勾选对应开关（识别到人时三项全勾，沿用原生成器逻辑） */
+function autoDetect(cn: string): void {
+  const person = /(姓名|人员|签字|签名|经理|负责人|经办|填报|审核人|批准人|总监|代表|联系人|经办人|申报人|代理人)/.test(cn);
+  const opinion = /(意见|审核|审批|批准|结论|会签|签署)/.test(cn);
+  const date = /(日期|时间|年月日|签收|签定|签订)/.test(cn);
+  if (person) {
+    draft.value.isPerson = true;
+    draft.value.hasOpinion = true;
+    draft.value.hasDate = true;
+  } else {
+    draft.value.isPerson = false;
+    draft.value.hasOpinion = opinion;
+    draft.value.hasDate = date;
+  }
+}
+watch(
+  () => draft.value.chineseName,
+  (v) => {
+    if (v && v.trim()) autoDetect(v.trim());
+  }
+);
 
 function summarize(f: CustomFieldInput): string {
   const parts: string[] = [f.type];

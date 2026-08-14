@@ -2,6 +2,8 @@ import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-rou
 import FieldGenerator from '@/tools/field-generator/index.vue';
 import FieldSql from '@/tools/field-sql/index.vue';
 import BookmarkForm from '@/tools/bookmark-form/index.vue';
+import JsonFormatter from '@/tools/json-formatter/index.vue';
+import FormDocs from '@/tools/form-docs/index.vue';
 
 // 让 vue-router 的 RouteMeta 认知到工具元信息，避免 meta.tool 报错
 declare module 'vue-router' {
@@ -62,6 +64,30 @@ const routes: RouteRecordRaw[] = [
           title: '书签生成表单',
           desc: '提取 Word 书签 → 复用命名规则 → 设计器 JSON',
           icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h5',
+        } satisfies ToolMeta,
+      },
+  },
+  {
+    path: '/json-formatter',
+    name: 'json-formatter',
+    component: JsonFormatter,
+      meta: {
+        tool: {
+          title: 'JSON 格式化',
+          desc: 'JSON 格式化 / 压缩 / 校验 + 在线工具',
+          icon: 'M8 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6zM14 3v6h6',
+        } satisfies ToolMeta,
+      },
+  },
+  {
+    path: '/form-docs',
+    name: 'form-docs',
+    component: FormDocs,
+      meta: {
+        tool: {
+          title: '自定义表单在线文档',
+          desc: 'BestDT 响应式表单设计器文档',
+          icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h6',
         } satisfies ToolMeta,
       },
   },

@@ -144,7 +144,7 @@ function onExport(): void {
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; flex: 1; min-height: 0">
+  <div style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden">
     <!-- 工具内工具条：主表/子表切换 + 配置中心 -->
     <div
       class="toolbar"
@@ -232,7 +232,14 @@ function onExport(): void {
         v-model:value="session.tableChineseName"
         size="small"
         placeholder="表中文名，如：设备验收单"
-        style="width: 220px"
+        style="width: 200px"
+        clearable
+      />
+      <NInput
+        v-model:value="session.englishTableName"
+        size="small"
+        placeholder="英文表名（留空自动生成）"
+        style="width: 190px"
         clearable
       />
       <NTooltip trigger="hover">
@@ -283,12 +290,14 @@ function onExport(): void {
   gap: 0;
   padding: 4px;
   min-height: 0;
+  overflow: hidden;
 }
 .col {
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* 分隔条：细线指示，悬停/拖拽时高亮为强调色；两侧留 3px 隐形热区便于抓取 */

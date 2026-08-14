@@ -33,10 +33,11 @@ const filter = ref('');
 
 const visible = computed(() => {
   const q = filter.value.trim().toLowerCase();
-  if (!q) return fields.value;
-  return fields.value.filter(
-    (f) => f.english.toLowerCase().includes(q) || f.chinese.toLowerCase().includes(q),
-  );
+  return fields.value.filter((f) => {
+    if (f.origin === 'system') return false; // 基础字段不在表格展示，但导出 Excel 时仍生成
+    if (!q) return true;
+    return f.english.toLowerCase().includes(q) || f.chinese.toLowerCase().includes(q);
+  });
 });
 
 const hasManualOrder = computed(() => session.manualOrder.length > 0);
@@ -67,7 +68,7 @@ function onDrop(target: number): void {
   overIndex.value = null;
   if (from == null || from === target) return;
 
-  const names = fields.value.map((f) => f.english);
+  const names = visible.value.map((f) => f.english);
   const [moved] = names.splice(from, 1);
   if (moved === undefined) return;
   names.splice(target, 0, moved);
@@ -131,7 +132,7 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; flex: 1; min-height: 0; min-width: 0">
+  <div style="display: flex; flex-direction: column; flex: 1; min-height: 0; min-width: 0; overflow: hidden">
     <div class="panel-head">
       <span class="panel-title">字段定义</span>
       <NTag size="tiny" :bordered="false">{{ fields.length }} 个</NTag>
