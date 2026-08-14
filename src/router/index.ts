@@ -99,7 +99,7 @@ const routes: RouteRecordRaw[] = [
       meta: {
         tool: {
           title: '工具箱',
-          desc: '123apps 在线工具集合：音视频 / 图片 / PDF / 文档格式转换',
+          desc: 'PDF 在线工具（合并 / 格式转换）',
           icon: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6z',
         } satisfies ToolMeta,
       },

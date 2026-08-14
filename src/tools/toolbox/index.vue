@@ -1,23 +1,10 @@
 <script setup lang="ts">
-import { NButton } from 'naive-ui';
-
-const url = 'https://123apps.com/cn/';
+const url = "https://pdf.io/cn/merge/";
 </script>
 
 <template>
   <div class="page">
-    <div class="bar">
-      <span class="hint">123apps 在线工具箱（音频 / 视频 / 图片 / PDF / 文档等格式转换与处理）</span>
-      <NButton
-        size="small"
-        tag="a"
-        :href="url"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        在新窗口打开 ↗
-      </NButton>
-    </div>
+    <div class="bar"></div>
 
     <div class="frame-wrap">
       <iframe

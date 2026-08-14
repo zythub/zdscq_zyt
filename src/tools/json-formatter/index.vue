@@ -1,16 +1,9 @@
 <script setup lang="ts">
-const jsonToolUrl = 'https://www.json.cn/json/json';
+const jsonToolUrl = "https://www.json.cn/jsononline/";
 </script>
 
 <template>
   <div class="page">
-    <div class="page-head">
-      <div>
-        <h2>JSON 格式化</h2>
-        <p>第三方在线工具（JSON.cn），支持格式化、压缩、校验、转义等。如加载异常，请检查网络或浏览器是否拦截了跨站嵌入。</p>
-      </div>
-    </div>
-
     <div class="cols">
       <section class="frame-col">
         <iframe

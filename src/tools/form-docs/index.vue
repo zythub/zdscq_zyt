@@ -1,23 +1,11 @@
 <script setup lang="ts">
-import { NButton } from 'naive-ui';
-
-const url = 'https://www.bestdt.com/formdeep/docs/responsive/function/basic-control/';
+const url =
+  "https://www.bestdt.com/formdeep/docs/responsive/function/basic-control/";
 </script>
 
 <template>
   <div class="page">
-    <div class="bar">
-      <NButton
-        size="small"
-        tag="a"
-        :href="url"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        在新窗口打开 ↗
-      </NButton>
-    </div>
-
+    <div class="bar"></div>
     <div class="frame-wrap">
       <iframe
         :src="url"
