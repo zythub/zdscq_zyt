@@ -4,7 +4,6 @@ import {
   NButton,
   NConfigProvider,
   NDialogProvider,
-  NLayout,
   NMessageProvider,
   darkTheme,
   dateZhCN,
@@ -110,7 +109,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
   <NConfigProvider :theme="theme" :theme-overrides="themeOverrides" :locale="zhCN" :date-locale="dateZhCN">
     <NMessageProvider>
       <NDialogProvider>
-        <NLayout style="height: 100vh; display: flex; flex-direction: column">
+        <div style="height: 100vh; display: flex; flex-direction: column; overflow: hidden">
           <div
             v-if="baselineUpdated"
             style="
@@ -129,10 +128,10 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
             </span>
             <NButton size="tiny" @click="acknowledgeBaseline">知道了</NButton>
           </div>
-          <div style="flex: 1; min-height: 0; position: relative">
+          <div style="flex: 1; min-height: 0">
             <ToolLayout :is-dark="isDark" @toggle-theme="toggleTheme" />
           </div>
-        </NLayout>
+        </div>
       </NDialogProvider>
     </NMessageProvider>
   </NConfigProvider>

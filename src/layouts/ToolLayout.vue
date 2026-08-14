@@ -144,8 +144,8 @@ const current = computed<ToolMeta | undefined>(
 
 <style scoped>
 .shell {
-  position: absolute;
-  inset: 0;
+  height: 100%;
+  width: 100%;
   display: flex;
   overflow: hidden;
 }
