@@ -1,86 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { NAlert, NButton, useMessage } from 'naive-ui';
-
-const message = useMessage();
-const input = ref('');
-const output = ref('');
-const error = ref('');
-const jsonToolUrl = 'https://www.json.cn/jsononline/';
-
-function reset(): void {
-  error.value = '';
-}
-function format(): void {
-  reset();
-  if (!input.value.trim()) {
-    message.warning('请输入 JSON');
-    return;
-  }
-  try {
-    const obj = JSON.parse(input.value);
-    output.value = JSON.stringify(obj, null, 2);
-    message.success('已格式化');
-  } catch (e) {
-    error.value = (e as Error).message;
-  }
-}
-function minify(): void {
-  reset();
-  if (!input.value.trim()) {
-    message.warning('请输入 JSON');
-    return;
-  }
-  try {
-    const obj = JSON.parse(input.value);
-    output.value = JSON.stringify(obj);
-    message.success('已压缩');
-  } catch (e) {
-    error.value = (e as Error).message;
-  }
-}
-function validate(): void {
-  reset();
-  if (!input.value.trim()) {
-    message.warning('请输入 JSON');
-    return;
-  }
-  try {
-    JSON.parse(input.value);
-    message.success('JSON 合法 ✓');
-  } catch (e) {
-    error.value = (e as Error).message;
-    message.error('JSON 不合法');
-  }
-}
-async function copy(): Promise<void> {
-  if (!output.value) {
-    message.warning('没有可复制的内容');
-    return;
-  }
-  try {
-    await navigator.clipboard.writeText(output.value);
-    message.success('已复制');
-  } catch {
-    message.error('复制失败，请手动选择');
-  }
-}
-function clearAll(): void {
-  input.value = '';
-  output.value = '';
-  error.value = '';
-}
+const jsonToolUrl = 'https://www.json.cn/json/json';
 </script>
 
 <template>
   <div class="page">
     <div class="page-head">
-
+      <div>
+        <h2>JSON 格式化</h2>
+        <p>第三方在线工具（JSON.cn），支持格式化、压缩、校验、转义等。如加载异常，请检查网络或浏览器是否拦截了跨站嵌入。</p>
+      </div>
     </div>
 
     <div class="cols">
- 
- 
       <section class="frame-col">
         <iframe
           :src="jsonToolUrl"
@@ -125,40 +56,6 @@ function clearAll(): void {
   min-height: 0;
   display: flex;
   gap: 12px;
-}
-.editor {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-.ops {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-  flex-shrink: 0;
-}
-.io {
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  resize: none;
-  padding: 10px 12px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text-1);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  outline: none;
-}
-.io:focus {
-  border-color: var(--primary);
-}
-.io.out {
-  background: var(--surface-1);
 }
 .frame-col {
   flex: 1;
