@@ -1,18 +1,52 @@
 <script setup lang="ts">
-const url = "https://pdf.io/cn/merge/";
+interface ExtTool {
+  name: string;
+  url: string;
+  desc: string;
+}
+
+// 这些站点都带 X-Frame-Options，浏览器禁止跨站 iframe 嵌入，
+// 故改为外链落地页，点击在新窗口打开。
+const tools: ExtTool[] = [
+  {
+    name: '123apps 在线工具',
+    url: 'https://123apps.com/cn/',
+    desc: '音视频 / 图片 / PDF / 文档格式转换',
+  },
+  {
+    name: 'PDF.io',
+    url: 'https://pdf.io/cn/merge/',
+    desc: 'PDF 合并 / 格式转换',
+  },
+];
+
+function open(url: string): void {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
 </script>
 
 <template>
   <div class="page">
-    <div class="bar"></div>
+    <div class="head">
+      <h2>工具箱</h2>
+      <p>以下第三方工具禁止站内嵌入（跨站 iframe 被浏览器拦截），点击卡片在新窗口打开。</p>
+    </div>
 
-    <div class="frame-wrap">
-      <iframe
-        :src="url"
-        referrerpolicy="no-referrer"
-        title="工具箱"
-        loading="lazy"
-      ></iframe>
+    <div class="grid">
+      <button
+        v-for="t in tools"
+        :key="t.url"
+        type="button"
+        class="card"
+        @click="open(t.url)"
+      >
+        <span class="card-top">
+          <span class="name">{{ t.name }}</span>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </span>
+        <span class="desc">{{ t.desc }}</span>
+        <span class="url">{{ t.url }}</span>
+      </button>
     </div>
   </div>
 </template>
@@ -23,31 +57,76 @@ const url = "https://pdf.io/cn/merge/";
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  padding: 4px;
 }
-.bar {
+.head {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.head p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  align-content: start;
+  overflow: auto;
+  min-height: 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease, transform 0.05s ease, background 0.15s ease;
+}
+.card:hover {
+  border-color: var(--primary);
+  background: var(--surface-1);
+}
+.card:active {
+  transform: translateY(1px);
+}
+.card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-  flex-shrink: 0;
 }
-.hint {
+.name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.arrow {
+  font-size: 15px;
+  color: var(--primary);
+}
+.desc {
   font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.url {
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: var(--text-3);
-}
-.frame-wrap {
-  flex: 1;
-  min-height: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  overflow: hidden;
-  background: var(--surface-1);
-}
-.frame-wrap iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
+  word-break: break-all;
 }
 </style>
