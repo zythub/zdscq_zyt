@@ -10,7 +10,20 @@ const original = rawMd;
 const text = ref(rawMd);
 const mode = ref<Mode>('preview');
 
-const rendered = computed(() => renderMarkdown(text.value));
+interface TocItem {
+  id: string;
+  level: number;
+  text: string;
+}
+interface ParseResult {
+  html: string;
+  toc: TocItem[];
+}
+
+/** 解析一次，同时产出 HTML 与目录（标题带锚点 id，便于点击跳转） */
+const parsed = computed<ParseResult>(() => parseMarkdown(text.value));
+const rendered = computed(() => parsed.value.html);
+const toc = computed(() => parsed.value.toc);
 
 /** 极简 markdown → HTML（覆盖标题/代码块/列表/引用/分割线/行内），无第三方依赖 */
 function escapeHtml(s: string): string {
@@ -32,13 +45,34 @@ function inline(s: string): string {
   return t;
 }
 
-function renderMarkdown(md: string): string {
+/** 目录里展示标题的纯文本（去掉行内标记/标签） */
+function plainHeading(s: string): string {
+  return s
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .trim();
+}
+
+function wrapCode(code: string): string {
+  return (
+    '<div class="code-block"><button type="button" class="copy-btn">复制</button>' +
+    '<pre><code>' +
+    escapeHtml(code) +
+    '</code></pre></div>'
+  );
+}
+
+function parseMarkdown(md: string): ParseResult {
   const lines = md.replace(/\r\n/g, '\n').split('\n');
   const out: string[] = [];
+  const toc: TocItem[] = [];
   let i = 0;
   let inCode = false;
   let codeBuf: string[] = [];
   let listType: 'ul' | 'ol' | null = null;
+  let hid = 0;
   const para: string[] = [];
 
   const flushPara = () => {
@@ -65,7 +99,7 @@ function renderMarkdown(md: string): string {
         codeBuf = [];
       } else {
         inCode = false;
-        out.push('<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>');
+        out.push(wrapCode(codeBuf.join('\n')));
       }
       i++;
       continue;
@@ -80,7 +114,10 @@ function renderMarkdown(md: string): string {
     if (h) {
       flushPara();
       closeList();
-      out.push(`<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`);
+      const id = 'sec-' + hid++;
+      const level = h[1].length;
+      toc.push({ id, level, text: plainHeading(h[2]) });
+      out.push(`<h${level} id="${id}">${inline(h[2])}</h${level}>`);
       i++;
       continue;
     }
@@ -142,9 +179,9 @@ function renderMarkdown(md: string): string {
   flushPara();
   closeList();
   if (inCode) {
-    out.push('<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>');
+    out.push(wrapCode(codeBuf.join('\n')));
   }
-  return out.join('\n');
+  return { html: out.join('\n'), toc };
 }
 
 function download(): void {
@@ -161,6 +198,55 @@ function download(): void {
 
 function reset(): void {
   text.value = original;
+}
+
+/** 目录点击：平滑滚动到对应标题 */
+function scrollToHeading(id: string): void {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/** 预览区事件委托：点到复制按钮时复制其代码块内容 */
+function onPreviewClick(e: MouseEvent): void {
+  const target = e.target as HTMLElement | null;
+  const btn = target?.closest('.copy-btn') as HTMLElement | null;
+  if (!btn) return;
+  const block = btn.closest('.code-block') as HTMLElement | null;
+  const codeEl = block?.querySelector('pre code');
+  if (!codeEl) return;
+  copyText(codeEl.textContent ?? '');
+  const old = btn.textContent ?? '复制';
+  btn.textContent = '已复制 ✓';
+  btn.classList.add('copied');
+  window.setTimeout(() => {
+    btn.textContent = old;
+    btn.classList.remove('copied');
+  }, 1500);
+}
+
+function copyText(s: string): void {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(s).catch(() => fallbackCopy(s));
+  } else {
+    fallbackCopy(s);
+  }
+}
+
+/** 非安全上下文（如纯 http）兜底到 execCommand */
+function fallbackCopy(s: string): void {
+  const ta = document.createElement('textarea');
+  ta.value = s;
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+  } catch {
+    /* 忽略 */
+  }
+  document.body.removeChild(ta);
 }
 </script>
 
@@ -181,7 +267,21 @@ function reset(): void {
     </div>
 
     <div class="body">
-      <div v-if="mode === 'preview'" class="preview markdown" v-html="rendered"></div>
+      <template v-if="mode === 'preview'">
+        <aside v-if="toc.length" class="toc">
+          <div class="toc-title">目录</div>
+          <ul>
+            <li
+              v-for="item in toc"
+              :key="item.id"
+              :class="'lv' + item.level"
+            >
+              <a href="#" @click.prevent="scrollToHeading(item.id)">{{ item.text }}</a>
+            </li>
+          </ul>
+        </aside>
+        <div class="preview markdown" v-html="rendered" @click="onPreviewClick"></div>
+      </template>
       <textarea
         v-else
         v-model="text"
@@ -247,6 +347,53 @@ function reset(): void {
   line-height: 1.7;
   color: var(--text-1);
 }
+.toc {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface-2);
+  overflow: auto;
+  padding: 14px 12px;
+}
+.toc-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+.toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.toc li {
+  margin: 1px 0;
+}
+.toc li a {
+  display: block;
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.toc li a:hover {
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+.toc li.lv1 a {
+  font-weight: 600;
+  color: var(--text-1);
+}
+.toc li.lv2 a { padding-left: 18px; }
+.toc li.lv3 a { padding-left: 30px; }
+.toc li.lv4 a { padding-left: 42px; }
+.toc li.lv5 a { padding-left: 54px; }
+.toc li.lv6 a { padding-left: 66px; }
 .editor {
   flex: 1;
   min-height: 0;
@@ -288,7 +435,7 @@ function reset(): void {
   border: 1px solid var(--border);
 }
 .markdown :deep(pre) {
-  margin: 12px 0;
+  margin: 0;
   padding: 14px 16px;
   border-radius: var(--r-sm);
   background: var(--surface-2);
@@ -301,6 +448,34 @@ function reset(): void {
   background: transparent;
   font-size: 12.5px;
   line-height: 1.6;
+}
+/* 代码块容器 + 右上角复制按钮 */
+.markdown :deep(.code-block) {
+  position: relative;
+  margin: 12px 0;
+}
+.markdown :deep(.copy-btn) {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font: inherit;
+  font-size: 12px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-1);
+  color: var(--text-2);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.markdown :deep(.code-block:hover .copy-btn) {
+  opacity: 1;
+}
+.markdown :deep(.copy-btn.copied) {
+  color: var(--primary);
+  border-color: var(--primary);
+  opacity: 1;
 }
 .markdown :deep(blockquote) {
   margin: 10px 0;
