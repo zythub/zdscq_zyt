@@ -313,6 +313,8 @@ const current = computed<ToolMeta | undefined>(
 .content {
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
   overflow: auto;
   padding: 18px 20px;
 }
