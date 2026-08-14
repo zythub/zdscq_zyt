@@ -80,6 +80,7 @@ const routes: RouteRecordRaw[] = [
           title: 'JSON 格式化',
           desc: 'JSON 格式化 / 压缩 / 校验 + 在线工具',
           icon: 'M8 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6zM14 3v6h6',
+          hideTopbar: true,
         } satisfies ToolMeta,
       },
   },
