@@ -24,26 +24,6 @@ const jsonToolUrl = "https://www.json.cn/jsononline/";
   flex: 1;
   min-height: 0;
 }
-.page-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-  flex-shrink: 0;
-}
-.page-head h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-.page-head p {
-  margin: 6px 0 0;
-  font-size: 13px;
-  color: var(--text-3);
-  line-height: 1.5;
-  max-width: 760px;
-}
 .cols {
   flex: 1;
   min-height: 0;
