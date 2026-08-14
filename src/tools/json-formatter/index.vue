@@ -6,7 +6,7 @@ const message = useMessage();
 const input = ref('');
 const output = ref('');
 const error = ref('');
-const jsonToolUrl = 'https://www.json.cn/json/json';
+const jsonToolUrl = 'https://www.json.cn/jsononline/';
 
 function reset(): void {
   error.value = '';
@@ -75,55 +75,12 @@ function clearAll(): void {
 <template>
   <div class="page">
     <div class="page-head">
-      <div>
-        <h2>JSON 格式化 / 校验</h2>
-        <p>
-          左侧自研：格式化、压缩、合法性校验；右侧嵌入 JSON.cn 在线工具，二者任选。
-        </p>
-      </div>
-      <NButton
-        size="small"
-        tag="a"
-        :href="jsonToolUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        在新窗口打开 JSON.cn ↗
-      </NButton>
+
     </div>
 
     <div class="cols">
-      <!-- 左：自研 JSON 工具 -->
-      <section class="panel editor">
-        <div class="ops">
-          <NButton size="small" type="primary" @click="format">格式化</NButton>
-          <NButton size="small" @click="minify">压缩</NButton>
-          <NButton size="small" @click="validate">校验</NButton>
-          <NButton size="small" @click="copy">复制</NButton>
-          <NButton size="small" quaternary @click="clearAll">清空</NButton>
-        </div>
-
-        <textarea
-          v-model="input"
-          class="io"
-          spellcheck="false"
-          placeholder="在此粘贴 JSON…"
-        ></textarea>
-
-        <NAlert v-if="error" type="error" :show-icon="true" style="margin-top: 8px">
-          {{ error }}
-        </NAlert>
-        <textarea
-          v-else
-          v-model="output"
-          class="io out"
-          spellcheck="false"
-          readonly
-          placeholder="格式化 / 压缩结果将显示在这里…"
-        ></textarea>
-      </section>
-
-      <!-- 右：第三方在线工具 -->
+ 
+ 
       <section class="frame-col">
         <iframe
           :src="jsonToolUrl"
