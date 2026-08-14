@@ -129,7 +129,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
             </span>
             <NButton size="tiny" @click="acknowledgeBaseline">知道了</NButton>
           </div>
-          <div style="flex: 1; min-height: 0">
+          <div style="flex: 1; min-height: 0; position: relative">
             <ToolLayout :is-dark="isDark" @toggle-theme="toggleTheme" />
           </div>
         </NLayout>

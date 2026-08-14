@@ -171,8 +171,6 @@ export interface AppConfig {
   baseFieldsStart: FixedFieldDef[];
   baseFieldsEnd: FixedFieldDef[];
   subTableFields: FixedFieldDef[];
-  /** 这些中文名不生成字段 */
-  excludedNames: string[];
   /** 中文 → 英文 手工映射词典，命中即直接复用 */
   translationDict: Record<string, string>;
 }
@@ -190,7 +188,6 @@ export interface ConfigDiff {
   baseFieldsStart?: FixedFieldDef[];
   baseFieldsEnd?: FixedFieldDef[];
   subTableFields?: FixedFieldDef[];
-  excludedNames?: string[];
   translationDict?: Record<string, string>;
 }
 

@@ -6,7 +6,7 @@ const message = useMessage();
 const input = ref('');
 const output = ref('');
 const error = ref('');
-const jsonToolUrl = 'https://www.json.cn/';
+const jsonToolUrl = 'https://www.json.cn/json/json';
 
 function reset(): void {
   error.value = '';

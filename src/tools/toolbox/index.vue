@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { NButton } from 'naive-ui';
 
-const url = 'https://www.bestdt.com/formdeep/docs/responsive/function/basic-control/';
+const url = 'https://123apps.com/cn/';
 </script>
 
 <template>
   <div class="page">
     <div class="bar">
+      <span class="hint">123apps 在线工具箱（音频 / 视频 / 图片 / PDF / 文档等格式转换与处理）</span>
       <NButton
         size="small"
         tag="a"
@@ -22,7 +23,7 @@ const url = 'https://www.bestdt.com/formdeep/docs/responsive/function/basic-cont
       <iframe
         :src="url"
         referrerpolicy="no-referrer"
-        title="自定义表单在线文档"
+        title="工具箱"
         loading="lazy"
       ></iframe>
     </div>
@@ -38,9 +39,15 @@ const url = 'https://www.bestdt.com/formdeep/docs/responsive/function/basic-cont
 }
 .bar {
   display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.hint {
+  font-size: 13px;
+  color: var(--text-3);
 }
 .frame-wrap {
   flex: 1;

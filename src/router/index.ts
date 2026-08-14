@@ -4,6 +4,7 @@ import FieldSql from '@/tools/field-sql/index.vue';
 import BookmarkForm from '@/tools/bookmark-form/index.vue';
 import JsonFormatter from '@/tools/json-formatter/index.vue';
 import FormDocs from '@/tools/form-docs/index.vue';
+import Toolbox from '@/tools/toolbox/index.vue';
 
 // 让 vue-router 的 RouteMeta 认知到工具元信息，避免 meta.tool 报错
 declare module 'vue-router' {
@@ -88,6 +89,18 @@ const routes: RouteRecordRaw[] = [
           title: '自定义表单在线文档',
           desc: 'BestDT 响应式表单设计器文档',
           icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h6',
+        } satisfies ToolMeta,
+      },
+  },
+  {
+    path: '/toolbox',
+    name: 'toolbox',
+    component: Toolbox,
+      meta: {
+        tool: {
+          title: '工具箱',
+          desc: '123apps 在线工具集合：音视频 / 图片 / PDF / 文档格式转换',
+          icon: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6z',
         } satisfies ToolMeta,
       },
   },

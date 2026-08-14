@@ -113,6 +113,13 @@ function isLenless(t: string): boolean {
   return NO_LEN_TYPES.has(t);
 }
 
+// 新增行的默认排序号：取当前最大 + 1，起步 50（第一条 50、第二条 51…不重复）
+function nextSort(): number {
+  if (!rows.value.length) return 50;
+  const max = Math.max(...rows.value.map((r) => r.sort));
+  return Math.max(max, 49) + 1;
+}
+
 // ── 批量解析：粘贴的中文 → 自动出英文 + 类型 + 表格 ──
 function parseBatch(): void {
   const labels = splitTextFields(batchText.value);
@@ -122,6 +129,7 @@ function parseBatch(): void {
   }
   const used = new Set<string>();
   const base = globalTable.value.trim() || 'tud_table';
+  let sortSeed = nextSort();
   const newRows: FieldRow[] = labels.map((label) => {
     const r = resolveEnglishName(label, used, config.value.naming, config.value.translationDict, ['_name', '_yj', '_date']);
     used.add(r.name);
@@ -133,7 +141,7 @@ function parseBatch(): void {
       fieldDesc: label,
       dbType: db.dbType,
       length: db.length,
-      sort: 50,
+      sort: sortSeed++,
       id: randId(),
       warn: r.warnings.join('；'),
     };
@@ -151,7 +159,7 @@ function addRow(): void {
     fieldDesc: '',
     dbType: 'VARCHAR',
     length: 255,
-    sort: 50,
+    sort: nextSort(),
     id: randId(),
     warn: '',
   });

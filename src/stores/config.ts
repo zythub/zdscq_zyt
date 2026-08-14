@@ -78,7 +78,6 @@ export const config = computed<AppConfig>(() => {
     baseFieldsStart: diff.baseFieldsStart ?? base.baseFieldsStart,
     baseFieldsEnd: diff.baseFieldsEnd ?? base.baseFieldsEnd,
     subTableFields: diff.subTableFields ?? base.subTableFields,
-    excludedNames: diff.excludedNames ?? base.excludedNames,
     translationDict: { ...base.translationDict, ...(diff.translationDict ?? {}) },
   };
 });
@@ -94,7 +93,6 @@ export const overrideCount = computed(() => {
   if (diff.baseFieldsStart) n += 1;
   if (diff.baseFieldsEnd) n += 1;
   if (diff.subTableFields) n += 1;
-  if (diff.excludedNames) n += 1;
   if (diff.translationDict && Object.keys(diff.translationDict).length) {
     n += Object.keys(diff.translationDict).length;
   }
@@ -169,11 +167,6 @@ export function setFixedFields(
 ): void {
   const same = JSON.stringify(list) === JSON.stringify(DEFAULT_CONFIG[which]);
   diff[which] = same ? undefined : deepClone(list);
-}
-
-export function setExcludedNames(list: string[]): void {
-  const same = JSON.stringify(list) === JSON.stringify(DEFAULT_CONFIG.excludedNames);
-  diff.excludedNames = same ? undefined : [...list];
 }
 
 /** 记住「中文 → 英文」映射，下次同样的中文自动复用 */

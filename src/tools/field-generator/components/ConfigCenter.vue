@@ -6,7 +6,6 @@ import {
   NCheckbox,
   NDrawer,
   NDrawerContent,
-  NDynamicTags,
   NInput,
   NInputNumber,
   NPopconfirm,
@@ -29,7 +28,6 @@ import {
   removeNode,
   resetAll,
   resetNode,
-  setExcludedNames,
   setFixedFields,
   setNaming,
   setRoleDefault,
@@ -363,15 +361,6 @@ const dictEntries = computed(() => Object.entries(config.value.translationDict))
             >
               <span style="font-size: 13px">拼音首字母撞名时，自动降级为全拼</span>
             </NCheckbox>
-
-            <div>
-              <div style="font-size: 13px; margin-bottom: 6px">排除的中文名（不生成字段）</div>
-              <NDynamicTags
-                :value="config.excludedNames"
-                size="small"
-                @update:value="setExcludedNames"
-              />
-            </div>
 
             <div v-if="dictEntries.length">
               <div style="font-size: 13px; margin-bottom: 6px">

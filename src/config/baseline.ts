@@ -154,6 +154,5 @@ export const DEFAULT_CONFIG: AppConfig = {
     { english: 'ay_serial', chinese: '序号', role: 'serial' },
     { english: 'zb_id', chinese: '主表_id', role: 'foreignKey' },
   ],
-  excludedNames: ['注', '致', '附', '：'],
   translationDict: {},
 };

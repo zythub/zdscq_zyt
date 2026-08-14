@@ -74,10 +74,6 @@ function submit(): void {
     message.warning('请填写中文名称');
     return;
   }
-  if (config.value.excludedNames.includes(cleanChineseName(cn))) {
-    message.warning(`「${cn}」在排除列表中，不会生成字段`);
-    return;
-  }
   const added = addCustomField({ ...draft.value });
   markRecentlyAdded(expansion.value);
   message.success(`已添加 ${expansion.value.length} 个字段`);

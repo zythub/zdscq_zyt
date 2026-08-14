@@ -183,13 +183,13 @@ function pushPerson(
 }
 
 function buildNode(ctx: BuildCtx, node: NodeDef): void {
-  const { naming, translationDict, excludedNames } = ctx.config;
+  const { naming, translationDict } = ctx.config;
   const nonPerson: Array<() => void> = [];
   const persons: Array<() => void> = [];
 
   for (const field of node.fields) {
     const chinese = cleanChineseName(field.name);
-    if (!chinese || excludedNames.includes(chinese)) continue;
+    if (!chinese) continue;
 
     const suffixes = field.isPerson ? [naming.nameSuffix] : [];
     const taken = new Set<string>([...ctx.used, ...ctx.reserved]);
@@ -236,13 +236,13 @@ function buildNode(ctx: BuildCtx, node: NodeDef): void {
 }
 
 function buildCustom(ctx: BuildCtx, fields: CustomFieldInput[]): void {
-  const { naming, translationDict, excludedNames } = ctx.config;
+  const { naming, translationDict } = ctx.config;
   const nonPerson: Array<() => void> = [];
   const persons: Array<() => void> = [];
 
   for (const cf of fields) {
     const chinese = cleanChineseName(cf.chineseName);
-    if (!chinese || excludedNames.includes(chinese)) continue;
+    if (!chinese) continue;
 
     const needsDate = cf.hasDate && cf.type !== 'DATE' && cf.type !== 'DATETIME' && cf.type !== 'TIMESTAMP';
     const suffixes: string[] = [];
