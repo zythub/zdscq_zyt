@@ -5,7 +5,6 @@ const url =
 
 <template>
   <div class="page">
-    <div class="bar"></div>
     <div class="frame-wrap">
       <iframe
         :src="url"
@@ -23,12 +22,6 @@ const url =
   flex-direction: column;
   flex: 1;
   min-height: 0;
-}
-.bar {
-  display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  margin-bottom: 8px;
 }
 .frame-wrap {
   flex: 1;

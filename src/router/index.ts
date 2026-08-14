@@ -5,6 +5,7 @@ import BookmarkForm from '@/tools/bookmark-form/index.vue';
 import JsonFormatter from '@/tools/json-formatter/index.vue';
 import FormDocs from '@/tools/form-docs/index.vue';
 import Toolbox from '@/tools/toolbox/index.vue';
+import FormCode from '@/tools/form-code/index.vue';
 
 // 让 vue-router 的 RouteMeta 认知到工具元信息，避免 meta.tool 报错
 declare module 'vue-router' {
@@ -21,6 +22,8 @@ export interface ToolMeta {
   desc: string;
   /** 24×24 viewBox 的 svg path（描边风格） */
   icon: string;
+  /** 为纯嵌入页（如 iframe 文档）隐藏顶栏，让内容铺满 */
+  hideTopbar?: boolean;
 }
 
 export interface AppRouteMeta extends Record<string, unknown> {
@@ -89,6 +92,7 @@ const routes: RouteRecordRaw[] = [
           title: '自定义表单在线文档',
           desc: 'BestDT 响应式表单设计器文档',
           icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h6',
+          hideTopbar: true,
         } satisfies ToolMeta,
       },
   },
@@ -101,6 +105,18 @@ const routes: RouteRecordRaw[] = [
           title: '工具箱',
           desc: '第三方在线工具',
           icon: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6z',
+        } satisfies ToolMeta,
+      },
+  },
+  {
+    path: '/form-code',
+    name: 'form-code',
+    component: FormCode,
+      meta: {
+        tool: {
+          title: '自定义表单代码示例',
+          desc: 'BestDT 响应式表单代码示例（在线查看 / 编辑 / 下载）',
+          icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13h-4M16 17h-4',
         } satisfies ToolMeta,
       },
   },

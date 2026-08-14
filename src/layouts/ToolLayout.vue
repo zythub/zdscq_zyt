@@ -110,7 +110,7 @@ const current = computed<ToolMeta | undefined>(
 
     <!-- 右侧：顶栏 + 内容区 -->
     <div class="main">
-      <header class="topbar">
+      <header v-if="!current?.hideTopbar" class="topbar">
         <div class="top-title">
           <h1>{{ current?.title ?? '开发效率提升工具集' }}</h1>
           <p v-if="current?.desc">{{ current.desc }}</p>
