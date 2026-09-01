@@ -189,8 +189,45 @@ function onExport(): void {
       </NButton>
     </div>
 
-    <!-- 表信息条：集中手填表中文名/英文名/数据链接/表备注，英文名留空自动生成；置于顶栏下方 -->
-    <div class="info-bar">
+    <!-- 主体：列宽可拖拽调整。分隔条置于相邻两列之间，拖动时在两列间转移宽度 -->
+    <div ref="bodyRef" class="body">
+      <section v-if="!isSub" class="panel col rise-in" :style="colStyle(0)">
+        <NodePanel />
+      </section>
+      <div
+        v-if="!isSub"
+        class="splitter"
+        :class="{ active: dragging === 0 }"
+        title="拖拽调整宽度"
+        @mousedown="startDrag(0, $event)"
+      ></div>
+
+      <section class="panel col rise-in" :style="colStyle(isSub ? 0 : 1)">
+        <QuickAdd />
+      </section>
+      <div
+        class="splitter"
+        :class="{ active: dragging === (isSub ? 0 : 1) }"
+        title="拖拽调整宽度"
+        @mousedown="startDrag(isSub ? 0 : 1, $event)"
+      ></div>
+
+      <section class="col rise-in" :style="colStyle(isSub ? 1 : 2)">
+        <FieldTable />
+      </section>
+    </div>
+
+    <!-- 底栏：表信息条（表中文名/英文名/数据链接/表备注）+ 错误统计 + 导出 -->
+    <footer
+      style="
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 4px;
+        flex-shrink: 0;
+      "
+    >
       <NInput
         v-model:value="session.tableChineseName"
         size="small"
@@ -224,47 +261,7 @@ function onExport(): void {
         style="width: 150px"
       />
       <span class="muted info-hint">表名可直接手填；留空时由中文名自动生成</span>
-    </div>
 
-    <!-- 主体：列宽可拖拽调整。分隔条置于相邻两列之间，拖动时在两列间转移宽度 -->
-    <div ref="bodyRef" class="body">
-      <section v-if="!isSub" class="panel col rise-in" :style="colStyle(0)">
-        <NodePanel />
-      </section>
-      <div
-        v-if="!isSub"
-        class="splitter"
-        :class="{ active: dragging === 0 }"
-        title="拖拽调整宽度"
-        @mousedown="startDrag(0, $event)"
-      ></div>
-
-      <section class="panel col rise-in" :style="colStyle(isSub ? 0 : 1)">
-        <QuickAdd />
-      </section>
-      <div
-        class="splitter"
-        :class="{ active: dragging === (isSub ? 0 : 1) }"
-        title="拖拽调整宽度"
-        @mousedown="startDrag(isSub ? 0 : 1, $event)"
-      ></div>
-
-      <section class="col rise-in" :style="colStyle(isSub ? 1 : 2)">
-        <FieldTable />
-      </section>
-    </div>
-
-    <!-- 底栏 -->
-    <footer
-      style="
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 10px 4px;
-        flex-shrink: 0;
-      "
-    >
       <div style="flex: 1"></div>
 
       <NTag v-if="problemCount.errors" size="small" type="error" :bordered="false">
@@ -296,17 +293,7 @@ function onExport(): void {
   overflow: hidden;
 }
 
-/* 表信息条：顶栏下方的集中手填区；下边框与主体分隔，浅底色区分层级 */
-.info-bar {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 8px 4px;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
-}
+/* 表信息条提示文字（置于底部 footer 内） */
 .info-hint {
   font-size: 12px;
   color: var(--text-3);
