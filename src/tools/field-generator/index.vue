@@ -189,6 +189,43 @@ function onExport(): void {
       </NButton>
     </div>
 
+    <!-- 表信息条：集中手填表中文名/英文名/数据链接/表备注，英文名留空自动生成；置于顶栏下方 -->
+    <div class="info-bar">
+      <NInput
+        v-model:value="session.tableChineseName"
+        size="small"
+        placeholder="表中文名，如：设备验收单"
+        style="width: 200px"
+        clearable
+      />
+      <NInput
+        v-model:value="session.englishTableName"
+        size="small"
+        placeholder="英文表名（留空自动生成）"
+        style="width: 190px"
+        clearable
+      />
+      <NTooltip trigger="hover">
+        <template #trigger>
+          <NTag size="small" :bordered="false" class="mono">{{ fullTableName }}</NTag>
+        </template>
+        最终写入 Excel「表名称」sheet 的表名，前缀可在配置中心修改
+      </NTooltip>
+      <NInput
+        v-model:value="session.dataLinkName"
+        size="small"
+        placeholder="数据链接名称"
+        style="width: 150px"
+      />
+      <NInput
+        v-model:value="session.tableComment"
+        size="small"
+        placeholder="表备注"
+        style="width: 150px"
+      />
+      <span class="muted info-hint">表名可直接手填；留空时由中文名自动生成</span>
+    </div>
+
     <!-- 主体：列宽可拖拽调整。分隔条置于相邻两列之间，拖动时在两列间转移宽度 -->
     <div ref="bodyRef" class="body">
       <section v-if="!isSub" class="panel col rise-in" :style="colStyle(0)">
@@ -228,40 +265,6 @@ function onExport(): void {
         flex-shrink: 0;
       "
     >
-      <NInput
-        v-model:value="session.tableChineseName"
-        size="small"
-        placeholder="表中文名，如：设备验收单"
-        style="width: 200px"
-        clearable
-      />
-      <NInput
-        v-model:value="session.englishTableName"
-        size="small"
-        placeholder="英文表名（留空自动生成）"
-        style="width: 190px"
-        clearable
-      />
-      <NTooltip trigger="hover">
-        <template #trigger>
-          <NTag size="small" :bordered="false" class="mono">{{ fullTableName }}</NTag>
-        </template>
-        最终写入 Excel「表名称」sheet 的表名，前缀可在配置中心修改
-      </NTooltip>
-
-      <NInput
-        v-model:value="session.dataLinkName"
-        size="small"
-        placeholder="数据链接名称"
-        style="width: 150px"
-      />
-      <NInput
-        v-model:value="session.tableComment"
-        size="small"
-        placeholder="表备注"
-        style="width: 150px"
-      />
-
       <div style="flex: 1"></div>
 
       <NTag v-if="problemCount.errors" size="small" type="error" :bordered="false">
@@ -291,6 +294,22 @@ function onExport(): void {
   padding: 4px;
   min-height: 0;
   overflow: hidden;
+}
+
+/* 表信息条：顶栏下方的集中手填区；下边框与主体分隔，浅底色区分层级 */
+.info-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 4px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.info-hint {
+  font-size: 12px;
+  color: var(--text-3);
 }
 .col {
   min-width: 0;
