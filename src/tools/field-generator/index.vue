@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, onBeforeUnmount } from 'vue';
-import { NButton, NRadioButton, NRadioGroup, NTag, NTooltip, useMessage } from 'naive-ui';
+import { NButton, NInput, NRadioButton, NRadioGroup, NTag, NTooltip, useMessage } from 'naive-ui';
 import NodePanel from './components/NodePanel.vue';
 import QuickAdd from './components/QuickAdd.vue';
 import FieldTable from './components/FieldTable.vue';
