@@ -29,38 +29,40 @@ import { TYPES_WITHOUT_LENGTH, TYPES_WITH_SCALE, type FieldType, type GeneratedF
 const message = useMessage();
 const emit = defineEmits<{ openConfig: [] }>();
 
-/** 表格 / Markdown 两种视图切换 */
-const viewMode = ref<'table' | 'md'>('table');
+/** 表格 / Excel(可粘贴) 两种视图切换 */
+const viewMode = ref<'table' | 'excel'>('table');
 
-/** 生成可复制到 Excel 的 Markdown 表格 */
-const markdown = computed(() => {
-  const esc = (s: string) => s.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+/**
+ * 生成 TSV（制表符分隔）文本：Excel / WPS / 飞书表格 直接 Ctrl+V 会按列展开，
+ * 比 Markdown 表格体验好很多（Markdown 粘进去会被塞进同一列）。
+ */
+const tsvText = computed(() => {
+  const esc = (s: string) => s.replace(/\t/g, ' ').replace(/[\r\n]+/g, ' ');
+  const header = ['字段名称', '中文名称', '类型', '长度', '小数位', '允许空', '默认值', '备注', '来源'];
   const rows = visible.value.map((f) =>
     [
-      esc(f.english),
-      esc(f.chinese),
+      f.english,
+      f.chinese,
       f.type,
       f.length == null ? '' : String(f.length),
       f.scale == null ? '' : String(f.scale),
       f.nullable ? '是' : '否',
-      esc(f.defaultValue ?? ''),
-      esc(f.comment ?? ''),
-      esc(f.originLabel),
+      f.defaultValue ?? '',
+      f.comment ?? '',
+      f.originLabel,
     ]
-      .map((c) => ` ${c} `)
-      .join('|')
+      .map((c) => esc(String(c)))
+      .join('\t')
   );
-  const header = '| 字段名称 | 中文名称 | 类型 | 长度 | 小数位 | 允许空 | 默认值 | 备注 | 来源 |';
-  const sep = '| --- | --- | --- | --- | --- | --- | --- | --- | --- |';
-  return [header, sep, ...rows].join('\n');
+  return [header.join('\t'), ...rows].join('\n');
 });
 
-async function copyMarkdown(): Promise<void> {
+async function copyExcel(): Promise<void> {
   try {
-    await navigator.clipboard.writeText(markdown.value);
-    message.success('已复制 Markdown 表格，可直接粘贴到 Excel / 飞书表格');
+    await navigator.clipboard.writeText(tsvText.value);
+    message.success('已复制，直接 Ctrl+V 粘贴到 Excel / WPS / 飞书表格即可按列展开');
   } catch {
-    message.error('复制失败（浏览器禁用了剪贴板），请手动选择文本复制');
+    message.error('复制失败（浏览器禁用了剪贴板），请手动选中下方文本复制');
   }
 }
 
@@ -182,7 +184,7 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
       <div style="flex: 1"></div>
       <NRadioGroup v-model:value="viewMode" size="small">
         <NRadioButton value="table">表格</NRadioButton>
-        <NRadioButton value="md">Markdown</NRadioButton>
+        <NRadioButton value="excel">Excel</NRadioButton>
       </NRadioGroup>
       <NInput
         v-model:value="filter"
@@ -364,9 +366,9 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
       style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 4px"
     >
       <div style="display: flex; justify-content: flex-end; padding: 4px 2px">
-        <NButton size="tiny" @click="copyMarkdown">复制表格</NButton>
+        <NButton size="tiny" @click="copyExcel">复制（直接粘贴到 Excel）</NButton>
       </div>
-      <pre class="md-box mono">{{ markdown }}</pre>
+      <pre class="md-box mono">{{ tsvText }}</pre>
     </div>
   </div>
 </template>
