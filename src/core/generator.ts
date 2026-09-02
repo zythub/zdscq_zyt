@@ -171,6 +171,16 @@ function pushPerson(
     originLabel: params.originLabel,
   });
 
+  // 签名字段：每个签字人自动加一个 _sign（TEXT），用于存放签字内容
+  push(ctx, {
+    english: params.base + '_sign',
+    chinese: params.chinese + '签字',
+    role: 'text',
+    override: { type: 'TEXT', length: null },
+    origin: params.origin,
+    originLabel: params.originLabel,
+  });
+
   if (params.withDate) {
     push(ctx, {
       english: params.base + naming.dateSuffix,
@@ -201,6 +211,7 @@ function buildNode(ctx: BuildCtx, node: NodeDef): void {
       // 误判为「字段名重复」而刷出一排假 error。
       ctx.reserved.add(name);
       ctx.reserved.add(name + naming.nameSuffix);
+      ctx.reserved.add(name + '_sign');
       persons.push(() =>
         pushPerson(ctx, {
           base: name,

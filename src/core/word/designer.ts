@@ -128,17 +128,18 @@ const TECH_FIELDS: BaseFieldSpec[] = [
   { english: 'sys_createtime', label: '创建时间', type: 'input', length: null, lock: true },
 ];
 const GEN_START: BaseFieldSpec[] = [
+  { english: '_id', label: '_id', type: 'input', length: 200 },
   { english: 'specialty', label: '专业', type: 'input', length: 50 },
   { english: 'unit', label: '机组', type: 'input', length: 50 },
-  { english: 'project_name', label: '工程名称', type: 'input', length: 50 },
+  { english: 'project_name', label: '工程名称', type: 'input', length: 200 },
   { english: 'number', label: '编号', type: 'input', length: 50 },
   { english: 'bdh', label: '表单号', type: 'input', length: 50 },
   { english: 'zhi', label: '致', type: 'input', length: 50 },
-  { english: 'qcdw', label: '起草单位', type: 'input', length: 50 },
-  { english: 'organization_name', label: '单位名称', type: 'input', length: 50 },
-  { english: 'company_code', label: '单位代码', type: 'input', length: 50 },
-  { english: 'contract_name', label: '合同名称', type: 'input', length: 50 },
-  { english: 'contract_number', label: '合同编号', type: 'input', length: 50 },
+  { english: 'qcdw', label: '起草单位', type: 'input', length: 100 },
+  { english: 'organization_name', label: '单位名称', type: 'input', length: 100 },
+  { english: 'company_code', label: '单位代码', type: 'input', length: 100 },
+  { english: 'contract_name', label: '合同名称', type: 'input', length: 100 },
+  { english: 'contract_number', label: '合同编号', type: 'input', length: 100 },
 ];
 // 用户要求的默认「备注」字段（可填写多行 → textarea，保证导入后可录入）
 const EXTRA_BZ: BaseFieldSpec = { english: 'bz', label: '备注', type: 'textarea', length: null };

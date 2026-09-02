@@ -6,7 +6,7 @@ import type { AppConfig, FieldRole, NodeDef, RoleDefaults } from '@/types';
  *
  * 改动基线请同步 +1 SCHEMA_VERSION，界面会提示用户基线已更新。
  */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 /** L1 全局默认表：按字段角色定义默认属性 */
 export const DEFAULT_ROLE_DEFAULTS: RoleDefaults = {
@@ -130,17 +130,18 @@ export const DEFAULT_CONFIG: AppConfig = {
   roleDefaults: DEFAULT_ROLE_DEFAULTS,
   nodes: DEFAULT_NODES,
   baseFieldsStart: [
+    { english: '_id', chinese: '_id', role: 'text', override: { type: 'VARCHAR', length: 200 } },
     { english: 'specialty', chinese: '专业', role: 'text' },
     { english: 'unit', chinese: '机组', role: 'text' },
-    { english: 'project_name', chinese: '工程名称', role: 'text' },
+    { english: 'project_name', chinese: '工程名称', role: 'text', override: { type: 'VARCHAR', length: 200 } },
     { english: 'number', chinese: '编号', role: 'text' },
     { english: 'bdh', chinese: '表单号', role: 'text' },
     { english: 'zhi', chinese: '致', role: 'text' },
-    { english: 'qcdw', chinese: '起草单位', role: 'text' },
-    { english: 'organization_name', chinese: '单位名称', role: 'text' },
-    { english: 'company_code', chinese: '单位代码', role: 'text' },
-    { english: 'contract_name', chinese: '合同名称', role: 'text' },
-    { english: 'contract_number', chinese: '合同编号', role: 'text' },
+    { english: 'qcdw', chinese: '起草单位', role: 'text', override: { type: 'VARCHAR', length: 100 } },
+    { english: 'organization_name', chinese: '单位名称', role: 'text', override: { type: 'VARCHAR', length: 100 } },
+    { english: 'company_code', chinese: '单位代码', role: 'text', override: { type: 'VARCHAR', length: 100 } },
+    { english: 'contract_name', chinese: '合同名称', role: 'text', override: { type: 'VARCHAR', length: 100 } },
+    { english: 'contract_number', chinese: '合同编号', role: 'text', override: { type: 'VARCHAR', length: 100 } },
   ],
   baseFieldsEnd: [
     { english: 'fdd_dzqz_file_id', chinese: '签章文件id', role: 'text' },
