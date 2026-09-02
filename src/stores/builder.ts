@@ -89,6 +89,15 @@ export function removeCustomField(uid: string): void {
   if (idx >= 0) session.customFields.splice(idx, 1);
 }
 
+/** 清空全部手动添加的字段（快速添加区），并清理已失效的行内编辑记录 */
+export function clearCustomFields(): void {
+  session.customFields = [];
+  const live = new Set(fields.value.map((f) => f.english));
+  for (const k of Object.keys(session.edits)) {
+    if (!live.has(k)) delete session.edits[k];
+  }
+}
+
 /**
  * 把「从 Word / 文字」解析出的主表字段直接接入生成器主流程：
  * 写入 session.customFields，随即出现在主字段表、可像普通字段一样编辑/排序/导出 Excel。

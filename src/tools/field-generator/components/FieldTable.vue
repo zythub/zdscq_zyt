@@ -5,6 +5,8 @@ import {
   NInput,
   NInputNumber,
   NPopover,
+  NRadioButton,
+  NRadioGroup,
   NSelect,
   NSwitch,
   NTag,
@@ -25,6 +27,43 @@ import { rememberTranslation } from '@/stores/config';
 import { TYPES_WITHOUT_LENGTH, TYPES_WITH_SCALE, type FieldType, type GeneratedField } from '@/types';
 
 const message = useMessage();
+const emit = defineEmits<{ openConfig: [] }>();
+
+/** 表格 / Markdown 两种视图切换 */
+const viewMode = ref<'table' | 'md'>('table');
+
+/** 生成可复制到 Excel 的 Markdown 表格 */
+const markdown = computed(() => {
+  const esc = (s: string) => s.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+  const rows = visible.value.map((f) =>
+    [
+      esc(f.english),
+      esc(f.chinese),
+      f.type,
+      f.length == null ? '' : String(f.length),
+      f.scale == null ? '' : String(f.scale),
+      f.nullable ? '是' : '否',
+      esc(f.defaultValue ?? ''),
+      esc(f.comment ?? ''),
+      esc(f.originLabel),
+    ]
+      .map((c) => ` ${c} `)
+      .join('|')
+  );
+  const header = '| 字段名称 | 中文名称 | 类型 | 长度 | 小数位 | 允许空 | 默认值 | 备注 | 来源 |';
+  const sep = '| --- | --- | --- | --- | --- | --- | --- | --- | --- |';
+  return [header, sep, ...rows].join('\n');
+});
+
+async function copyMarkdown(): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(markdown.value);
+    message.success('已复制 Markdown 表格，可直接粘贴到 Excel / 飞书表格');
+  } catch {
+    message.error('复制失败（浏览器禁用了剪贴板），请手动选择文本复制');
+  }
+}
+
 const typeOptions = FIELD_TYPES.map((t) => ({ label: t, value: t }));
 
 const dragIndex = ref<number | null>(null);
@@ -141,6 +180,10 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         恢复默认顺序
       </NButton>
       <div style="flex: 1"></div>
+      <NRadioGroup v-model:value="viewMode" size="small">
+        <NRadioButton value="table">表格</NRadioButton>
+        <NRadioButton value="md">Markdown</NRadioButton>
+      </NRadioGroup>
       <NInput
         v-model:value="filter"
         size="tiny"
@@ -148,9 +191,11 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         clearable
         style="width: 150px"
       />
+      <NButton size="tiny" @click="emit('openConfig')">配置中心</NButton>
     </div>
 
     <div
+      v-if="viewMode === 'table'"
       class="scroll-y field-grid"
       style="flex: 1; border: 1px solid var(--border); border-radius: var(--r-md)"
     >
@@ -312,6 +357,17 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         {{ filter ? '没有匹配的字段' : '勾选审批节点或添加自定义字段后，这里会显示生成结果' }}
       </div>
     </div>
+
+    <div
+      v-else
+      class="scroll-y"
+      style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 4px"
+    >
+      <div style="display: flex; justify-content: flex-end; padding: 4px 2px">
+        <NButton size="tiny" @click="copyMarkdown">复制表格</NButton>
+      </div>
+      <pre class="md-box mono">{{ markdown }}</pre>
+    </div>
   </div>
 </template>
 
@@ -319,6 +375,19 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
 .field-grid {
   overflow: auto;
   min-height: 0;
+}
+.md-box {
+  margin: 0;
+  padding: 12px;
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+  overflow: auto;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text-2);
 }
 .grid-head {
   display: grid;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, onBeforeUnmount } from 'vue';
-import { NButton, NInput, NRadioButton, NRadioGroup, NTag, NTooltip, useMessage } from 'naive-ui';
+import { NButton, NInput, NRadioButton, NRadioGroup, NTag, useMessage } from 'naive-ui';
 import NodePanel from './components/NodePanel.vue';
 import QuickAdd from './components/QuickAdd.vue';
 import FieldTable from './components/FieldTable.vue';
@@ -145,7 +145,7 @@ function onExport(): void {
 
 <template>
   <div style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden">
-    <!-- 工具内工具条：主表/子表切换 + 配置中心 -->
+    <!-- 工具内工具条：主表/子表切换（配置中心已移至右侧字段表表头，与筛选同行） -->
     <div
       class="toolbar"
       style="
@@ -164,29 +164,6 @@ function onExport(): void {
         <NRadioButton value="main">主表</NRadioButton>
         <NRadioButton value="sub">子表</NRadioButton>
       </NRadioGroup>
-
-      <div style="flex: 1"></div>
-
-      <NButton size="small" type="primary" @click="showConfig = true">
-        <template #icon>
-          <svg
-            viewBox="0 0 24 24"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="3" />
-            <path
-              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-            />
-          </svg>
-        </template>
-        配置中心
-      </NButton>
     </div>
 
     <!-- 主体：列宽可拖拽调整。分隔条置于相邻两列之间，拖动时在两列间转移宽度 -->
@@ -213,7 +190,7 @@ function onExport(): void {
       ></div>
 
       <section class="col rise-in" :style="colStyle(isSub ? 1 : 2)">
-        <FieldTable />
+        <FieldTable @open-config="showConfig = true" />
       </section>
     </div>
 
@@ -236,31 +213,14 @@ function onExport(): void {
         clearable
       />
       <NInput
-        v-model:value="session.englishTableName"
+        :value="fullTableName"
         size="small"
-        placeholder="英文表名（留空自动生成）"
-        style="width: 190px"
-        clearable
+        placeholder="自动生成英文表名"
+        style="width: 240px"
+        :disabled="true"
+        class="mono"
       />
-      <NTooltip trigger="hover">
-        <template #trigger>
-          <NTag size="small" :bordered="false" class="mono">{{ fullTableName }}</NTag>
-        </template>
-        最终写入 Excel「表名称」sheet 的表名，前缀可在配置中心修改
-      </NTooltip>
-      <NInput
-        v-model:value="session.dataLinkName"
-        size="small"
-        placeholder="数据链接名称"
-        style="width: 150px"
-      />
-      <NInput
-        v-model:value="session.tableComment"
-        size="small"
-        placeholder="表备注"
-        style="width: 150px"
-      />
-      <span class="muted info-hint">表名可直接手填；留空时由中文名自动生成</span>
+      <span class="muted info-hint">表名由中文名自动生成（前缀可在配置中心修改）</span>
 
       <div style="flex: 1"></div>
 

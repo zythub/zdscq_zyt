@@ -6,12 +6,12 @@ import type { AppConfig, FieldRole, NodeDef, RoleDefaults } from '@/types';
  *
  * 改动基线请同步 +1 SCHEMA_VERSION，界面会提示用户基线已更新。
  */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 /** L1 全局默认表：按字段角色定义默认属性 */
 export const DEFAULT_ROLE_DEFAULTS: RoleDefaults = {
   personId: { type: 'VARCHAR', length: 50, scale: null, nullable: true, defaultValue: '', comment: '' },
-  personName: { type: 'VARCHAR', length: 100, scale: null, nullable: true, defaultValue: '', comment: '' },
+  personName: { type: 'VARCHAR', length: 200, scale: null, nullable: true, defaultValue: '', comment: '' },
   opinion: { type: 'TEXT', length: null, scale: null, nullable: true, defaultValue: '', comment: '' },
   date: { type: 'DATE', length: null, scale: null, nullable: true, defaultValue: '', comment: '' },
   text: { type: 'VARCHAR', length: 50, scale: null, nullable: true, defaultValue: '', comment: '' },

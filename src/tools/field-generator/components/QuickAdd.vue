@@ -5,13 +5,14 @@ import {
   NCheckbox,
   NInput,
   NInputNumber,
+  NPopconfirm,
   NSelect,
   NSpace,
   NTooltip,
   useMessage,
 } from 'naive-ui';
 import { TYPES_WITHOUT_LENGTH, TYPES_WITH_SCALE, type CustomFieldInput, type FieldType } from '@/types';
-import { addCustomField, FIELD_TYPES, markRecentlyAdded, removeCustomField, session } from '@/stores/builder';
+import { addCustomField, clearCustomFields, FIELD_TYPES, markRecentlyAdded, removeCustomField, session } from '@/stores/builder';
 import { config } from '@/stores/config';
 import { cleanChineseName, toAcronym } from '@/core/identifier';
 
@@ -197,8 +198,17 @@ function summarize(f: CustomFieldInput): string {
     </NButton>
 
     <div v-if="session.customFields.length" style="display: flex; flex-direction: column; min-height: 0; flex: 1">
-      <div class="muted" style="font-size: 13px; padding: 6px 2px">
-        已添加 {{ session.customFields.length }} 组
+      <div
+        class="muted"
+        style="font-size: 13px; padding: 6px 2px; display: flex; align-items: center; justify-content: space-between"
+      >
+        <span>已添加 {{ session.customFields.length }} 组</span>
+        <NPopconfirm @positive-click="clearCustomFields">
+          <template #trigger>
+            <NButton size="tiny" type="error" quaternary>清空</NButton>
+          </template>
+          将移除全部手动添加的字段（不影响审批节点生成的字段），确定吗？
+        </NPopconfirm>
       </div>
       <div class="scroll-y" style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px">
         <div
