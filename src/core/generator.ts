@@ -388,10 +388,10 @@ export function generateFields(input: GenerateInput): GeneratedField[] {
 
   // 子表不涉及审批节点（用户确认：这是有意为之）
   if (tableMode === 'main') {
-    const byId = new Map(config.nodes.map((n) => [n.id, n]));
-    for (const id of selectedNodeIds) {
-      const node = byId.get(id);
-      if (node) buildNode(ctx, node);
+    // 输出顺序始终按 config.nodes 的配置先后，与勾选顺序无关
+    const selected = new Set(selectedNodeIds);
+    for (const node of config.nodes) {
+      if (selected.has(node.id)) buildNode(ctx, node);
     }
     pushFixed(ctx, config.baseFieldsEnd, '基础字段');
   }

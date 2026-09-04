@@ -23,11 +23,16 @@ function selectedInGroup(nodes: NodeDef[]): number {
   return nodes.filter((n) => selected.value.has(n.id)).length;
 }
 
-/** 该节点会产出多少个物理字段：人员字段按当前预设的展开模板展开
- *  （南充版 3 个：ID/姓名/签字；标准版 5 个：_id/_name/_sign/_yj/_date） */
-function fieldCount(node: NodeDef): number {
-  const perPerson = config.value.personTemplate.length;
-  return node.fields.reduce((sum, f) => sum + (f.isPerson ? perPerson : 1), 0);
+/** 节点下面包含哪些人（人员字段的中文名），用于行内展示 */
+function personNames(node: NodeDef): string[] {
+  return node.fields.filter((f) => f.isPerson).map((f) => f.name);
+}
+
+/** 点文字 / 行任意处也可勾选；点在复选框本身时不重复触发（checkbox 已自行处理） */
+function onRowToggle(e: MouseEvent, id: string): void {
+  const t = e.target as HTMLElement | null;
+  if (t && t.closest('.n-checkbox')) return;
+  toggleNode(id);
 }
 
 function selectAll(): void {
@@ -87,14 +92,20 @@ function clearAll(): void {
               :key="node.id"
               class="hoverable node-row"
               :class="{ 'node-row--on': selected.has(node.id) }"
-              style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: var(--r-sm); cursor: pointer"
+              style="display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border-radius: var(--r-sm); cursor: pointer"
+              @click="onRowToggle($event, node.id)"
             >
               <NCheckbox
                 :checked="selected.has(node.id)"
+                style="margin-top: 1px"
                 @update:checked="toggleNode(node.id)"
               />
-              <span style="flex: 1; font-size: 13px; line-height: 1.3">{{ node.name }}</span>
-              <span class="muted" style="font-size: 12px">{{ fieldCount(node) }}</span>
+              <span class="node-main">
+                <span class="node-name">{{ node.name }}</span>
+                <span v-if="personNames(node).length" class="node-people">{{
+                  personNames(node).join('、')
+                }}</span>
+              </span>
             </label>
           </div>
         </NCollapseItem>
@@ -109,5 +120,25 @@ function clearAll(): void {
 }
 .node-row--on:hover {
   background: var(--primary-soft);
+}
+.node-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.node-name {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.node-people {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
