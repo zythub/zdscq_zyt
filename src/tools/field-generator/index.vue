@@ -34,12 +34,12 @@ const isSub = computed(() => session.tableMode === 'sub');
 const bodyRef = ref<HTMLElement | null>(null);
 const dragging = ref<number | null>(null);
 
-// 主表三栏：审批节点 / 快速添加 / 字段表；子表两栏：快速添加 / 字段表
+// 主表三栏：审批节点(左) / 字段定义表(中) / 快速添加(右)；子表两栏：字段表 / 快速添加
 // 列宽仅存内存，刷新即回默认（不缓存 UI 配置）
-const MAIN_DEFAULTS = [24, 16, 60];
-const SUB_DEFAULTS = [32, 68];
-const MIN_MAIN = [200, 160, 340]; // 节点 / 快速添加 / 字段表 的最小像素宽
-const MIN_SUB = [220, 320]; // 快速添加 / 字段表
+const MAIN_DEFAULTS = [22, 58, 20];
+const SUB_DEFAULTS = [70, 30];
+const MIN_MAIN = [200, 340, 180]; // 节点 / 字段表 / 快速添加 的最小像素宽
+const MIN_SUB = [340, 180]; // 字段表 / 快速添加
 
 const mainWeights = ref<number[]>([...MAIN_DEFAULTS]);
 const subWeights = ref<number[]>([...SUB_DEFAULTS]);
@@ -178,7 +178,7 @@ function onExport(): void {
       </NButton>
     </div>
 
-    <!-- 主体：三栏。审批节点 | 快速添加字段 | 字段定义表，列宽可拖拽 -->
+    <!-- 主体：审批节点(左) | 字段定义表(中) | 快速添加(右)，列宽可拖拽 -->
     <div ref="bodyRef" class="body">
       <section v-if="!isSub" class="panel col rise-in" :style="colStyle(0)">
         <NodePanel />
@@ -192,7 +192,7 @@ function onExport(): void {
       ></div>
 
       <section class="panel col rise-in" :style="colStyle(isSub ? 0 : 1)">
-        <QuickAdd />
+        <FieldTable />
       </section>
       <div
         class="splitter"
@@ -201,8 +201,8 @@ function onExport(): void {
         @mousedown="startDrag(isSub ? 0 : 1, $event)"
       ></div>
 
-      <section class="col rise-in" :style="colStyle(isSub ? 1 : 2)">
-        <FieldTable />
+      <section class="panel col rise-in" :style="colStyle(isSub ? 1 : 2)">
+        <QuickAdd />
       </section>
     </div>
 

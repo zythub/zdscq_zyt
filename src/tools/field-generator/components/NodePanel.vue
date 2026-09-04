@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { NBadge, NButton, NCheckbox, NCollapse, NCollapseItem, NEmpty, NSpace, NTag } from 'naive-ui';
+import { NBadge, NButton, NCollapse, NCollapseItem, NEmpty, NSpace, NTag } from 'naive-ui';
 import { config } from '@/stores/config';
 import { session, toggleNode } from '@/stores/builder';
 import type { NodeDef } from '@/types';
@@ -26,13 +26,6 @@ function selectedInGroup(nodes: NodeDef[]): number {
 /** 节点下面包含哪些人（人员字段的中文名），用于行内展示 */
 function personNames(node: NodeDef): string[] {
   return node.fields.filter((f) => f.isPerson).map((f) => f.name);
-}
-
-/** 点文字 / 行任意处也可勾选；点在复选框本身时不重复触发（checkbox 已自行处理） */
-function onRowToggle(e: MouseEvent, id: string): void {
-  const t = e.target as HTMLElement | null;
-  if (t && t.closest('.n-checkbox')) return;
-  toggleNode(id);
 }
 
 function selectAll(): void {
@@ -86,27 +79,23 @@ function clearAll(): void {
               {{ selectedInGroup(g.nodes) }}/{{ g.nodes.length }}
             </NTag>
           </template>
-          <div style="display: flex; flex-direction: column; gap: 2px">
-            <label
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <button
               v-for="node in g.nodes"
               :key="node.id"
-              class="hoverable node-row"
+              type="button"
+              class="node-row"
               :class="{ 'node-row--on': selected.has(node.id) }"
-              style="display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border-radius: var(--r-sm); cursor: pointer"
-              @click="onRowToggle($event, node.id)"
+              @click="toggleNode(node.id)"
             >
-              <NCheckbox
-                :checked="selected.has(node.id)"
-                style="margin-top: 1px"
-                @update:checked="toggleNode(node.id)"
-              />
+              <span class="node-rail" aria-hidden="true"></span>
               <span class="node-main">
                 <span class="node-name">{{ node.name }}</span>
                 <span v-if="personNames(node).length" class="node-people">{{
                   personNames(node).join('、')
                 }}</span>
               </span>
-            </label>
+            </button>
           </div>
         </NCollapseItem>
       </NCollapse>
@@ -115,11 +104,53 @@ function clearAll(): void {
 </template>
 
 <style scoped>
+/* 节点行：无勾选框，用彩色背景 + 左侧色条标示选中 */
+.node-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: var(--text-1);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  padding: 6px 10px 6px 6px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background var(--dur-fast) var(--ease-out-quart),
+    border-color var(--dur-fast) var(--ease-out-quart),
+    box-shadow var(--dur-fast) var(--ease-out-quart);
+}
+.node-row:hover {
+  background: var(--surface-2);
+}
+/* 左侧选中色条（选中时高亮） */
+.node-rail {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+  transition: background var(--dur-fast) var(--ease-out-quart);
+}
+/* 选中态：蓝底 + 左侧色条 */
 .node-row--on {
   background: var(--primary-soft);
+  border-color: color-mix(in srgb, var(--primary) 28%, transparent);
 }
 .node-row--on:hover {
-  background: var(--primary-soft);
+  background: color-mix(in srgb, var(--accent-50) 55%, var(--surface-2));
+}
+.node-row--on .node-rail {
+  background: var(--primary);
+}
+.node-row--on .node-name {
+  color: var(--primary);
 }
 .node-main {
   flex: 1;
@@ -127,11 +158,13 @@ function clearAll(): void {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  padding-left: 6px;
 }
 .node-name {
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
+  transition: color var(--dur-fast) var(--ease-out-quart);
 }
 .node-people {
   font-size: 11px;
@@ -140,5 +173,8 @@ function clearAll(): void {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.node-row--on .node-people {
+  color: color-mix(in srgb, var(--text-3) 82%, var(--primary));
 }
 </style>

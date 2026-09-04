@@ -1,7 +1,7 @@
 /* =========================================================================
    zdscq · 设计令牌 (Design Tokens)
-   方向：工业精密风 (Industrial Precision)
-   —— 冷调中性灰（带蓝味）+ 克制钢蓝强调色，强调精确、可信、高效。
+   方向：Element 蓝科技风 (2026-09 改版)
+   —— 冷调中性灰 + Element 主蓝 #409EFF，明快、现代、带科技感。
    明暗双主题；语义令牌在 .dark 下重定义，原语令牌保持不变。
    ========================================================================= */
 
@@ -18,24 +18,24 @@
   --gray-800: #324050;
   --gray-900: #1f2a37;
 
-  /* ---- 强调色：钢蓝（steel teal-blue），刻意避开 AI 紫蓝渐变 ---- */
-  --accent-50: #e6f3f6;
-  --accent-100: #cfe7ee;
-  --accent-200: #9fcfdc;
-  --accent-400: #2da3c4;
-  --accent-500: #0f6f8f;
-  --accent-600: #0c5e7a;
-  --accent-700: #0a4f67;
+  /* ---- 强调色：Element 主蓝 #409EFF ---- */
+  --accent-50: #ecf5ff;
+  --accent-100: #d9ecff;
+  --accent-200: #b3d9ff;
+  --accent-400: #66b1ff;
+  --accent-500: #409eff;
+  --accent-600: #337ecc;
+  --accent-700: #2563a8;
 
-  /* ---- 语义颜色 ---- */
-  --success: #1f9d5b;
-  --success-soft: #e7f6ee;
-  --warning: #b9790f;
-  --warning-soft: #fbf1e0;
-  --error: #d23b54;
-  --error-soft: #fbe7eb;
-  --info: #2f6fb0;
-  --info-soft: #e7f0f8;
+  /* ---- 语义颜色（Element 风格） ---- */
+  --success: #67c23a;
+  --success-soft: #f0f9eb;
+  --warning: #e6a23c;
+  --warning-soft: #fdf6ec;
+  --error: #f56c6c;
+  --error-soft: #fef0f0;
+  --info: #909399;
+  --info-soft: #f4f4f5;
 
   /* ---- 语义令牌：浅色 ---- */
   --bg: var(--gray-50);
@@ -52,8 +52,8 @@
   --text-3: var(--gray-500);
 
   --primary: var(--accent-500);
-  --primary-hover: var(--accent-600);
-  --primary-pressed: var(--accent-700);
+  --primary-hover: var(--accent-400);
+  --primary-pressed: var(--accent-600);
   --primary-soft: var(--accent-50);
   --primary-contrast: #ffffff;
 
@@ -126,22 +126,22 @@
   --gray-800: #dde4ea;
   --gray-900: #eef2f6;
 
-  --accent-50: #0f2e38;
-  --accent-100: #143a47;
-  --accent-200: #1c5566;
-  --accent-400: #2da3c4;
-  --accent-500: #38b3d4;
-  --accent-600: #2da3c4;
-  --accent-700: #1f8aa8;
+  --accent-50: #10233f;
+  --accent-100: #16304e;
+  --accent-200: #214a7a;
+  --accent-400: #66b1ff;
+  --accent-500: #409eff;
+  --accent-600: #5f9fe0;
+  --accent-700: #3d7fc2;
 
-  --success: #3fbf7a;
-  --success-soft: #12281d;
-  --warning: #e0a23a;
-  --warning-soft: #2c2310;
-  --error: #ef6277;
-  --error-soft: #2e141a;
-  --info: #5a9bdb;
-  --info-soft: #102233;
+  --success: #67c23a;
+  --success-soft: #16240e;
+  --warning: #e6a23c;
+  --warning-soft: #2c2210;
+  --error: #f56c6c;
+  --error-soft: #2c1416;
+  --info: #909399;
+  --info-soft: #1b1d21;
 
   --bg: #0a0e12;
   --surface-1: #151b22;
@@ -160,7 +160,7 @@
   --primary-hover: var(--accent-400);
   --primary-pressed: var(--accent-600);
   --primary-soft: var(--accent-50);
-  --primary-contrast: #06181d;
+  --primary-contrast: #ffffff;
 
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.5);
