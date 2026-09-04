@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import {
-  NButton,
   NConfigProvider,
   NDialogProvider,
   NMessageProvider,
@@ -11,7 +10,6 @@ import {
 } from 'naive-ui';
 import type { GlobalThemeOverrides } from 'naive-ui';
 import ToolLayout from '@/layouts/ToolLayout.vue';
-import { acknowledgeBaseline, baselineUpdated, overrideCount } from '@/stores/config';
 
 const isDark = ref(localStorage.getItem('zdscq:theme') === 'dark');
 const theme = computed(() => (isDark.value ? darkTheme : null));
@@ -110,24 +108,6 @@ const themeOverrides = computed<GlobalThemeOverrides>(() =>
     <NMessageProvider>
       <NDialogProvider>
         <div style="height: 100vh; display: flex; flex-direction: column; overflow: hidden">
-          <div
-            v-if="baselineUpdated"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 10px;
-              padding: 6px 14px;
-              font-size: 14px;
-              background: var(--primary-soft);
-              color: var(--text-1);
-              flex-shrink: 0;
-            "
-          >
-            <span>
-              团队配置基线已更新，你有 {{ overrideCount }} 项个人覆盖仍然生效
-            </span>
-            <NButton size="tiny" @click="acknowledgeBaseline">知道了</NButton>
-          </div>
           <div style="flex: 1; min-height: 0">
             <ToolLayout :is-dark="isDark" @toggle-theme="toggleTheme" />
           </div>

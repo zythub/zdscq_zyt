@@ -4,14 +4,11 @@ import { NButton, NInput, NRadioButton, NRadioGroup, NTag, useMessage } from 'na
 import NodePanel from './components/NodePanel.vue';
 import QuickAdd from './components/QuickAdd.vue';
 import FieldTable from './components/FieldTable.vue';
-import ConfigCenter from './components/ConfigCenter.vue';
 import { fields, fullTableName, problemCount, session, setTableMode } from '@/stores/builder';
-import { setVersion, version } from '@/stores/config';
 import { exportExcel } from '@/core/excel';
-import type { ConfigVersion, TableMode } from '@/types';
+import type { TableMode } from '@/types';
 
 const message = useMessage();
-const showConfig = ref(false);
 
 /** 顶栏在字段生成器里被隐藏（用户要求：菜单下方直接就是内容），
  *  主题切换改由 ToolLayout 通过 provide 下发，在这里的工具条上呈现 */
@@ -174,16 +171,6 @@ function onExport(): void {
         <NRadioButton value="sub">子表</NRadioButton>
       </NRadioGroup>
 
-      <!-- 配置预设：南充版本（历史默认） / 标准版本（默认打开） -->
-      <NRadioGroup
-        :value="version"
-        size="small"
-        @update:value="(v: ConfigVersion) => setVersion(v)"
-      >
-        <NRadioButton value="standard">标准版本</NRadioButton>
-        <NRadioButton value="nanchong">南充版本</NRadioButton>
-      </NRadioGroup>
-
       <div style="flex: 1"></div>
 
       <NButton
@@ -220,7 +207,7 @@ function onExport(): void {
       ></div>
 
       <section class="col rise-in" :style="colStyle(isSub ? 1 : 2)">
-        <FieldTable @open-config="showConfig = true" />
+        <FieldTable />
       </section>
     </div>
 
@@ -266,8 +253,6 @@ function onExport(): void {
         导出 Excel
       </NButton>
     </footer>
-
-    <ConfigCenter v-model:show="showConfig" />
   </div>
 </template>
 

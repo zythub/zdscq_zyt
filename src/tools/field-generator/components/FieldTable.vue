@@ -23,11 +23,10 @@ import {
   resetFieldEdit,
   session,
 } from '@/stores/builder';
-import { rememberTranslation } from '@/stores/config';
+import { presetOptions, setVersion, version } from '@/stores/config';
 import { TYPES_WITHOUT_LENGTH, TYPES_WITH_SCALE, type FieldType, type GeneratedField } from '@/types';
 
 const message = useMessage();
-const emit = defineEmits<{ openConfig: [] }>();
 
 /** 表格 / Excel(可粘贴) 两种视图切换 */
 const viewMode = ref<'table' | 'excel'>('table');
@@ -146,8 +145,7 @@ function onEnglishCommit(f: GeneratedField, value: string): void {
   const next = value.trim().toLowerCase();
   if (!next || next === f.english) return;
   editField(f.english, { english: next });
-  rememberTranslation(f.chinese, next);
-  message.success(`已记住映射「${f.chinese} → ${next}」，下次自动复用`);
+  message.success(`已改为 ${next}`);
 }
 
 function severityClass(f: GeneratedField): string {
@@ -193,7 +191,15 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         clearable
         style="width: 150px"
       />
-      <NButton size="tiny" @click="emit('openConfig')">配置中心</NButton>
+      <!-- 版本下拉：配置模板在 baseline.ts 中写死，这里只负责切换 -->
+      <NSelect
+        :value="version"
+        :options="presetOptions"
+        size="small"
+        style="width: 128px"
+        :consistent-menu-width="false"
+        @update:value="(v: string) => setVersion(v)"
+      />
     </div>
 
     <div

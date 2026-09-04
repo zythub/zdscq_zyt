@@ -189,9 +189,6 @@ export interface AppConfig {
   personTemplate: PersonFieldTemplate[];
 }
 
-/** 字段生成器配置预设版本 */
-export type ConfigVersion = 'nanchong' | 'standard';
-
 /** 存进 localStorage 的个人覆盖层：只存改动，不存全量 */
 export interface ConfigDiff {
   /** 记录建立 diff 时所基于的基线版本 */

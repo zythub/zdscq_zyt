@@ -1,15 +1,14 @@
-import type { AppConfig, ConfigVersion, FieldRole, NodeDef, PersonFieldTemplate, RoleDefaults } from '@/types';
+import type { AppConfig, FieldRole, NodeDef, PersonFieldTemplate, RoleDefaults } from '@/types';
 
 /**
- * 配置基线 —— 团队共享的默认值，随代码发布。
- * 用户的个人改动以 diff 形式存在 localStorage，基线更新后自动生效。
+ * ★ 配置基线 —— 唯一需要维护的配置文件 ★
  *
- * 改动基线请同步 +1 SCHEMA_VERSION，界面会提示用户基线已更新。
- *
- * 本文件现在维护「两套预设」：
- *   - nanchong  ：南充版本（历史默认字段 / 审批节点）
- *   - standard  ：标准版本（由用户提供的《标准化表单字段.xlsx》整理而来，默认打开）
- * 两者通过 src/stores/config.ts 里的 version 状态切换，默认 standard。
+ * 本工具的所有「配置模板」都写死在本文件里：用户（最终使用者）不提供任何编辑入口，
+ * 只通过界面右上「版本」下拉在模板间切换。要新增一套模板：
+ *   1. 往下滚到 PRESET_LIST，复制一条已有的 { id, label, config } 条目；
+ *   2. 把 config 里的字段 / 节点 / 长度按新模板改好即可（节点可参考下方各 xxx_NODES 常量，
+ *      人员字段会自动按该模板的 personTemplate 展开成 _id/_name/_sign/_yj/_date 等）。
+ * 添加后请同步在界面下拉里出现新版本（列表顺序即下拉顺序，第一个为默认版本）。
  */
 export const SCHEMA_VERSION = 4;
 
@@ -237,38 +236,65 @@ const STANDARD_BASE_START: AppConfig['baseFieldsStart'] = [
   { english: 'contract_number', chinese: '合同编号', role: 'text', override: { type: 'VARCHAR', length: 50 } },
 ];
 
-/** 两套预设 */
-export const PRESETS: Record<ConfigVersion, AppConfig> = {
-  nanchong: {
-    schemaVersion: SCHEMA_VERSION,
-    naming: { ...COMMON_NAMING },
-    roleDefaults: NANCHONG_ROLE_DEFAULTS,
-    nodes: NANCHONG_NODES,
-    baseFieldsStart: NANCHONG_BASE_START,
-    baseFieldsEnd: NANCHONG_BASE_END,
-    subTableFields: [
-      { english: 'ay_serial', chinese: '序号', role: 'serial' },
-      { english: 'zb_id', chinese: '主表_id', role: 'foreignKey' },
-    ],
-    translationDict: {},
-    personTemplate: NANCHONG_PERSON_TEMPLATE,
-  },
-  standard: {
-    schemaVersion: SCHEMA_VERSION,
-    naming: { ...COMMON_NAMING },
-    roleDefaults: STANDARD_ROLE_DEFAULTS,
-    nodes: STANDARD_NODES,
-    baseFieldsStart: STANDARD_BASE_START,
-    // 标准版按《标准化表单字段.xlsx》只包含业务字段，不含 _id / fdd_dzqz_* / flow_* 系统字段
-    baseFieldsEnd: [],
-    subTableFields: [
-      { english: 'ay_serial', chinese: '序号', role: 'serial' },
-      { english: 'zb_id', chinese: '主表_id', role: 'foreignKey' },
-    ],
-    translationDict: { 设计单位: 'sjdb' },
-    personTemplate: STANDARD_PERSON_TEMPLATE,
-  },
-};
+/** 子表默认字段（各版本通用） */
+const SUBTABLE_FIELDS: AppConfig['subTableFields'] = [
+  { english: 'ay_serial', chinese: '序号', role: 'serial' },
+  { english: 'zb_id', chinese: '主表_id', role: 'foreignKey' },
+];
 
-/** 默认配置 = 标准版本（用户要求默认打开标准版） */
-export const DEFAULT_CONFIG: AppConfig = PRESETS.standard;
+/** 一条配置模板（Preset）。id 唯一；label 是界面下拉里的显示名；config 为该模板全部配置。 */
+export interface PresetEntry {
+  id: string;
+  label: string;
+  config: AppConfig;
+}
+
+/**
+ * ★ 全部配置模板清单 ★
+ * 列表顺序即界面「版本」下拉的顺序，第一项为默认打开版本。
+ * 新增模板 = 在下方复制一条条目并修改 config，无需改其它任何文件。
+ */
+export const PRESET_LIST: PresetEntry[] = [
+  // ── 标准版本（默认，字段取自《标准化表单字段.xlsx》：11 基础字段 + 19 审批角色 × 5 字段）──
+  {
+    id: 'standard',
+    label: '标准版本',
+    config: {
+      schemaVersion: SCHEMA_VERSION,
+      naming: { ...COMMON_NAMING },
+      roleDefaults: STANDARD_ROLE_DEFAULTS,
+      nodes: STANDARD_NODES,
+      baseFieldsStart: STANDARD_BASE_START,
+      // 标准版按 xlsx 只含业务字段，不含 _id / fdd_dzqz_* / flow_* 系统字段
+      baseFieldsEnd: [],
+      subTableFields: SUBTABLE_FIELDS,
+      // 「设计单位」在 xlsx 里是 sjdb（拼音首字母默认是 sjdw），用词典显式钉住
+      translationDict: { 设计单位: 'sjdb' },
+      personTemplate: STANDARD_PERSON_TEMPLATE,
+    },
+  },
+  // ── 南充版本（历史默认字段与审批节点）──
+  {
+    id: 'nanchong',
+    label: '南充版本',
+    config: {
+      schemaVersion: SCHEMA_VERSION,
+      naming: { ...COMMON_NAMING },
+      roleDefaults: NANCHONG_ROLE_DEFAULTS,
+      nodes: NANCHONG_NODES,
+      baseFieldsStart: NANCHONG_BASE_START,
+      baseFieldsEnd: NANCHONG_BASE_END,
+      subTableFields: SUBTABLE_FIELDS,
+      translationDict: {},
+      personTemplate: NANCHONG_PERSON_TEMPLATE,
+    },
+  },
+];
+
+/** 默认打开的版本 id（默认取清单第一项 = 标准版本） */
+export const DEFAULT_VERSION: string = PRESET_LIST[0].id;
+
+/** id → 配置 的便捷索引（config store 使用） */
+export const PRESET_MAP: Record<string, AppConfig> = Object.fromEntries(
+  PRESET_LIST.map((p) => [p.id, p.config])
+);
