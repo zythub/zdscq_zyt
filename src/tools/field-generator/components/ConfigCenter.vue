@@ -19,6 +19,7 @@ import {
   useMessage,
 } from 'naive-ui';
 import {
+  baseConfig,
   config,
   configDiff,
   exportConfigJson,
@@ -33,7 +34,6 @@ import {
   setRoleDefault,
   upsertNode,
 } from '@/stores/config';
-import { DEFAULT_CONFIG } from '@/config/baseline';
 import { FIELD_TYPES } from '@/stores/builder';
 import {
   DIALECT_MAX_IDENTIFIER,
@@ -107,7 +107,7 @@ function removeNodeField(i: number): void {
 }
 
 function isBaselineNode(id: string): boolean {
-  return DEFAULT_CONFIG.nodes.some((n) => n.id === id);
+  return baseConfig.value.nodes.some((n) => n.id === id);
 }
 
 function isNodeOverridden(id: string): boolean {
@@ -281,7 +281,7 @@ const dictEntries = computed(() => Object.entries(config.value.translationDict))
               title="恢复该行默认"
               @click="
                 (Object.keys(configDiff.roleDefaults?.[role] ?? {}) as (keyof RoleDefault)[]).forEach(
-                  (k) => setRoleDefault(role, k, DEFAULT_CONFIG.roleDefaults[role][k] as never)
+                  (k) => setRoleDefault(role, k, baseConfig.roleDefaults[role][k] as never)
                 )
               "
             >
@@ -430,7 +430,13 @@ const dictEntries = computed(() => Object.entries(config.value.translationDict))
                 </div>
                 <div style="font-size: 11px; opacity: 0.55">
                   {{ node.fields.length }} 项定义 ·
-                  {{ node.fields.reduce((s, f) => s + (f.isPerson ? 2 : 1), 0) }} 个物理字段
+                  {{
+                    node.fields.reduce(
+                      (s, f) => s + (f.isPerson ? config.personTemplate.length : 1),
+                      0
+                    )
+                  }}
+                  个物理字段
                 </div>
               </div>
               <NButton size="tiny" quaternary @click="startEdit(node)">编辑</NButton>

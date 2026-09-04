@@ -121,6 +121,38 @@ function pushFixed(ctx: BuildCtx, defs: FixedFieldDef[], originLabel: string): v
   }
 }
 
+/**
+ * 人员字段展开（审批节点专用）：按配置的 personTemplate 展开。
+ * 南充版本 = 裸ID + _name + _sign；标准版本 = _id + _name + _sign + _yj + _date。
+ * 英文 = base + suffix，中文 = 人员中文名 + label。
+ */
+function pushPersonTemplate(
+  ctx: BuildCtx,
+  params: {
+    base: string;
+    chinese: string;
+    origin: string;
+    originLabel: string;
+    warnings: string[];
+    /** 节点字段上的 override，作用于展开出的每一个物理字段 */
+    override?: Partial<RoleDefault>;
+  }
+): void {
+  // warnings（如撞名降级）只挂在展开出的第一个物理字段上，避免同一条告警重复 N 遍
+  ctx.config.personTemplate.forEach((t, i) => {
+    push(ctx, {
+      english: params.base + t.suffix,
+      chinese: params.chinese + t.label,
+      role: t.role,
+      // 模板自带 override 优先于节点字段 override
+      override: { ...(params.override ?? {}), ...(t.override ?? {}) },
+      origin: params.origin,
+      originLabel: params.originLabel,
+      warnings: i === 0 ? params.warnings : [],
+    });
+  });
+}
+
 /** 人员字段展开：ID → 姓名（+ 可选 意见 / 日期） */
 function pushPerson(
   ctx: BuildCtx,
@@ -201,26 +233,26 @@ function buildNode(ctx: BuildCtx, node: NodeDef): void {
     const chinese = cleanChineseName(field.name);
     if (!chinese) continue;
 
-    const suffixes = field.isPerson ? [naming.nameSuffix] : [];
+    // 人员字段会按模板展开成多个物理字段，撞名检测需覆盖模板的全部后缀
+    // （标准版 _id/_name/_sign/_yj/_date，南充版 裸ID/_name/_sign）
+    const suffixes = field.isPerson ? ctx.config.personTemplate.map((t) => t.suffix) : [];
     const taken = new Set<string>([...ctx.used, ...ctx.reserved]);
     const { name, warnings } = resolveEnglishName(chinese, taken, naming, translationDict, suffixes);
 
     if (field.isPerson) {
-      // 预留姓名派生名，避免同节点后续字段抢名。
-      // 用 reserved 而非 used——否则 push 会把同一个字段自己预约的 base/name
+      // 预留展开出的全部派生名，避免同节点后续字段抢名。
+      // 用 reserved 而非 used——否则 push 会把同一个字段自己预约的名字
       // 误判为「字段名重复」而刷出一排假 error。
       ctx.reserved.add(name);
-      ctx.reserved.add(name + naming.nameSuffix);
-      ctx.reserved.add(name + '_sign');
+      for (const t of ctx.config.personTemplate) ctx.reserved.add(name + t.suffix);
       persons.push(() =>
-        pushPerson(ctx, {
+        pushPersonTemplate(ctx, {
           base: name,
           chinese: field.name,
           origin: `node:${node.id}`,
           originLabel: node.name,
           warnings,
-          idOverride: field.override,
-          nameOverride: field.override,
+          override: field.override,
         })
       );
     } else {

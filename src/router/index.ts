@@ -42,6 +42,8 @@ const routes: RouteRecordRaw[] = [
           title: '字段生成器',
           desc: '审批流建表 · Excel 字段定义一键生成',
           icon: 'M3 5h18v14H3zM3 9h18M3 14h18M9 5v14M15 5v14',
+          // 用户要求：不要标题栏，菜单下方直接就是内容（主题切换已由工具页自行呈现）
+          hideTopbar: true,
         } satisfies ToolMeta,
       },
   },

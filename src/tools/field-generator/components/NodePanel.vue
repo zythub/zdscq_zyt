@@ -23,9 +23,11 @@ function selectedInGroup(nodes: NodeDef[]): number {
   return nodes.filter((n) => selected.value.has(n.id)).length;
 }
 
-/** 该节点会产出多少个物理字段：人员字段展开成 ID + 姓名两个 */
+/** 该节点会产出多少个物理字段：人员字段按当前预设的展开模板展开
+ *  （南充版 3 个：ID/姓名/签字；标准版 5 个：_id/_name/_sign/_yj/_date） */
 function fieldCount(node: NodeDef): number {
-  return node.fields.reduce((sum, f) => sum + (f.isPerson ? 2 : 1), 0);
+  const perPerson = config.value.personTemplate.length;
+  return node.fields.reduce((sum, f) => sum + (f.isPerson ? perPerson : 1), 0);
 }
 
 function selectAll(): void {

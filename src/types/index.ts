@@ -93,6 +93,18 @@ export interface NodeDef {
   fields: NodeFieldDef[];
 }
 
+/** 人员字段展开模板：一个中文人员名展开成多个物理字段的规则 */
+export interface PersonFieldTemplate {
+  /** 拼在 base 英文名后的后缀，如 '_id' / '_name' / ''（裸 ID） */
+  suffix: string;
+  /** 该物理字段的角色，决定类型/长度等默认值 */
+  role: FieldRole;
+  /** 拼在人员中文名后的标签，如 'id' / '姓名' / ''（裸 ID） */
+  label: string;
+  /** 覆盖角色默认值 */
+  override?: Partial<RoleDefault>;
+}
+
 /** 固定字段（基础字段前/后段、子表默认字段），英文名由用户直接指定 */
 export interface FixedFieldDef {
   english: string;
@@ -173,7 +185,12 @@ export interface AppConfig {
   subTableFields: FixedFieldDef[];
   /** 中文 → 英文 手工映射词典，命中即直接复用 */
   translationDict: Record<string, string>;
+  /** 人员字段展开模板：一个中文人员名按此展开成若干物理字段（南充版 3 字段、标准版 5 字段） */
+  personTemplate: PersonFieldTemplate[];
 }
+
+/** 字段生成器配置预设版本 */
+export type ConfigVersion = 'nanchong' | 'standard';
 
 /** 存进 localStorage 的个人覆盖层：只存改动，不存全量 */
 export interface ConfigDiff {

@@ -1,8 +1,9 @@
 import { computed, reactive, ref, watch } from 'vue';
-import { DEFAULT_CONFIG, SCHEMA_VERSION } from '@/config/baseline';
+import { PRESETS, SCHEMA_VERSION } from '@/config/baseline';
 import type {
   AppConfig,
   ConfigDiff,
+  ConfigVersion,
   FieldRole,
   FixedFieldDef,
   NamingConfig,
@@ -11,6 +12,22 @@ import type {
 } from '@/types';
 
 const STORAGE_KEY = 'zdscq:config-diff:v1';
+const VERSION_KEY = 'zdscq:config-version';
+
+/** 配置预设版本：默认打开标准版（与用户提供的《标准化表单字段.xlsx》对齐） */
+export const version = ref<ConfigVersion>(
+  (localStorage.getItem(VERSION_KEY) as ConfigVersion | null) ?? 'standard',
+);
+watch(version, (v) => {
+  try {
+    localStorage.setItem(VERSION_KEY, v);
+  } catch {
+    /* 忽略 */
+  }
+});
+export function setVersion(v: ConfigVersion): void {
+  version.value = v;
+}
 
 function deepClone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v)) as T;
@@ -53,9 +70,12 @@ watch(
   { deep: true }
 );
 
+/** 当前预设版本的基线（南充 / 标准），个人 diff 叠加在它之上 */
+export const baseConfig = computed<AppConfig>(() => PRESETS[version.value]);
+
 /** 三层合并结果：基线 → 个人 diff */
 export const config = computed<AppConfig>(() => {
-  const base = DEFAULT_CONFIG;
+  const base = PRESETS[version.value];
 
   const naming: NamingConfig = { ...base.naming, ...(diff.naming ?? {}) };
 
@@ -79,6 +99,7 @@ export const config = computed<AppConfig>(() => {
     baseFieldsEnd: diff.baseFieldsEnd ?? base.baseFieldsEnd,
     subTableFields: diff.subTableFields ?? base.subTableFields,
     translationDict: { ...base.translationDict, ...(diff.translationDict ?? {}) },
+    personTemplate: base.personTemplate,
   };
 });
 
@@ -101,7 +122,7 @@ export const overrideCount = computed(() => {
 
 export function setNaming<K extends keyof NamingConfig>(key: K, value: NamingConfig[K]): void {
   diff.naming = { ...(diff.naming ?? {}), [key]: value };
-  if (value === DEFAULT_CONFIG.naming[key]) {
+  if (value === PRESETS[version.value].naming[key]) {
     const next = { ...diff.naming };
     delete next[key];
     diff.naming = Object.keys(next).length ? next : undefined;
@@ -115,7 +136,7 @@ export function setRoleDefault<K extends keyof RoleDefault>(
 ): void {
   const current = diff.roleDefaults?.[role] ?? {};
   const next = { ...current, [key]: value };
-  if (value === DEFAULT_CONFIG.roleDefaults[role][key]) delete next[key];
+  if (value === PRESETS[version.value].roleDefaults[role][key]) delete next[key];
   const all = { ...(diff.roleDefaults ?? {}) };
   if (Object.keys(next).length) all[role] = next;
   else delete all[role];
@@ -123,7 +144,7 @@ export function setRoleDefault<K extends keyof RoleDefault>(
 }
 
 export function upsertNode(node: NodeDef): void {
-  const isBaseline = DEFAULT_CONFIG.nodes.some((n) => n.id === node.id);
+  const isBaseline = PRESETS[version.value].nodes.some((n) => n.id === node.id);
   if (isBaseline) {
     diff.nodesOverride = { ...(diff.nodesOverride ?? {}), [node.id]: deepClone(node) };
   } else {
@@ -139,7 +160,7 @@ export function upsertNode(node: NodeDef): void {
 }
 
 export function removeNode(id: string): void {
-  const isBaseline = DEFAULT_CONFIG.nodes.some((n) => n.id === id);
+  const isBaseline = PRESETS[version.value].nodes.some((n) => n.id === id);
   if (isBaseline) {
     diff.nodesRemoved = [...new Set([...(diff.nodesRemoved ?? []), id])];
     if (diff.nodesOverride?.[id]) {
@@ -165,7 +186,7 @@ export function setFixedFields(
   which: 'baseFieldsStart' | 'baseFieldsEnd' | 'subTableFields',
   list: FixedFieldDef[]
 ): void {
-  const same = JSON.stringify(list) === JSON.stringify(DEFAULT_CONFIG[which]);
+  const same = JSON.stringify(list) === JSON.stringify(PRESETS[version.value][which]);
   diff[which] = same ? undefined : deepClone(list);
 }
 

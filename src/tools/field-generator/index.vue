@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { computed, ref, onBeforeUnmount } from 'vue';
+import { computed, inject, ref, onBeforeUnmount } from 'vue';
 import { NButton, NInput, NRadioButton, NRadioGroup, NTag, useMessage } from 'naive-ui';
 import NodePanel from './components/NodePanel.vue';
 import QuickAdd from './components/QuickAdd.vue';
 import FieldTable from './components/FieldTable.vue';
 import ConfigCenter from './components/ConfigCenter.vue';
 import { fields, fullTableName, problemCount, session, setTableMode } from '@/stores/builder';
+import { setVersion, version } from '@/stores/config';
 import { exportExcel } from '@/core/excel';
-import type { TableMode } from '@/types';
+import type { ConfigVersion, TableMode } from '@/types';
 
 const message = useMessage();
 const showConfig = ref(false);
+
+/** 顶栏在字段生成器里被隐藏（用户要求：菜单下方直接就是内容），
+ *  主题切换改由 ToolLayout 通过 provide 下发，在这里的工具条上呈现 */
+const theme = inject<{ isDark: { value: boolean }; toggle: () => void } | undefined>(
+  'theme',
+  undefined
+);
 
 const isSub = computed(() => session.tableMode === 'sub');
 
@@ -20,9 +28,10 @@ const isSub = computed(() => session.tableMode === 'sub');
 const bodyRef = ref<HTMLElement | null>(null);
 const dragging = ref<number | null>(null);
 
-const MAIN_DEFAULTS = [30, 70]; // 左栏(审批节点+快速添加) / 字段表
+// 主表三栏：审批节点 / 快速添加 / 字段表；子表两栏：快速添加 / 字段表
+const MAIN_DEFAULTS = [20, 25, 55];
 const SUB_DEFAULTS = [32, 68];
-const MIN_MAIN = [220, 320]; // 左栏 / 字段表 的最小像素宽
+const MIN_MAIN = [180, 220, 320]; // 节点 / 快速添加 / 字段表 的最小像素宽
 const MIN_SUB = [220, 320]; // 快速添加 / 字段表
 const KEY_MAIN = 'zdscq:colw:main';
 const KEY_SUB = 'zdscq:colw:sub';
@@ -67,7 +76,7 @@ let drag: { idx: number; startX: number; wA0: number; wB0: number; avail: number
 function startDrag(idx: number, e: MouseEvent) {
   if (!bodyRef.value) return;
   e.preventDefault();
-  const splitterCount = 1;
+  const splitterCount = isSub.value ? 1 : 2;
   const avail = bodyRef.value.clientWidth - 24 /* 容器内边距 12*2 */ - splitterCount * SPLITTER_W;
   const w = activeWeights.value;
   drag = {
@@ -164,26 +173,53 @@ function onExport(): void {
         <NRadioButton value="main">主表</NRadioButton>
         <NRadioButton value="sub">子表</NRadioButton>
       </NRadioGroup>
+
+      <!-- 配置预设：南充版本（历史默认） / 标准版本（默认打开） -->
+      <NRadioGroup
+        :value="version"
+        size="small"
+        @update:value="(v: ConfigVersion) => setVersion(v)"
+      >
+        <NRadioButton value="standard">标准版本</NRadioButton>
+        <NRadioButton value="nanchong">南充版本</NRadioButton>
+      </NRadioGroup>
+
+      <div style="flex: 1"></div>
+
+      <NButton
+        v-if="theme"
+        size="small"
+        quaternary
+        @click="theme.toggle()"
+      >
+        {{ theme.isDark.value ? '浅色' : '深色' }}
+      </NButton>
     </div>
 
-    <!-- 主体：两栏。左栏(窄)上下堆叠「审批节点 + 快速添加字段」，右栏为字段定义表 -->
+    <!-- 主体：三栏。审批节点 | 快速添加字段 | 字段定义表，列宽可拖拽 -->
     <div ref="bodyRef" class="body">
-      <section class="col rise-in" :style="colStyle(0)" style="gap: 8px">
-        <div v-if="!isSub" class="panel col" style="flex: 1 1 0; min-height: 0">
-          <NodePanel />
-        </div>
-        <div class="panel col" style="flex: 1 1 0; min-height: 0">
-          <QuickAdd />
-        </div>
+      <section v-if="!isSub" class="panel col rise-in" :style="colStyle(0)">
+        <NodePanel />
       </section>
       <div
+        v-if="!isSub"
         class="splitter"
         :class="{ active: dragging === 0 }"
         title="拖拽调整宽度"
         @mousedown="startDrag(0, $event)"
       ></div>
 
-      <section class="col rise-in" :style="colStyle(1)">
+      <section class="panel col rise-in" :style="colStyle(isSub ? 0 : 1)">
+        <QuickAdd />
+      </section>
+      <div
+        class="splitter"
+        :class="{ active: dragging === (isSub ? 0 : 1) }"
+        title="拖拽调整宽度"
+        @mousedown="startDrag(isSub ? 0 : 1, $event)"
+      ></div>
+
+      <section class="col rise-in" :style="colStyle(isSub ? 1 : 2)">
         <FieldTable @open-config="showConfig = true" />
       </section>
     </div>

@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, provide, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NButton } from 'naive-ui';
 import type { ToolMeta } from '@/router';
 import { EXTERNAL_TOOLS } from '@/stores/externalTools';
 
-defineProps<{ isDark: boolean }>();
+const props = defineProps<{ isDark: boolean }>();
 const emit = defineEmits<{ (e: 'toggle-theme'): void }>();
+
+/**
+ * 顶栏可被单个工具隐藏（hideTopbar），但主题切换仍需可用，
+ * 故把切换能力 provide 下去，由工具页自己在工具条上呈现。
+ */
+provide('theme', {
+  isDark: computed(() => props.isDark),
+  toggle: () => emit('toggle-theme'),
+});
 
 const router = useRouter();
 const route = useRoute();
