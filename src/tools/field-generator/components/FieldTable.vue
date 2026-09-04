@@ -393,8 +393,16 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
   font-size: 14px;
   font-weight: 600;
   color: var(--text-2);
-  background: var(--surface-1);
   border-bottom: 1px solid var(--border);
+}
+/* 表头格子逐个铺不透明背景：列比容器宽、横向滚动时，超出第一屏的格子也有底色，
+   不会透明地压在下面行内容上造成“字符重叠” */
+.grid-head > div {
+  background: var(--surface-1);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .ft-row {
   display: grid;
