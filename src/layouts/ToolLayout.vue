@@ -191,7 +191,7 @@ const current = computed<ToolMeta | undefined>(
 
       <div class="side-foot">
         <span class="ver">v2.1.0</span>
-        <span class="visits" title="站点累计访问人次">访问 <span id="busuanzi_value_site_pv" class="mono">–</span></span>
+        <span class="visits" title="站点累计访问人次">访问 <span id="vercount_value_site_pv" class="mono">–</span></span>
       </div>
     </aside>
 
