@@ -35,33 +35,14 @@ const bodyRef = ref<HTMLElement | null>(null);
 const dragging = ref<number | null>(null);
 
 // 主表三栏：审批节点 / 快速添加 / 字段表；子表两栏：快速添加 / 字段表
+// 列宽仅存内存，刷新即回默认（不缓存 UI 配置）
 const MAIN_DEFAULTS = [24, 16, 60];
 const SUB_DEFAULTS = [32, 68];
 const MIN_MAIN = [200, 160, 340]; // 节点 / 快速添加 / 字段表 的最小像素宽
 const MIN_SUB = [220, 320]; // 快速添加 / 字段表
-const KEY_MAIN = 'zdscq:colw:main:v2';
-const KEY_SUB = 'zdscq:colw:sub';
 
-function loadWeights(key: string, fallback: number[]): number[] {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return [...fallback];
-    const arr = JSON.parse(raw);
-    if (
-      Array.isArray(arr) &&
-      arr.length === fallback.length &&
-      arr.every((n) => typeof n === 'number' && isFinite(n) && n > 0)
-    ) {
-      return arr as number[];
-    }
-  } catch {
-    /* 损坏则回退默认 */
-  }
-  return [...fallback];
-}
-
-const mainWeights = ref<number[]>(loadWeights(KEY_MAIN, MAIN_DEFAULTS));
-const subWeights = ref<number[]>(loadWeights(KEY_SUB, SUB_DEFAULTS));
+const mainWeights = ref<number[]>([...MAIN_DEFAULTS]);
+const subWeights = ref<number[]>([...SUB_DEFAULTS]);
 
 const activeWeights = computed<number[]>(() => (isSub.value ? subWeights.value : mainWeights.value));
 const activeMin = computed<number[]>(() => (isSub.value ? MIN_SUB : MIN_MAIN));
@@ -121,12 +102,7 @@ function onUp() {
   document.body.style.userSelect = '';
   document.body.style.cursor = '';
   dragging.value = null;
-  const key = isSub.value ? KEY_SUB : KEY_MAIN;
-  try {
-    localStorage.setItem(key, JSON.stringify(activeWeights.value));
-  } catch {
-    /* 隐私模式等写入失败则忽略 */
-  }
+  // 列宽仅内存态，不写 localStorage（刷新回默认）
   drag = null;
 }
 

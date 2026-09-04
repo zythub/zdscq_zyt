@@ -1,11 +1,9 @@
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { config } from './config';
 import { generateFields } from '@/core/generator';
 import { buildTableName } from '@/core/identifier';
 import type { CustomFieldInput, FieldType, GeneratedField, TableMode } from '@/types';
 import type { DesignerFieldType } from '@/core/word/designer';
-
-const SESSION_KEY = 'zdscq:session:v1';
 
 interface SessionState {
   tableMode: TableMode;
@@ -35,29 +33,8 @@ function defaultSession(): SessionState {
   };
 }
 
-function loadSession(): SessionState {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return defaultSession();
-    return { ...defaultSession(), ...(JSON.parse(raw) as SessionState) };
-  } catch {
-    return defaultSession();
-  }
-}
-
-export const session = reactive<SessionState>(loadSession());
-
-watch(
-  () => JSON.parse(JSON.stringify(session)) as SessionState,
-  (v) => {
-    try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify(v));
-    } catch (e) {
-      console.warn('会话保存失败', e);
-    }
-  },
-  { deep: true }
-);
+/** 会话仅存内存，不做 localStorage 持久化 —— 刷新/重开即恢复空白初始状态 */
+export const session = reactive<SessionState>(defaultSession());
 
 /** 最近新增的字段，用于表格高亮 */
 export const recentlyAdded = ref<Set<string>>(new Set());
