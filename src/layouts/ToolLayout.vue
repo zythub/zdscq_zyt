@@ -84,7 +84,7 @@ const current = computed<ToolMeta | undefined>(
         </span>
         <div class="brand-text">
           <span class="brand-name">开发效率提升工具集</span>
-          <span class="brand-sub">贝斯特效率提升工具</span>
+          <span class="brand-sub">贝斯特效率提升工具 by：张义涛</span>
         </div>
       </div>
 
