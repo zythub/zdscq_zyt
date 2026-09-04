@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref, onBeforeUnmount } from 'vue';
+import { computed, ref, onBeforeUnmount } from 'vue';
 import {
   NButton,
   NInput,
@@ -18,13 +18,6 @@ import { exportExcel } from '@/core/excel';
 import type { TableMode } from '@/types';
 
 const message = useMessage();
-
-/** 顶栏在字段生成器里被隐藏（用户要求：菜单下方直接就是内容），
- *  主题切换改由 ToolLayout 通过 provide 下发，在这里的工具条上呈现 */
-const theme = inject<{ isDark: { value: boolean }; toggle: () => void } | undefined>(
-  'theme',
-  undefined
-);
 
 const isSub = computed(() => session.tableMode === 'sub');
 
@@ -165,16 +158,6 @@ function onExport(): void {
         :consistent-menu-width="false"
         @update:value="(v: string) => setVersion(v)"
       />
-
-      <!-- 深浅色：紧跟版本旁边（控制类聚在左侧） -->
-      <NButton
-        v-if="theme"
-        size="small"
-        quaternary
-        @click="theme.toggle()"
-      >
-        {{ theme.isDark.value ? '浅色' : '深色' }}
-      </NButton>
 
       <!-- 表名（原底栏内容上移）：中文名手填，英文名自动生成只读 -->
       <NInput

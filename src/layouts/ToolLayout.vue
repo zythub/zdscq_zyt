@@ -123,6 +123,22 @@ const current = computed<ToolMeta | undefined>(
         <span class="ver">v2.1.0</span>
         <span class="visits" title="站点累计访问人次">访问 <span id="vercount_value_site_pv" class="mono">–</span></span>
       </div>
+
+      <!-- 深浅色切换：全站统一放在顶部菜单栏最右上角 -->
+      <div class="top-right">
+        <NButton size="small" quaternary @click="emit('toggle-theme')">
+          <template #icon>
+            <svg v-if="isDark" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            </svg>
+            <svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+            </svg>
+          </template>
+          {{ isDark ? '浅色' : '深色' }}
+        </NButton>
+      </div>
     </aside>
 
     <!-- 右侧：顶栏 + 内容区 -->
@@ -131,20 +147,7 @@ const current = computed<ToolMeta | undefined>(
         <div class="top-title">
           <h1>{{ current?.title ?? '开发效率提升工具集' }}</h1>
         </div>
-        <div class="top-actions">
-          <NButton size="small" quaternary @click="emit('toggle-theme')">
-            <template #icon>
-              <svg v-if="isDark" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4" />
-                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-              </svg>
-              <svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
-              </svg>
-            </template>
-            {{ isDark ? '浅色' : '深色' }}
-          </NButton>
-        </div>
+        <!-- 深浅色已全局移至顶部菜单栏右上角，此处不再重复 -->
       </header>
 
       <main class="content">
@@ -347,6 +350,13 @@ const current = computed<ToolMeta | undefined>(
 }
 .shell.is-top .nav-item {
   flex-shrink: 0;
+}
+/* 深浅色切换：顶部菜单栏最右上角 */
+.shell.is-top .top-right {
+  order: 5;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 /* ── 右侧主区 ── */
