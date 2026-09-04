@@ -151,7 +151,7 @@ function onExport(): void {
 
 <template>
   <div style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden">
-    <!-- 工具内工具条：主表/子表切换（配置中心已移至右侧字段表表头，与筛选同行） -->
+    <!-- 工具内工具条：主表/子表切换；版本下拉在右侧字段表表头（模板在 baseline.ts 中维护） -->
     <div
       class="toolbar"
       style="
@@ -211,7 +211,7 @@ function onExport(): void {
       </section>
     </div>
 
-    <!-- 底栏：表信息条（表中文名/英文名/数据链接/表备注）+ 错误统计 + 导出 -->
+    <!-- 底栏：表中文名 + 自动英文表名 + 错误统计 + 导出 -->
     <footer
       style="
         display: flex;
