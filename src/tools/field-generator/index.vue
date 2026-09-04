@@ -166,6 +166,16 @@ function onExport(): void {
         @update:value="(v: string) => setVersion(v)"
       />
 
+      <!-- 深浅色：紧跟版本旁边（控制类聚在左侧） -->
+      <NButton
+        v-if="theme"
+        size="small"
+        quaternary
+        @click="theme.toggle()"
+      >
+        {{ theme.isDark.value ? '浅色' : '深色' }}
+      </NButton>
+
       <!-- 表名（原底栏内容上移）：中文名手填，英文名自动生成只读 -->
       <NInput
         v-model:value="session.tableChineseName"
@@ -195,15 +205,6 @@ function onExport(): void {
 
       <NButton type="primary" size="small" :disabled="!fields.length" @click="onExport">
         导出 Excel
-      </NButton>
-
-      <NButton
-        v-if="theme"
-        size="small"
-        quaternary
-        @click="theme.toggle()"
-      >
-        {{ theme.isDark.value ? '浅色' : '深色' }}
       </NButton>
     </div>
 
