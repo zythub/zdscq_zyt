@@ -24,6 +24,13 @@ function loadVisitCounter(): void {
   const w = window as unknown as { __vercountLoaded?: boolean };
   if (w.__vercountLoaded) return;
   w.__vercountLoaded = true;
+  // 清掉历史缓存计数：接口请求失败时脚本会回退显示 localStorage 里旧的
+  // （曾出现过旧的域名级大数 63,724,565 被缓存），确保每次都取新值，失败则显示占位符
+  try {
+    localStorage.removeItem('visitorCountData');
+  } catch {
+    /* 忽略 */
+  }
   const s = document.createElement('script');
   s.src = VERCOUNT_SRC;
   s.async = true;
