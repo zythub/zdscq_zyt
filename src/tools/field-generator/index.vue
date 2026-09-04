@@ -166,7 +166,36 @@ function onExport(): void {
         @update:value="(v: string) => setVersion(v)"
       />
 
+      <!-- 表名（原底栏内容上移）：中文名手填，英文名自动生成只读 -->
+      <NInput
+        v-model:value="session.tableChineseName"
+        size="small"
+        placeholder="请输入表名（中文）"
+        style="width: 190px"
+        clearable
+      />
+      <NInput
+        :value="fullTableName"
+        size="small"
+        placeholder="表名自动生成"
+        style="width: 230px"
+        :disabled="true"
+        class="mono"
+      />
+
       <div style="flex: 1"></div>
+
+      <NTag v-if="problemCount.errors" size="small" type="error" :bordered="false">
+        {{ problemCount.errors }} 个错误
+      </NTag>
+      <NTag v-else-if="problemCount.warns" size="small" type="warning" :bordered="false">
+        {{ problemCount.warns }} 个提示
+      </NTag>
+      <span class="muted" style="font-size: 14px">共 {{ fields.length }} 个字段</span>
+
+      <NButton type="primary" size="small" :disabled="!fields.length" @click="onExport">
+        导出 Excel
+      </NButton>
 
       <NButton
         v-if="theme"
@@ -205,49 +234,6 @@ function onExport(): void {
         <QuickAdd />
       </section>
     </div>
-
-    <!-- 底栏：表中文名 + 自动英文表名 + 错误统计 + 导出 -->
-    <footer
-      style="
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 10px 4px;
-        flex-shrink: 0;
-      "
-    >
-      <NInput
-        v-model:value="session.tableChineseName"
-        size="small"
-        placeholder="请输入表名（中文）"
-        style="width: 200px"
-        clearable
-      />
-      <NInput
-        :value="fullTableName"
-        size="small"
-        placeholder="表名自动生成"
-        style="width: 240px"
-        :disabled="true"
-        class="mono"
-      />
- 
-
-      <div style="flex: 1"></div>
-
-      <NTag v-if="problemCount.errors" size="small" type="error" :bordered="false">
-        {{ problemCount.errors }} 个错误
-      </NTag>
-      <NTag v-else-if="problemCount.warns" size="small" type="warning" :bordered="false">
-        {{ problemCount.warns }} 个提示
-      </NTag>
-      <span class="muted" style="font-size: 14px">共 {{ fields.length }} 个字段</span>
-
-      <NButton type="primary" size="small" :disabled="!fields.length" @click="onExport">
-        导出 Excel
-      </NButton>
-    </footer>
   </div>
 </template>
 
@@ -263,11 +249,6 @@ function onExport(): void {
   overflow: hidden;
 }
 
-/* 表信息条提示文字（置于底部 footer 内） */
-.info-hint {
-  font-size: 12px;
-  color: var(--text-3);
-}
 .col {
   min-width: 0;
   min-height: 0;
