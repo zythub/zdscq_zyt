@@ -48,18 +48,6 @@ const routes: RouteRecordRaw[] = [
       },
   },
   {
-    path: '/field-sql',
-    name: 'field-sql',
-    component: FieldSql,
-      meta: {
-        tool: {
-          title: '新增字段 SQL',
-          desc: '批量生成 dy_table_field 插入 / 改表 / 注释 SQL',
-          icon: 'M4 7h16M4 12h10M4 17h16M17 10l3 2-3 2',
-        } satisfies ToolMeta,
-      },
-  },
-  {
     path: '/bookmark-form',
     name: 'bookmark-form',
     component: BookmarkForm,
@@ -68,19 +56,6 @@ const routes: RouteRecordRaw[] = [
           title: '书签生成表单',
           desc: '提取 Word 书签 → 复用命名规则 → 设计器 JSON',
           icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h5',
-        } satisfies ToolMeta,
-      },
-  },
-
-  {
-    path: '/toolbox',
-    name: 'toolbox',
-    component: Toolbox,
-      meta: {
-        tool: {
-          title: '工具箱',
-          desc: '第三方在线工具',
-          icon: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6z',
         } satisfies ToolMeta,
       },
   },
@@ -93,6 +68,31 @@ const routes: RouteRecordRaw[] = [
           title: '自定义表单代码示例',
           desc: 'BestDT 响应式表单代码示例（在线查看 / 编辑 / 下载）',
           icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13h-4M16 17h-4',
+        } satisfies ToolMeta,
+      },
+  },
+  {
+    path: '/field-sql',
+    name: 'field-sql',
+    component: FieldSql,
+      meta: {
+        tool: {
+          title: '新增字段 SQL',
+          desc: '批量生成 dy_table_field 插入 / 改表 / 注释 SQL',
+          icon: 'M4 7h16M4 12h10M4 17h16M17 10l3 2-3 2',
+        } satisfies ToolMeta,
+      },
+  },
+ 
+  {
+    path: '/toolbox',
+    name: 'toolbox',
+    component: Toolbox,
+      meta: {
+        tool: {
+          title: '工具箱',
+          desc: '第三方在线工具',
+          icon: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6z',
         } satisfies ToolMeta,
       },
   },

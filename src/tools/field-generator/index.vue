@@ -244,19 +244,19 @@ function onExport(): void {
       <NInput
         v-model:value="session.tableChineseName"
         size="small"
-        placeholder="表中文名，如：设备验收单"
+        placeholder="请输入表名（中文）"
         style="width: 200px"
         clearable
       />
       <NInput
         :value="fullTableName"
         size="small"
-        placeholder="自动生成英文表名"
+        placeholder="表名自动生成"
         style="width: 240px"
         :disabled="true"
         class="mono"
       />
-      <span class="muted info-hint">表名由中文名自动生成（前缀可在配置中心修改）</span>
+ 
 
       <div style="flex: 1"></div>
 
