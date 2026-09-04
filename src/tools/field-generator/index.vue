@@ -36,9 +36,9 @@ const dragging = ref<number | null>(null);
 
 // 主表三栏：审批节点(左) / 字段定义表(中) / 快速添加(右)；子表两栏：字段表 / 快速添加
 // 列宽仅存内存，刷新即回默认（不缓存 UI 配置）
-const MAIN_DEFAULTS = [22, 58, 20];
+const MAIN_DEFAULTS = [15, 68, 15];
 const SUB_DEFAULTS = [70, 30];
-const MIN_MAIN = [200, 340, 180]; // 节点 / 字段表 / 快速添加 的最小像素宽
+const MIN_MAIN = [200, 340, 120]; // 节点 / 字段表 / 快速添加 的最小像素宽
 const MIN_SUB = [340, 180]; // 字段表 / 快速添加
 
 const mainWeights = ref<number[]>([...MAIN_DEFAULTS]);

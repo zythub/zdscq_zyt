@@ -155,9 +155,11 @@ const NANCHONG_NODES: NodeDef[] = [
  * 仅「设计单位」在 translationDict 中显式映射为 sjdb（xlsx 用 sjdb，拼音默认 sjdw）。
  */
 const STANDARD_NODES: NodeDef[] = [
-  node('sgdw', '施工单位', '参建单位', [['经办人', 'personId', P]]),
+  node('sgdw', '施工单位', '参建单位', [
+     ['经办人', 'personId', P],   
+     ['项目技术负责人', 'personId', P],
+    ]),
   node('jldw', '监理单位', '参建单位', [
-    ['项目技术负责人', 'personId', P],
     ['项目经理', 'personId', P],
     ['专业监理工程师', 'personId', P],
     ['安全监理工程师', 'personId', P],
@@ -185,7 +187,7 @@ const STANDARD_NODES: NodeDef[] = [
     ['物资部专业工程师', 'personId', P],
     ['物资部负责人', 'personId', P],
   ]),
-  node('jsdw', '建设单位', '建设单位', [['建设单位负责人', 'personId', P]]),
+  node('jsdw', '建设单位', '建设单位部门', [['建设单位负责人', 'personId', P]]),
 ];
 
 const COMMON_NAMING = {
