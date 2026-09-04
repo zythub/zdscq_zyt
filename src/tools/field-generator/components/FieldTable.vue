@@ -163,7 +163,7 @@ const columns = [
   { key: 'nullable', label: 'null', width: '58px' },
   { key: 'default', label: '默认值', width: '90px' },
   { key: 'comment', label: '备注', width: 'minmax(90px, 0.8fr)' },
-  { key: 'origin', label: '来源', width: '108px', sticky: true },
+  { key: 'origin', label: '来源', width: '108px' },
 ];
 
 const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
@@ -204,7 +204,6 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         <div
           v-for="c in columns"
           :key="c.key"
-          :class="{ 'sticky-col': c.sticky }"
           style="padding: 8px 8px"
         >{{ c.label }}</div>
       </div>
@@ -314,7 +313,6 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         </div>
 
         <div
-          class="sticky-col"
           style="padding: 4px 8px; min-width: 0; display: flex; align-items: center; gap: 6px"
         >
           <NPopover v-if="f.warnings.length" trigger="hover" placement="left">
@@ -421,30 +419,5 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
 .drag-handle:hover {
   opacity: 0.85 !important;
   color: var(--primary);
-}
-/* 来源列：固定在右侧，水平滚动时始终可见 */
-.sticky-col {
-  position: sticky;
-  right: 0;
-  z-index: 3;
-  background: var(--surface-1);
-  border-left: 1px solid var(--border);
-  box-shadow: -8px 0 8px -6px rgba(31, 42, 55, 0.16);
-}
-.grid-head .sticky-col {
-  z-index: 4;
-}
-/* 行悬停/告警底色需同步到 sticky 列，避免断层；告警优先级高于悬停 */
-.ft-row:hover .sticky-col {
-  background: var(--surface-2);
-}
-.ft-row.row-error .sticky-col {
-  background: var(--error-soft);
-}
-.ft-row.row-warn .sticky-col {
-  background: var(--warning-soft);
-}
-:global(.dark) .sticky-col {
-  box-shadow: -8px 0 8px -6px rgba(0, 0, 0, 0.5);
 }
 </style>
