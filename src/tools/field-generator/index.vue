@@ -20,9 +20,9 @@ const isSub = computed(() => session.tableMode === 'sub');
 const bodyRef = ref<HTMLElement | null>(null);
 const dragging = ref<number | null>(null);
 
-const MAIN_DEFAULTS = [20, 25, 55];
+const MAIN_DEFAULTS = [30, 70]; // 左栏(审批节点+快速添加) / 字段表
 const SUB_DEFAULTS = [32, 68];
-const MIN_MAIN = [180, 220, 320]; // 节点 / 快速添加 / 字段表 的最小像素宽
+const MIN_MAIN = [220, 320]; // 左栏 / 字段表 的最小像素宽
 const MIN_SUB = [220, 320]; // 快速添加 / 字段表
 const KEY_MAIN = 'zdscq:colw:main';
 const KEY_SUB = 'zdscq:colw:sub';
@@ -67,7 +67,7 @@ let drag: { idx: number; startX: number; wA0: number; wB0: number; avail: number
 function startDrag(idx: number, e: MouseEvent) {
   if (!bodyRef.value) return;
   e.preventDefault();
-  const splitterCount = isSub.value ? 1 : 2;
+  const splitterCount = 1;
   const avail = bodyRef.value.clientWidth - 24 /* 容器内边距 12*2 */ - splitterCount * SPLITTER_W;
   const w = activeWeights.value;
   drag = {
@@ -166,30 +166,24 @@ function onExport(): void {
       </NRadioGroup>
     </div>
 
-    <!-- 主体：列宽可拖拽调整。分隔条置于相邻两列之间，拖动时在两列间转移宽度 -->
+    <!-- 主体：两栏。左栏(窄)上下堆叠「审批节点 + 快速添加字段」，右栏为字段定义表 -->
     <div ref="bodyRef" class="body">
-      <section v-if="!isSub" class="panel col rise-in" :style="colStyle(0)">
-        <NodePanel />
+      <section class="col rise-in" :style="colStyle(0)" style="gap: 8px">
+        <div v-if="!isSub" class="panel col" style="flex: 1 1 0; min-height: 0">
+          <NodePanel />
+        </div>
+        <div class="panel col" style="flex: 1 1 0; min-height: 0">
+          <QuickAdd />
+        </div>
       </section>
       <div
-        v-if="!isSub"
         class="splitter"
         :class="{ active: dragging === 0 }"
         title="拖拽调整宽度"
         @mousedown="startDrag(0, $event)"
       ></div>
 
-      <section class="panel col rise-in" :style="colStyle(isSub ? 0 : 1)">
-        <QuickAdd />
-      </section>
-      <div
-        class="splitter"
-        :class="{ active: dragging === (isSub ? 0 : 1) }"
-        title="拖拽调整宽度"
-        @mousedown="startDrag(isSub ? 0 : 1, $event)"
-      ></div>
-
-      <section class="col rise-in" :style="colStyle(isSub ? 1 : 2)">
+      <section class="col rise-in" :style="colStyle(1)">
         <FieldTable @open-config="showConfig = true" />
       </section>
     </div>

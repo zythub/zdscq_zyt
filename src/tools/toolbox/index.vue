@@ -9,6 +9,16 @@ interface ExtTool {
 // 故改为外链落地页，点击在新窗口打开。
 const tools: ExtTool[] = [
   {
+    name: '贝斯特自定义表单文档',
+    url: 'https://www.bestdt.com/formdeep/docs/responsive/function/basic-control/',
+    desc: '自定义表单在线文档',
+  },
+  {
+    name: 'JSON格式化',
+    url: 'https://www.json.cn/',
+    desc: 'JSON 格式化 / 压缩 / 校验 + 在线工具',
+  },
+  {
     name: '123apps 在线工具',
     url: 'https://123apps.com/cn/',
     desc: '音视频 / 图片 / PDF / 文档格式转换',
@@ -18,6 +28,7 @@ const tools: ExtTool[] = [
     url: 'https://pdf.io/cn/merge/',
     desc: 'PDF 合并 / 格式转换',
   },
+  
 ];
 
 function open(url: string): void {

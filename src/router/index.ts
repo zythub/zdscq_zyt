@@ -71,32 +71,7 @@ const routes: RouteRecordRaw[] = [
         } satisfies ToolMeta,
       },
   },
-  {
-    path: '/json-formatter',
-    name: 'json-formatter',
-    component: JsonFormatter,
-      meta: {
-        tool: {
-          title: 'JSON 格式化',
-          desc: 'JSON 格式化 / 压缩 / 校验 + 在线工具',
-          icon: 'M8 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6zM14 3v6h6',
-          hideTopbar: true,
-        } satisfies ToolMeta,
-      },
-  },
-  {
-    path: '/form-docs',
-    name: 'form-docs',
-    component: FormDocs,
-      meta: {
-        tool: {
-          title: '自定义表单在线文档',
-          desc: 'BestDT 响应式表单设计器文档',
-          icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h6',
-          hideTopbar: true,
-        } satisfies ToolMeta,
-      },
-  },
+
   {
     path: '/toolbox',
     name: 'toolbox',

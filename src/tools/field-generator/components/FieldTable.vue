@@ -158,8 +158,8 @@ function severityClass(f: GeneratedField): string {
 
 const columns = [
   { key: 'seq', label: '#', width: '44px' },
-  { key: 'english', label: '字段名称', width: 'minmax(170px, 1.4fr)' },
-  { key: 'chinese', label: '中文名称', width: 'minmax(150px, 1.2fr)' },
+  { key: 'english', label: '字段名称', width: 'minmax(170px, 1.1fr)' },
+  { key: 'chinese', label: '中文名称', width: 'minmax(240px, 2fr)' },
   { key: 'type', label: '类型', width: '116px' },
   { key: 'length', label: '长度', width: '84px' },
   { key: 'scale', label: '小数位', width: '78px' },
