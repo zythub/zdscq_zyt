@@ -1,10 +1,19 @@
 <script setup lang="ts">
 import { computed, inject, ref, onBeforeUnmount } from 'vue';
-import { NButton, NInput, NRadioButton, NRadioGroup, NTag, useMessage } from 'naive-ui';
+import {
+  NButton,
+  NInput,
+  NRadioButton,
+  NRadioGroup,
+  NSelect,
+  NTag,
+  useMessage,
+} from 'naive-ui';
 import NodePanel from './components/NodePanel.vue';
 import QuickAdd from './components/QuickAdd.vue';
 import FieldTable from './components/FieldTable.vue';
 import { fields, fullTableName, problemCount, session, setTableMode } from '@/stores/builder';
+import { presetOptions, setVersion, version } from '@/stores/config';
 import { exportExcel } from '@/core/excel';
 import type { TableMode } from '@/types';
 
@@ -151,15 +160,16 @@ function onExport(): void {
 
 <template>
   <div style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden">
-    <!-- 工具内工具条：主表/子表切换；版本下拉在右侧字段表表头（模板在 baseline.ts 中维护） -->
+    <!-- 工具条：版本 / 主表·子表 / 深浅色 集中在一行（模板在 baseline.ts 维护） -->
     <div
       class="toolbar"
       style="
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 10px 4px;
+        gap: 10px;
+        padding: 8px 4px;
         flex-shrink: 0;
+        flex-wrap: wrap;
       "
     >
       <NRadioGroup
@@ -170,6 +180,15 @@ function onExport(): void {
         <NRadioButton value="main">主表</NRadioButton>
         <NRadioButton value="sub">子表</NRadioButton>
       </NRadioGroup>
+
+      <NSelect
+        :value="version"
+        :options="presetOptions"
+        size="small"
+        style="width: 130px"
+        :consistent-menu-width="false"
+        @update:value="(v: string) => setVersion(v)"
+      />
 
       <div style="flex: 1"></div>
 

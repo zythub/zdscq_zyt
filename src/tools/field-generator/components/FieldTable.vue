@@ -23,7 +23,6 @@ import {
   resetFieldEdit,
   session,
 } from '@/stores/builder';
-import { presetOptions, setVersion, version } from '@/stores/config';
 import { TYPES_WITHOUT_LENGTH, TYPES_WITH_SCALE, type FieldType, type GeneratedField } from '@/types';
 
 const message = useMessage();
@@ -190,15 +189,6 @@ const gridTemplate = computed(() => columns.map((c) => c.width).join(' '));
         placeholder="筛选字段"
         clearable
         style="width: 150px"
-      />
-      <!-- 版本下拉：配置模板在 baseline.ts 中写死，这里只负责切换 -->
-      <NSelect
-        :value="version"
-        :options="presetOptions"
-        size="small"
-        style="width: 128px"
-        :consistent-menu-width="false"
-        @update:value="(v: string) => setVersion(v)"
       />
     </div>
 

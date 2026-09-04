@@ -209,6 +209,7 @@ const current = computed<ToolMeta | undefined>(
 
       <div class="side-foot">
         <span class="ver">v2.1.0</span>
+        <span class="visits" title="站点累计访问人次">访问 <span id="busuanzi_value_site_pv" class="mono">–</span></span>
       </div>
     </aside>
 
@@ -281,6 +282,7 @@ const current = computed<ToolMeta | undefined>(
   gap: 10px;
   padding: 2px 6px 12px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 .brand-mark {
   width: 30px;
@@ -303,6 +305,7 @@ const current = computed<ToolMeta | undefined>(
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 .brand-sub {
   font-size: 11px;
@@ -418,6 +421,15 @@ const current = computed<ToolMeta | undefined>(
   font-weight: 600;
   color: var(--text-2);
 }
+.side-foot .visits {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.side-foot .visits .mono {
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5em;
+}
 
 /* ── 顶部布局（菜单在上方）── */
 .shell.is-top .side {
@@ -438,7 +450,8 @@ const current = computed<ToolMeta | undefined>(
 .shell.is-top .nav {
   order: 2;
   flex-direction: row;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   align-items: center;
   gap: 4px;
   overflow-x: auto;
@@ -447,8 +460,18 @@ const current = computed<ToolMeta | undefined>(
 .shell.is-top .side-tools {
   order: 3;
 }
+/* 顶部菜单布局下，底部信息（版本 / 访问人次）放最右侧，横向排布 */
 .shell.is-top .side-foot {
-  display: none;
+  display: flex;
+  order: 4;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 0 2px;
+  border-top: none;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .shell.is-top .nav-item {
   flex-shrink: 0;
@@ -522,11 +545,19 @@ const current = computed<ToolMeta | undefined>(
   background: var(--surface-1);
   border-bottom: 1px solid var(--border);
 }
+.top-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
 .top-title h1 {
   font-size: 17px;
   font-weight: 600;
   margin: 0;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .top-title p {
   margin: 2px 0 0;
