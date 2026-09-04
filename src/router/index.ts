@@ -2,8 +2,6 @@ import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-rou
 import FieldGenerator from '@/tools/field-generator/index.vue';
 import FieldSql from '@/tools/field-sql/index.vue';
 import BookmarkForm from '@/tools/bookmark-form/index.vue';
-import JsonFormatter from '@/tools/json-formatter/index.vue';
-import FormDocs from '@/tools/form-docs/index.vue';
 import Toolbox from '@/tools/toolbox/index.vue';
 import FormCode from '@/tools/form-code/index.vue';
 

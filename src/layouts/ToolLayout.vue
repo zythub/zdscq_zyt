@@ -216,7 +216,6 @@ const current = computed<ToolMeta | undefined>(
       <header v-if="!current?.hideTopbar" class="topbar">
         <div class="top-title">
           <h1>{{ current?.title ?? '开发效率提升工具集' }}</h1>
-          <p v-if="current?.desc">{{ current.desc }}</p>
         </div>
         <div class="top-actions">
           <NButton size="small" quaternary @click="emit('toggle-theme')">

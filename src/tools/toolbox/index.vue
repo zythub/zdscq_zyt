@@ -2,7 +2,6 @@
 interface ExtTool {
   name: string;
   url: string;
-  desc: string;
 }
 
 // 这些站点都带 X-Frame-Options，浏览器禁止跨站 iframe 嵌入，
@@ -11,24 +10,20 @@ const tools: ExtTool[] = [
   {
     name: '贝斯特自定义表单文档',
     url: 'https://www.bestdt.com/formdeep/docs/responsive/function/basic-control/',
-    desc: '自定义表单在线文档',
   },
   {
     name: 'JSON格式化',
     url: 'https://www.json.cn/',
-    desc: 'JSON 格式化 / 压缩 / 校验 + 在线工具',
   },
   {
     name: '123apps 在线工具',
     url: 'https://123apps.com/cn/',
-    desc: '音视频 / 图片 / PDF / 文档格式转换',
   },
   {
     name: 'PDF.io',
     url: 'https://pdf.io/cn/merge/',
-    desc: 'PDF 合并 / 格式转换',
   },
-  
+
 ];
 
 function open(url: string): void {
@@ -52,7 +47,6 @@ function open(url: string): void {
           <span class="name">{{ t.name }}</span>
           <span class="arrow" aria-hidden="true">↗</span>
         </span>
-        <span class="desc">{{ t.desc }}</span>
         <span class="url">{{ t.url }}</span>
       </button>
     </div>
@@ -125,11 +119,6 @@ function open(url: string): void {
 .arrow {
   font-size: 15px;
   color: var(--primary);
-}
-.desc {
-  font-size: 13px;
-  color: var(--text-2);
-  line-height: 1.5;
 }
 .url {
   font-family: var(--font-mono);
