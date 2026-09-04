@@ -1,26 +1,38 @@
 <script setup lang="ts">
-import { computed, provide } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NButton } from 'naive-ui';
 import type { ToolMeta } from '@/router';
 import { EXTERNAL_TOOLS } from '@/stores/externalTools';
 
-const props = defineProps<{ isDark: boolean }>();
+defineProps<{ isDark: boolean }>();
 const emit = defineEmits<{ (e: 'toggle-theme'): void }>();
-
-/**
- * 顶栏可被单个工具隐藏（hideTopbar），但主题切换仍需可用，
- * 故把切换能力 provide 下去，由工具页自己在工具条上呈现。
- */
-provide('theme', {
-  isDark: computed(() => props.isDark),
-  toggle: () => emit('toggle-theme'),
-});
 
 const router = useRouter();
 const route = useRoute();
 
 // 布局固定为「顶部菜单栏」一种（用户确认：不再提供左侧菜单 / 横竖切换）
+
+/**
+ * 站点访问人次（Vercount，不蒜子替代）。
+ * 必须在 Vue 挂载之后再注入脚本：计数器执行时会扫描 #vercount_value_site_pv 元素，
+ * 若在 index.html 里 defer 引入会先于 Vue 渲染执行而扫不到元素，永远不显示。
+ * 注入一次即可（SPA 内路由切换不重新计数）。
+ */
+const VERCOUNT_SRC = 'https://events.vercount.one/js';
+function loadVisitCounter(): void {
+  const w = window as unknown as { __vercountLoaded?: boolean };
+  if (w.__vercountLoaded) return;
+  w.__vercountLoaded = true;
+  const s = document.createElement('script');
+  s.src = VERCOUNT_SRC;
+  s.async = true;
+  s.onerror = () => {
+    w.__vercountLoaded = false; // 失败可重试
+  };
+  document.head.appendChild(s);
+}
+onMounted(loadVisitCounter);
 
 interface NavEntry {
   key: string;
