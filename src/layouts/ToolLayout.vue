@@ -23,7 +23,6 @@ const route = useRoute();
 // ── 布局偏好（持久化到 localStorage，刷新后仍记住）──
 type Layout = 'side' | 'top';
 const LAYOUT_KEY = 'effkit.layout';
-const COLLAPSE_KEY = 'effkit.sidebar.collapsed';
 const WIDTH_KEY = 'effkit.sidebar.width';
 
 function readStore(k: string, fallback: string): string {
@@ -43,24 +42,19 @@ function writeStore(k: string, v: string): void {
 }
 
 const layout = ref<Layout>((readStore(LAYOUT_KEY, 'side') as Layout) || 'side');
-const collapsed = ref<boolean>(readStore(COLLAPSE_KEY, 'false') === 'true');
 const sideWidth = ref<number>(Number(readStore(WIDTH_KEY, '232')) || 232);
 
 function toggleLayout(): void {
   layout.value = layout.value === 'side' ? 'top' : 'side';
   writeStore(LAYOUT_KEY, layout.value);
 }
-function toggleCollapse(): void {
-  collapsed.value = !collapsed.value;
-  writeStore(COLLAPSE_KEY, String(collapsed.value));
-}
 function persistWidth(): void {
   writeStore(WIDTH_KEY, String(sideWidth.value));
 }
 
-// 拖动调整侧栏宽度（仅「左侧菜单」布局且未收起时生效）
+// 拖动调整侧栏宽度（仅「左侧菜单」布局生效）
 function startResize(e: PointerEvent): void {
-  if (layout.value !== 'side' || collapsed.value) return;
+  if (layout.value !== 'side') return;
   e.preventDefault();
   const startX = e.clientX;
   const startW = sideWidth.value;
@@ -81,19 +75,12 @@ function startResize(e: PointerEvent): void {
   document.body.style.userSelect = 'none';
 }
 
-// 侧栏内联宽度（仅左侧布局生效；收起时固定为图标轨道宽度）
+// 侧栏内联宽度（仅左侧布局生效；左侧菜单始终完整显示，不再提供收起成图标轨）
 const sideStyle = computed(() => {
   if (layout.value !== 'side') return {};
-  return { width: (collapsed.value ? 56 : sideWidth.value) + 'px' };
+  return { width: sideWidth.value + 'px' };
 });
 
-// 收起按钮图标：随布局/状态变化（左栏用左右箭头，顶部用上下箭头）
-const collapseIcon = computed(() => {
-  if (layout.value === 'side') {
-    return collapsed.value ? 'M9 6l6 6-6 6' : 'M15 6l-6 6 6 6';
-  }
-  return collapsed.value ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6';
-});
 // 布局切换按钮图标：当前在左栏则显示"顶部"图标，反之亦然
 const layoutIcon = computed(() =>
   layout.value === 'side' ? 'M3 4h18v16H3zM3 9h18' : 'M3 4h18v16H3zM9 4v16',
@@ -149,7 +136,7 @@ const current = computed<ToolMeta | undefined>(
 <template>
   <div class="shell" :class="{ 'is-top': layout === 'top' }">
     <!-- 侧边栏 / 顶部栏：工具导航 -->
-    <aside class="side" :class="{ collapsed }" :style="sideStyle">
+    <aside class="side" :style="sideStyle">
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -164,21 +151,16 @@ const current = computed<ToolMeta | undefined>(
         </div>
       </div>
 
-      <!-- 菜单控制：布局切换 + 收起（所有页面常驻，含铺满的嵌入页） -->
+      <!-- 菜单控制：横/竖布局切换（收起成图标轨已移除——容易误点且观感差） -->
       <div class="side-tools">
         <button class="tool-btn" type="button" :title="layout === 'side' ? '切换为顶部菜单' : '切换为左侧菜单'" @click="toggleLayout">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path :d="layoutIcon" />
           </svg>
         </button>
-        <button class="tool-btn" type="button" :title="collapsed ? '展开菜单' : '收起菜单'" @click="toggleCollapse">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path :d="collapseIcon" />
-          </svg>
-        </button>
       </div>
 
-      <nav class="nav" v-show="!(layout === 'top' && collapsed)">
+      <nav class="nav">
         <template v-for="e in navEntries" :key="e.key">
           <router-link
             v-if="!e.external"
@@ -215,7 +197,7 @@ const current = computed<ToolMeta | undefined>(
 
     <!-- 拖拽调整宽度（仅左侧布局且未收起时出现） -->
     <div
-      v-if="layout === 'side' && !collapsed"
+      v-if="layout === 'side'"
       class="resizer"
       title="拖动调整菜单宽度"
       @pointerdown="startResize"
@@ -475,31 +457,6 @@ const current = computed<ToolMeta | undefined>(
 }
 .shell.is-top .nav-item {
   flex-shrink: 0;
-}
-
-/* ── 收起（左侧布局时为图标轨道）── */
-.side.collapsed {
-  padding-left: 8px;
-  padding-right: 8px;
-}
-.side.collapsed .brand {
-  justify-content: center;
-  border-bottom: none;
-  padding-bottom: 0;
-}
-.side.collapsed .brand-text,
-.side.collapsed .nav-label,
-.side.collapsed .ext-badge,
-.side.collapsed .side-foot {
-  display: none;
-}
-.side.collapsed .side-tools {
-  flex-direction: column;
-}
-.side.collapsed .nav-item {
-  justify-content: center;
-  padding-left: 0;
-  padding-right: 0;
 }
 
 /* ── 拖拽分隔条 ── */
