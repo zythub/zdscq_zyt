@@ -25,6 +25,8 @@ export interface ToolMeta {
   icon: string;
   /** 为纯嵌入页（如 iframe 文档）隐藏顶栏，让内容铺满 */
   hideTopbar?: boolean;
+  /** 不在顶部菜单里出现（入口放在别处，如工具箱页），路由仍可直接访问 */
+  hiddenInNav?: boolean;
 }
 
 export interface AppRouteMeta extends Record<string, unknown> {
@@ -83,6 +85,8 @@ const routes: RouteRecordRaw[] = [
           title: '开发手册',
           desc: 'bestdt 低代码平台二次开发手册 · 16 篇笔记速查',
           icon: 'M4 5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM7 3v6h9M7 13h7M7 17h5',
+          // 用户要求：菜单里不放手册，入口收进「工具箱」页的卡片
+          hiddenInNav: true,
         } satisfies ToolMeta,
       },
   },

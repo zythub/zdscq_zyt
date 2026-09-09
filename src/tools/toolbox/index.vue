@@ -1,33 +1,53 @@
 <script setup lang="ts">
-interface ExtTool {
+interface ToolItem {
   name: string;
-  url: string;
+  /** 外链地址（新标签打开） */
+  url?: string;
+  /** 站内路由（新标签打开） */
+  to?: string;
+  /** 卡片第二行小字：外链写网址，站内写说明 */
+  hint: string;
 }
 
-// 这些站点都带 X-Frame-Options，浏览器禁止跨站 iframe 嵌入，
-// 故改为外链落地页，点击在新窗口打开。
-const tools: ExtTool[] = [
+// 「开发手册」是站内工具，入口收在这里（顶部菜单不放，避免菜单项过长）；
+// 第三方站点都带 X-Frame-Options，禁止跨站 iframe 嵌入，故以卡片形式跳新标签。
+// 两类统一在新标签打开，体验一致。
+const tools: ToolItem[] = [
+  {
+    name: '开发手册',
+    to: '/handbook',
+    hint: '新标签打开 · bestdt 低代码平台二次开发手册，16 篇笔记速查',
+  },
   {
     name: '贝斯特自定义表单文档',
     url: 'https://www.bestdt.com/formdeep/docs/responsive/function/basic-control/',
+    hint: 'https://www.bestdt.com/formdeep/docs/',
   },
   {
     name: 'JSON格式化',
     url: 'https://www.json.cn/',
+    hint: 'https://www.json.cn/',
   },
   {
     name: '123apps 在线工具',
     url: 'https://123apps.com/cn/',
+    hint: 'https://123apps.com/cn/',
   },
   {
     name: 'PDF.io',
     url: 'https://pdf.io/cn/merge/',
+    hint: 'https://pdf.io/cn/merge/',
   },
-
 ];
 
-function open(url: string): void {
-  window.open(url, '_blank', 'noopener,noreferrer');
+function open(t: ToolItem): void {
+  const base = import.meta.env.BASE_URL; // 部署子路径，如 /zdscq_zyt/
+  if (t.to) {
+    // 站内工具（开发手册）同样在新标签打开：base + hash 路由拼出完整站内地址
+    window.open(base + '#' + t.to, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  if (t.url) window.open(t.url, '_blank', 'noopener,noreferrer');
 }
 </script>
 
@@ -38,16 +58,17 @@ function open(url: string): void {
     <div class="grid">
       <button
         v-for="t in tools"
-        :key="t.url"
+        :key="t.name"
         type="button"
         class="card"
-        @click="open(t.url)"
+        :class="{ 'is-internal': !!t.to }"
+        @click="open(t)"
       >
         <span class="card-top">
           <span class="name">{{ t.name }}</span>
           <span class="arrow" aria-hidden="true">↗</span>
         </span>
-        <span class="url">{{ t.url }}</span>
+        <span class="url">{{ t.hint }}</span>
       </button>
     </div>
   </div>
@@ -105,6 +126,11 @@ function open(url: string): void {
 }
 .card:active {
   transform: translateY(1px);
+}
+/* 站内工具（开发手册）：与外部站点区分，用主色描边 + 右箭头 */
+.card.is-internal {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  background: var(--primary-soft);
 }
 .card-top {
   display: flex;

@@ -6,10 +6,10 @@
 - **新增字段 SQL**：批量生成 `dy_table_field` 的 INSERT / ALTER / COMMENT SQL。
 - **书签生成表单**：提取 Word 书签，复用命名规则，生成表单设计器 JSON。
 - **开发手册**：bestdt 低代码平台二次开发手册（Obsidian 知识库镜像），标签页多开 + 全文搜索 + 代码复制。
-  笔记原文在 `src/tools/handbook/notes/`，由 `node scripts/sync-handbook.mjs` 从 `D:\zyt\知识库` 同步；按需加载分包，不影响其它工具首屏。
+  入口在「**工具箱**」页（顶部菜单不放，避免菜单过长），点击卡片在**新标签打开**；笔记原文在 `src/tools/handbook/notes/`，由 `node scripts/sync-handbook.mjs` 从 `D:\zyt\知识库` 同步；按需加载分包，不影响其它工具首屏。
   同步时自动脱敏（规则见 `src/tools/handbook/sanitize.mjs`）：内网 IP / 端口 / Bearer Token / 账号密码统一替换为 `<内网地址>`、`<你的Token>`、`<账号> / <密码>` 等占位符，**源头知识库保持明文，打包产物不含敏感信息**；新增敏感信息时在该文件加一条规则即可。
 
-第三方工具（如常用的在线工具站）在 `src/stores/externalTools.ts` 的 `EXTERNAL_TOOLS` 数组里写死内置，侧边栏会与内置工具一起平铺展示，外链条目在新窗口打开。
+第三方工具（如常用的在线工具站）在 `src/stores/externalTools.ts` 的 `EXTERNAL_TOOLS` 数组里写死内置，侧边栏会与内置工具一起平铺展示，外链条目在新窗口打开；工具箱页内的卡片同样在新标签打开。
 
 在线地址：<https://zythub.github.io/zdscq_zyt/>（GitHub Pages，纯静态，无需后端）
 

@@ -52,11 +52,12 @@ interface NavEntry {
   url?: string;
 }
 
-// 内置工具：取所有带 meta.tool 的具名路由
+// 内置工具：取所有带 meta.tool 的具名路由（hiddenInNav 的只保留路由，入口在工具箱页）
 const internalTools = computed<NavEntry[]>(() =>
   router
     .getRoutes()
     .filter((r) => r.name && (r.meta as { tool?: ToolMeta } | undefined)?.tool)
+    .filter((r) => !(r.meta as { tool?: ToolMeta }).tool?.hiddenInNav)
     .map((r) => {
       const tool = (r.meta as { tool: ToolMeta }).tool;
       return {
