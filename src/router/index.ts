@@ -27,6 +27,8 @@ export interface ToolMeta {
   hideTopbar?: boolean;
   /** 不在顶部菜单里出现（入口放在别处，如工具箱页），路由仍可直接访问 */
   hiddenInNav?: boolean;
+  /** 完全隐藏站点外壳（顶部菜单 + 标题栏），内容铺满整屏（如阅读型工具） */
+  hideChrome?: boolean;
 }
 
 export interface AppRouteMeta extends Record<string, unknown> {
@@ -87,6 +89,9 @@ const routes: RouteRecordRaw[] = [
           icon: 'M4 5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM7 3v6h9M7 13h7M7 17h5',
           // 用户要求：菜单里不放手册，入口收进「工具箱」页的卡片
           hiddenInNav: true,
+          // 用户要求：打开后（尤其新标签）不要顶部菜单，内容铺满更好看
+          hideChrome: true,
+          hideTopbar: true,
         } satisfies ToolMeta,
       },
   },

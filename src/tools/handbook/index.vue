@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, inject, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { NInput } from 'naive-ui';
 import { groups, noteById, notes, resolveNoteId } from './notes';
 import { escapeHtml, renderMarkdown } from './markdown';
+
+interface AppThemeApi {
+  isDark: { value: boolean };
+  toggle: () => void;
+}
+// 手册是「无外壳」页面，自带深浅色切换（主题状态由 App 通过 provide 下发）
+const appTheme = inject<AppThemeApi>('appTheme');
 
 interface TocItem {
   id: string;
@@ -205,6 +212,21 @@ const metaChips = computed(() => {
       </div>
       <span class="spacer"></span>
       <span class="stat">{{ notes.length }} 篇 · {{ groups.length }} 分区</span>
+      <button
+        v-if="appTheme"
+        type="button"
+        class="theme-btn"
+        :title="appTheme.isDark.value ? '切换到浅色' : '切换到深色'"
+        @click="appTheme.toggle()"
+      >
+        <svg v-if="appTheme.isDark.value" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        </svg>
+        <svg v-else viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+        </svg>
+      </button>
     </div>
 
     <div class="body">
@@ -362,6 +384,25 @@ const metaChips = computed(() => {
 .stat {
   font: 12px/1 var(--font-mono);
   color: var(--text-3);
+}
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.theme-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-soft);
 }
 
 .body {

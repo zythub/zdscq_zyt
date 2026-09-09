@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, provide, ref, type Ref } from 'vue';
 import {
   NConfigProvider,
   NDialogProvider,
@@ -21,6 +21,13 @@ function toggleTheme(): void {
 }
 
 document.documentElement.classList.toggle('dark', isDark.value);
+
+/* 把主题状态暴露给任意组件（手册等"无外壳"页面需要自带深浅色切换） */
+interface AppThemeApi {
+  isDark: Ref<boolean>;
+  toggle: () => void;
+}
+provide<AppThemeApi>('appTheme', { isDark, toggle: toggleTheme });
 
 /* 与 tokens.css 对齐的 Naive UI 主题覆盖（明暗两套）。
    原语色用 hex 提供，避免 Naive 内部颜色运算对 oklch 的兼容问题。 */

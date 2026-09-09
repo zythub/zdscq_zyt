@@ -87,13 +87,16 @@ const navEntries = computed<NavEntry[]>(() => [
 const current = computed<ToolMeta | undefined>(
   () => (route.meta as { tool?: ToolMeta } | undefined)?.tool,
 );
+
+// 阅读型工具（如开发手册）请求隐藏整个站点外壳：顶部菜单 + 标题栏都不显示
+const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
 </script>
 
 <template>
   <!-- 固定顶部菜单布局（用户确认：不再提供左侧菜单 / 横竖切换） -->
   <div class="shell is-top">
-    <!-- 顶部菜单栏：品牌 + 工具导航 -->
-    <aside class="side">
+    <!-- 顶部菜单栏：品牌 + 工具导航（hideChrome 的阅读型页面不显示） -->
+    <aside v-if="!chromeHidden" class="side">
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -170,7 +173,7 @@ const current = computed<ToolMeta | undefined>(
         <!-- 深浅色已全局移至顶部菜单栏右上角，此处不再重复 -->
       </header>
 
-      <main class="content">
+      <main class="content" :class="{ 'chrome-off': chromeHidden }">
         <router-view v-slot="{ Component }">
           <transition name="fade" mode="out-in">
             <component :is="Component" />
@@ -429,6 +432,10 @@ const current = computed<ToolMeta | undefined>(
   flex-direction: column;
   overflow: auto;
   padding: 18px 20px;
+}
+/* 无外壳阅读页：内容铺满整屏，只留一点外边距 */
+.content.chrome-off {
+  padding: 14px 18px;
 }
 
 /* 路由切换淡入 */
