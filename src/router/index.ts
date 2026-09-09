@@ -5,6 +5,9 @@ import BookmarkForm from '@/tools/bookmark-form/index.vue';
 import Toolbox from '@/tools/toolbox/index.vue';
 import FormCode from '@/tools/form-code/index.vue';
 
+// 手册内置全部笔记原文（约 120KB），按需加载，避免拖慢其它工具首屏
+const Handbook = () => import('@/tools/handbook/index.vue');
+
 // 让 vue-router 的 RouteMeta 认知到工具元信息，避免 meta.tool 报错
 declare module 'vue-router' {
   interface RouteMeta {
@@ -68,6 +71,18 @@ const routes: RouteRecordRaw[] = [
           title: '自定义表单代码示例',
           desc: 'BestDT 响应式表单代码示例（在线查看 / 编辑 / 下载）',
           icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13h-4M16 17h-4',
+        } satisfies ToolMeta,
+      },
+  },
+  {
+    path: '/handbook',
+    name: 'handbook',
+    component: Handbook,
+      meta: {
+        tool: {
+          title: '开发手册',
+          desc: 'bestdt 低代码平台二次开发手册 · 16 篇笔记速查',
+          icon: 'M4 5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM7 3v6h9M7 13h7M7 17h5',
         } satisfies ToolMeta,
       },
   },
