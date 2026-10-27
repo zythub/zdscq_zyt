@@ -37,8 +37,9 @@ export interface AppRouteMeta extends Record<string, unknown> {
 
 const routes: RouteRecordRaw[] = [
   {
+    // 首页 = 工具箱（集合页）：站内开发工具 + 第三方站点的总入口
     path: '/',
-    redirect: '/field-generator',
+    redirect: '/toolbox',
   },
   {
     path: '/field-generator',
@@ -115,8 +116,10 @@ const routes: RouteRecordRaw[] = [
       meta: {
         tool: {
           title: '工具箱',
-          desc: '第三方在线工具',
+          desc: '站内开发工具 + 第三方在线工具',
           icon: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6z',
+          // 页面内已有「工具箱」标题，避免与顶栏标题重复
+          hideTopbar: true,
         } satisfies ToolMeta,
       },
   },
