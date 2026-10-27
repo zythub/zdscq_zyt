@@ -67,6 +67,23 @@ const current = computed<ToolMeta | undefined>(
 
 // 阅读型工具（如开发手册）请求隐藏整个站点外壳：顶部菜单 + 标题栏都不显示
 const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
+
+/**
+ * 品牌区的「返回首页」链接。
+ * 工具站有两种部署形态：
+ *   ① 独立部署（GitHub Pages，base=/zdscq_zyt/）→ 回自己的首页
+ *   ② 挂在手册站下（base=/tools/）→ 回手册站首页（../index.html）
+ * 用 base 是否以 /tools/ 结尾来区分。
+ */
+const isSubApp = import.meta.env.BASE_URL.replace(/\/$/, '').endsWith('/tools');
+const homeHref = isSubApp ? '../index.html' : import.meta.env.BASE_URL;
+
+function onHomeClick(e: MouseEvent): void {
+  // 同站跳转（手册站首页）用普通链接即可；独立部署时回自己的首页
+  if (!isSubApp) return;
+  e.preventDefault();
+  window.location.href = '../index.html';
+}
 </script>
 
 <template>
@@ -74,7 +91,13 @@ const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
   <div class="shell is-top">
     <!-- 顶部菜单栏：品牌 + 工具导航（hideChrome 的阅读型页面不显示） -->
     <aside v-if="!chromeHidden" class="side">
-      <div class="brand">
+      <!-- 品牌区可点：回到手册站首页（工具是挂在手册站下的子应用） -->
+      <a
+        class="brand brand-link"
+        :href="homeHref"
+        title="返回知识库首页"
+        @click="onHomeClick"
+      >
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <ellipse cx="12" cy="6" rx="7" ry="3" fill="#fff" stroke="none" />
@@ -83,10 +106,10 @@ const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
           </svg>
         </span>
         <div class="brand-text">
-          <span class="brand-name">开发效率提升工具集</span>
-          <span class="brand-sub">贝斯特效率提升工具 by：张义涛</span>
+          <span class="brand-name">自定义表单知识库</span>
+          <span class="brand-sub">BESTDT · 二次开发</span>
         </div>
-      </div>
+      </a>
 
       <!-- 菜单控制已移除：布局固定顶部菜单，无需任何切换按钮 -->
 
@@ -191,11 +214,22 @@ const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
+/* 品牌区作为「返回首页」链接 */
+.brand-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-out-quart);
+}
+.brand-link:hover {
+  opacity: 0.82;
+}
 .brand-mark {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: linear-gradient(140deg, var(--accent-400), var(--accent-600));
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  background: linear-gradient(140deg, var(--accent-500), #0e8f80);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -211,12 +245,14 @@ const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
 .brand-name {
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   white-space: nowrap;
 }
 .brand-sub {
   font-size: 11px;
   color: var(--text-3);
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .nav {
@@ -317,7 +353,7 @@ const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
   align-items: center;
   border-right: none;
   border-bottom: 1px solid var(--border);
-  height: 56px;
+  height: 52px;
   padding: 0 14px;
   gap: 14px;
 }
@@ -368,12 +404,12 @@ const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
   min-height: 0;
 }
 .topbar {
-  height: 60px;
+  height: 52px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 20px;
+  padding: 0 14px;
   background: var(--surface-1);
   border-bottom: 1px solid var(--border);
 }

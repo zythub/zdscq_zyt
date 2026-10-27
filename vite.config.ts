@@ -2,9 +2,16 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
-// GitHub Pages 项目页部署在 /zdscq_zyt/ 子路径下，本地开发用 /
+/**
+ * base 可通过环境变量覆盖，用于构建成「子应用」：
+ *   BASE_PATH=/tools/ npm run build:only   → 产物可挂在手册站 dist/tools/ 下
+ *   BASE_PATH=/zdscq_zyt/ npm run build:only → GitHub Pages 项目页（默认）
+ *   不设 BASE_PATH 时，build 用 /zdscq_zyt/、dev 用 /（保持原有行为）
+ */
+const BASE_PATH = process.env.BASE_PATH;
+
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/zdscq_zyt/' : '/',
+  base: BASE_PATH ?? (command === 'build' ? '/zdscq_zyt/' : '/'),
   plugins: [vue()],
   resolve: {
     alias: {
@@ -15,7 +22,7 @@ export default defineConfig(({ command }) => ({
   // public/legacy 由 build 脚本手动 cp 到 dist/legacy。
   publicDir: false,
   build: {
-    outDir: 'dist',
+    outDir: process.env.OUT_DIR || 'dist',
     emptyOutDir: true,
     // public/legacy 会被原样拷贝到 dist/legacy
     chunkSizeWarningLimit: 1500,

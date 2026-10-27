@@ -1,41 +1,43 @@
 /* =========================================================================
    zdscq · 设计令牌 (Design Tokens)
-   方向：Element 蓝科技风 (2026-09 改版)
-   —— 冷调中性灰 + Element 主蓝 #409EFF，明快、现代、带科技感。
+   方向：工程蓝图风（2026-10-27 与「自定义表单知识库」手册站统一）
+   —— 冷白纸面 + 蓝图蓝 + 示波青。手册站用 --paper/--panel/--ink/--blueprint/
+   --signal 这一套命名，本文件保留原语义名（--bg/--surface-1/--text-1/--primary…）
+   但值全部对齐手册站，两个站点并排看不出一套是另一套。
    明暗双主题；语义令牌在 .dark 下重定义，原语令牌保持不变。
    ========================================================================= */
 
 :root {
-  /* ---- 原语调色板：冷调中性 ---- */
-  --gray-50: #f7f9fb;
-  --gray-100: #eef2f6;
-  --gray-200: #e2e8ee;
-  --gray-300: #cdd7e0;
-  --gray-400: #aab6c3;
-  --gray-500: #8a98a8;
-  --gray-600: #6f7e8c;
-  --gray-700: #4a5868;
-  --gray-800: #324050;
-  --gray-900: #1f2a37;
+  /* ---- 原语调色板：冷调中性（对齐手册站 --paper/--panel/--ink）---- */
+  --gray-50: #f4f6f9;
+  --gray-100: #f8fafc;
+  --gray-200: #e3e8ef;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #6b7c93;
+  --gray-600: #4b5b6f;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
 
-  /* ---- 强调色：Element 主蓝 #409EFF ---- */
-  --accent-50: #ecf5ff;
-  --accent-100: #d9ecff;
-  --accent-200: #b3d9ff;
-  --accent-400: #66b1ff;
-  --accent-500: #409eff;
-  --accent-600: #337ecc;
-  --accent-700: #2563a8;
+  /* ---- 强调色：蓝图蓝（对齐手册站 --blueprint）+ 示波青（--signal）---- */
+  --accent-50: #edf3ff;
+  --accent-100: #dbe7ff;
+  --accent-200: #b9d0ff;
+  --accent-400: #4f7ff0;
+  --accent-500: #1d4ed8;
+  --accent-600: #1e40af;
+  --accent-700: #1e3a8a;
 
-  /* ---- 语义颜色（Element 风格） ---- */
-  --success: #67c23a;
-  --success-soft: #f0f9eb;
-  --warning: #e6a23c;
-  --warning-soft: #fdf6ec;
-  --error: #f56c6c;
-  --error-soft: #fef0f0;
-  --info: #909399;
-  --info-soft: #f4f4f5;
+  /* ---- 语义颜色 ---- */
+  --success: #0e8f80;
+  --success-soft: #e5f5f2;
+  --warning: #a35a06;
+  --warning-soft: #fdf3e3;
+  --error: #b91c3c;
+  --error-soft: #fdecef;
+  --info: #64748b;
+  --info-soft: #f1f5f9;
 
   /* ---- 语义令牌：浅色 ---- */
   --bg: var(--gray-50);
@@ -48,7 +50,7 @@
   --border-strong: var(--gray-300);
 
   --text-1: var(--gray-900);
-  --text-2: var(--gray-700);
+  --text-2: var(--gray-600);
   --text-3: var(--gray-500);
 
   --primary: var(--accent-500);
@@ -66,18 +68,18 @@
   --s-6: 32px;
   --s-7: 48px;
 
-  /* ---- 圆角 ---- */
+  /* ---- 圆角（对齐手册站 8px 主圆角） ---- */
   --r-xs: 5px;
   --r-sm: 7px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-xl: 20px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 18px;
 
-  /* ---- 字体 ---- */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
-  --font-mono: 'SFMono-Regular', 'JetBrains Mono', Consolas, 'Liberation Mono',
-    Menlo, monospace;
+  /* ---- 字体（与手册站同款） ---- */
+  --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'PingFang SC',
+    'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
+  --font-mono: 'Cascadia Mono', 'SFMono-Regular', 'JetBrains Mono', Consolas,
+    'Liberation Mono', Menlo, monospace;
 
   /* 字号比例（模块化，整体放大一档，更易读） */
   --fs-xs: 18px;
@@ -91,10 +93,10 @@
   --lh-tight: 1.25;
   --lh-base: 1.5;
 
-  /* ---- 阴影 / 提升（克制） ---- */
-  --shadow-1: 0 1px 2px rgba(31, 42, 55, 0.06), 0 1px 1px rgba(31, 42, 55, 0.04);
-  --shadow-2: 0 6px 20px rgba(31, 42, 55, 0.1);
-  --shadow-pop: 0 10px 34px rgba(31, 42, 55, 0.16);
+  /* ---- 阴影 / 提升（对齐手册站） ---- */
+  --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --shadow-2: 0 8px 28px rgba(15, 23, 42, 0.12);
+  --shadow-pop: 0 12px 36px rgba(15, 23, 42, 0.16);
 
   /* ---- 缓动 ---- */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -115,46 +117,46 @@
 
 /* ============================ 深色主题 ============================ */
 :root.dark {
-  --gray-50: #0c1014;
-  --gray-100: #141a21;
-  --gray-200: #1c242d;
-  --gray-300: #28323c;
-  --gray-400: #3a4754;
-  --gray-500: #6f7e8c;
-  --gray-600: #aab6c3;
-  --gray-700: #c2ccd6;
-  --gray-800: #dde4ea;
-  --gray-900: #eef2f6;
+  --gray-50: #0b1220;
+  --gray-100: #0e1728;
+  --gray-200: #1e2a3f;
+  --gray-300: #2b3a53;
+  --gray-400: #6b7c93;
+  --gray-500: #8fa0b8;
+  --gray-600: #a3b2c7;
+  --gray-700: #cbd5e1;
+  --gray-800: #e2e8f0;
+  --gray-900: #e6edf7;
 
-  --accent-50: #10233f;
-  --accent-100: #16304e;
-  --accent-200: #214a7a;
-  --accent-400: #66b1ff;
-  --accent-500: #409eff;
-  --accent-600: #5f9fe0;
-  --accent-700: #3d7fc2;
+  --accent-50: #152443;
+  --accent-100: #1a2e57;
+  --accent-200: #24427f;
+  --accent-400: #72a0ff;
+  --accent-500: #72a0ff;
+  --accent-600: #93b4ff;
+  --accent-700: #b4c9ff;
 
-  --success: #67c23a;
-  --success-soft: #16240e;
-  --warning: #e6a23c;
-  --warning-soft: #2c2210;
-  --error: #f56c6c;
-  --error-soft: #2c1416;
-  --info: #909399;
-  --info-soft: #1b1d21;
+  --success: #2dd4bf;
+  --success-soft: #10312e;
+  --warning: #f0b45f;
+  --warning-soft: #33240f;
+  --error: #fb7185;
+  --error-soft: #3a1620;
+  --info: #94a3b8;
+  --info-soft: #1e2a3f;
 
-  --bg: #0a0e12;
-  --surface-1: #151b22;
-  --surface-2: #1c242d;
-  --surface-3: #242e39;
-  --surface-inset: #11171d;
+  --bg: #0b1220;
+  --surface-1: #111a2b;
+  --surface-2: #0e1728;
+  --surface-3: #1e2a3f;
+  --surface-inset: #0e1728;
 
-  --border: #28323c;
-  --border-strong: #3a4754;
+  --border: #1e2a3f;
+  --border-strong: #2b3a53;
 
-  --text-1: #eef2f6;
-  --text-2: #aab6c3;
-  --text-3: #6f7e8c;
+  --text-1: #e6edf7;
+  --text-2: #a3b2c7;
+  --text-3: #6b7c93;
 
   --primary: var(--accent-500);
   --primary-hover: var(--accent-400);
@@ -163,8 +165,8 @@
   --primary-contrast: #ffffff;
 
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --shadow-2: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 14px 44px rgba(0, 0, 0, 0.6);
 
   color-scheme: dark;
 }

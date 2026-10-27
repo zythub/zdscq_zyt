@@ -11,12 +11,41 @@ import {
 import type { GlobalThemeOverrides } from 'naive-ui';
 import ToolLayout from '@/layouts/ToolLayout.vue';
 
-const isDark = ref(localStorage.getItem('zdscq:theme') === 'dark');
+/**
+ * 深浅色状态。与「自定义表单知识库」手册站共用同一个 localStorage key
+ * （handbook.theme），两个站切换后互相保持一致 —— 手册站和工具页是同一个站。
+ * 旧的 zdscq:theme 作为回退保留（升级前的老用户不丢偏好）。
+ */
+const THEME_KEY = 'handbook.theme';
+const LEGACY_THEME_KEY = 'zdscq:theme';
+
+function readTheme(): 'dark' | 'light' {
+  try {
+    const v = localStorage.getItem(THEME_KEY) || localStorage.getItem(LEGACY_THEME_KEY);
+    // 都没存过时默认深色（与手册站一致）
+    return v === 'light' ? 'light' : 'dark';
+  } catch {
+    return 'dark';
+  }
+}
+
+const isDark = ref(readTheme() === 'dark');
 const theme = computed(() => (isDark.value ? darkTheme : null));
+
+// 启动即落盘：手册站（dist/index.html）读同一个 key，两边深浅色始终一致
+try {
+  localStorage.setItem(THEME_KEY, isDark.value ? 'dark' : 'light');
+} catch {
+  /* 忽略 */
+}
 
 function toggleTheme(): void {
   isDark.value = !isDark.value;
-  localStorage.setItem('zdscq:theme', isDark.value ? 'dark' : 'light');
+  try {
+    localStorage.setItem(THEME_KEY, isDark.value ? 'dark' : 'light');
+  } catch {
+    /* 忽略 */
+  }
   document.documentElement.classList.toggle('dark', isDark.value);
 }
 
@@ -29,31 +58,30 @@ interface AppThemeApi {
 }
 provide<AppThemeApi>('appTheme', { isDark, toggle: toggleTheme });
 
-/* 与 tokens.css 对齐的 Naive UI 主题覆盖（明暗两套）。
-   原语色用 hex 提供，避免 Naive 内部颜色运算对 oklch 的兼容问题。 */
+/* 与 tokens.css / 全局保持一致（Naive UI 主题覆盖与 CSS 变量同一套值） */
 const lightOverrides: GlobalThemeOverrides = {
   common: {
-    primaryColor: '#409eff',
-    primaryColorHover: '#66b1ff',
-    primaryColorPressed: '#337ecc',
-    primaryColorSuppl: '#66b1ff',
-    borderRadius: '7px',
-    borderColor: '#e4e7ed',
-    dividerColor: '#e4e7ed',
+    primaryColor: '#1d4ed8',
+    primaryColorHover: '#4f7ff0',
+    primaryColorPressed: '#1e40af',
+    primaryColorSuppl: '#4f7ff0',
+    borderRadius: '8px',
+    borderColor: '#e3e8ef',
+    dividerColor: '#e3e8ef',
     cardColor: '#ffffff',
     modalColor: '#ffffff',
-    bodyColor: '#f5f7fa',
+    bodyColor: '#f4f6f9',
     inputColor: '#ffffff',
-    actionColor: '#eef2f6',
-    hoverColor: 'rgba(64, 158, 255, 0.06)',
-    textColorBase: '#303133',
-    textColor1: '#303133',
-    textColor2: '#606266',
-    textColor3: '#909399',
-    placeholderColor: '#c0c4cc',
+    actionColor: '#f1f5f9',
+    hoverColor: 'rgba(29, 78, 216, 0.06)',
+    textColorBase: '#0f172a',
+    textColor1: '#0f172a',
+    textColor2: '#4b5b6f',
+    textColor3: '#94a3b8',
+    placeholderColor: '#cbd5e1',
     fontWeightStrong: '600',
     fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+      "'Segoe UI', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif",
     // 整体放大一档，使 tiny/small 控件更易读
     fontSize: '18px',
     fontSizeTiny: '16px',
@@ -63,34 +91,34 @@ const lightOverrides: GlobalThemeOverrides = {
     fontSizeHuge: '22px',
     lineHeight: '1.5',
   },
-  Card: { borderRadius: '10px' },
+  Card: { borderRadius: '12px' },
   Dialog: { borderRadius: '12px' },
   Drawer: { borderRadius: '12px' },
 };
 
 const darkOverrides: GlobalThemeOverrides = {
   common: {
-    primaryColor: '#409eff',
-    primaryColorHover: '#66b1ff',
-    primaryColorPressed: '#337ecc',
-    primaryColorSuppl: '#66b1ff',
-    borderRadius: '7px',
-    borderColor: '#28323c',
-    dividerColor: '#28323c',
-    cardColor: '#151b22',
-    modalColor: '#151b22',
-    bodyColor: '#0a0e12',
-    inputColor: '#1c242d',
-    actionColor: '#1c242d',
-    hoverColor: 'rgba(64, 158, 255, 0.12)',
-    textColorBase: '#eef2f6',
-    textColor1: '#eef2f6',
-    textColor2: '#aab6c3',
-    textColor3: '#6f7e8c',
-    placeholderColor: '#6f7e8c',
+    primaryColor: '#72a0ff',
+    primaryColorHover: '#93b4ff',
+    primaryColorPressed: '#4f7ff0',
+    primaryColorSuppl: '#93b4ff',
+    borderRadius: '8px',
+    borderColor: '#1e2a3f',
+    dividerColor: '#1e2a3f',
+    cardColor: '#111a2b',
+    modalColor: '#111a2b',
+    bodyColor: '#0b1220',
+    inputColor: '#111a2b',
+    actionColor: '#1c2536',
+    hoverColor: 'rgba(114, 160, 255, 0.12)',
+    textColorBase: '#e6edf7',
+    textColor1: '#e6edf7',
+    textColor2: '#a3b2c7',
+    textColor3: '#6b7c93',
+    placeholderColor: '#4a5a70',
     fontWeightStrong: '600',
     fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+      "'Segoe UI', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif",
     // 整体放大一档，使 tiny/small 控件更易读
     fontSize: '15px',
     fontSizeTiny: '13px',
@@ -100,7 +128,7 @@ const darkOverrides: GlobalThemeOverrides = {
     fontSizeHuge: '20px',
     lineHeight: '1.5',
   },
-  Card: { borderRadius: '10px' },
+  Card: { borderRadius: '12px' },
   Dialog: { borderRadius: '12px' },
   Drawer: { borderRadius: '12px' },
 };

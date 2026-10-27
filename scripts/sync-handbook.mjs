@@ -22,7 +22,7 @@ import { sanitizeMd, scanSensitive } from '../src/tools/handbook/sanitize.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const TARGET = resolve(HERE, '..', 'src', 'tools', 'handbook', 'notes');
 const SOURCE = process.argv[2] ? resolve(process.argv[2]) : 'D:\\zyt\\知识库';
-const SKIP = new Set(['.obsidian', '.workbuddy', '.git', '.trash', '.claude', 'node_modules', '_site']);
+const SKIP = new Set(['.obsidian', '.workbuddy', '.git', '.trash', '.claude', '.trae', 'node_modules', '_site']);
 const SKIP_FILES = new Set(['CLAUDE.md', '表单打包导出SQL.md']);
 
 if (!existsSync(SOURCE)) {

@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "build:only": "vite build",
+    "build:sub": "node -e \"process.env.BASE_PATH='/tools/';process.env.OUT_DIR='dist-sub';require('child_process').execSync('npx vite build',{stdio:'inherit',env:process.env})\"",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit"
   },
