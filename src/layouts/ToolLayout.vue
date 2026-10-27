@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NButton } from 'naive-ui';
 import type { ToolMeta } from '@/router';
 import { EXTERNAL_TOOLS } from '@/stores/externalTools';
+import { useVisitCounter, SITE_PV_ID } from '@/core/visitCounter';
 
 defineProps<{ isDark: boolean }>();
 const emit = defineEmits<{ (e: 'toggle-theme'): void }>();
@@ -13,33 +14,9 @@ const route = useRoute();
 
 // 布局固定为「顶部菜单栏」一种（用户确认：不再提供左侧菜单 / 横竖切换）
 
-/**
- * 站点访问人次（Vercount，不蒜子替代）。
- * 必须在 Vue 挂载之后再注入脚本：计数器执行时会扫描 #vercount_value_site_pv 元素，
- * 若在 index.html 里 defer 引入会先于 Vue 渲染执行而扫不到元素，永远不显示。
- * 注入一次即可（SPA 内路由切换不重新计数）。
- */
-const VERCOUNT_SRC = 'https://events.vercount.one/js';
-function loadVisitCounter(): void {
-  const w = window as unknown as { __vercountLoaded?: boolean };
-  if (w.__vercountLoaded) return;
-  w.__vercountLoaded = true;
-  // 清掉历史缓存计数：接口请求失败时脚本会回退显示 localStorage 里旧的
-  // （曾出现过旧的域名级大数 63,724,565 被缓存），确保每次都取新值，失败则显示占位符
-  try {
-    localStorage.removeItem('visitorCountData');
-  } catch {
-    /* 忽略 */
-  }
-  const s = document.createElement('script');
-  s.src = VERCOUNT_SRC;
-  s.async = true;
-  s.onerror = () => {
-    w.__vercountLoaded = false; // 失败可重试
-  };
-  document.head.appendChild(s);
-}
-onMounted(loadVisitCounter);
+// 站点访问人次（Vercount，不蒜子替代）。实现见 @/core/visitCounter：
+// 必须在 Vue 挂载后再注入脚本，否则扫不到 #vercount_value_site_pv。
+useVisitCounter();
 
 interface NavEntry {
   key: string;
@@ -144,7 +121,7 @@ const chromeHidden = computed<boolean>(() => !!current.value?.hideChrome);
 
       <div class="side-foot">
         <span class="ver">v2.1.0</span>
-        <span class="visits" title="站点累计访问人次">访问 <span id="vercount_value_site_pv" class="mono">–</span></span>
+        <span class="visits" title="站点累计访问人次">访问 <span :id="SITE_PV_ID" class="mono">–</span></span>
       </div>
 
       <!-- 深浅色切换：全站统一放在顶部菜单栏最右上角 -->

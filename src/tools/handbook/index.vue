@@ -3,6 +3,7 @@ import { computed, inject, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { NInput } from 'naive-ui';
 import { groups, noteById, notes, resolveNoteId } from './notes';
 import { escapeHtml, renderMarkdown } from './markdown';
+import { MANUAL_PV_ID, useVisitCounter } from '@/core/visitCounter';
 
 interface AppThemeApi {
   isDark: { value: boolean };
@@ -10,6 +11,9 @@ interface AppThemeApi {
 }
 // 手册是「无外壳」页面，自带深浅色切换（主题状态由 App 通过 provide 下发）
 const appTheme = inject<AppThemeApi>('appTheme');
+
+// 手册页 hideChrome 隐藏了站点底栏，这里单独显示访问人次
+useVisitCounter();
 
 interface TocItem {
   id: string;
@@ -212,6 +216,7 @@ const metaChips = computed(() => {
       </div>
       <span class="spacer"></span>
       <span class="stat">{{ notes.length }} 篇 · {{ groups.length }} 分区</span>
+      <span class="stat" title="站点累计访问人次">访问 <span :id="MANUAL_PV_ID" class="mono">–</span></span>
       <button
         v-if="appTheme"
         type="button"

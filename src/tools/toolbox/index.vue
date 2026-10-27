@@ -12,11 +12,13 @@ interface ToolItem {
 // 「开发手册」是站内工具，入口收在这里（顶部菜单不放，避免菜单项过长）；
 // 第三方站点都带 X-Frame-Options，禁止跨站 iframe 嵌入，故以卡片形式跳新标签。
 // 两类统一在新标签打开，体验一致。
+// 注意：这里不要 import 手册的 notes —— 笔记原文约 120KB，
+// 打进主包会拖慢其它工具首屏（手册页本身是懒加载的）。
 const tools: ToolItem[] = [
   {
     name: '开发手册',
     to: '/handbook',
-    hint: '新标签打开 · bestdt 低代码平台二次开发手册，16 篇笔记速查',
+    hint: '新标签打开 · bestdt 低代码平台二次开发手册',
   },
   {
     name: '贝斯特自定义表单文档',
