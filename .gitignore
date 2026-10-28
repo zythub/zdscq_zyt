@@ -1,6 +1,7 @@
 node_modules/
 dist/
 dist-sub/
+_webroot/
 _dist_tmp/
 .npm-cache/
 .tmp-build*/

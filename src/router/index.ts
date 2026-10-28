@@ -4,6 +4,7 @@ import FieldSql from '@/tools/field-sql/index.vue';
 import BookmarkForm from '@/tools/bookmark-form/index.vue';
 import Toolbox from '@/tools/toolbox/index.vue';
 import FormCode from '@/tools/form-code/index.vue';
+import Home from '@/tools/home/index.vue';
 
 // 手册内置全部笔记原文（约 120KB），按需加载，避免拖慢其它工具首屏
 const Handbook = () => import('@/tools/handbook/index.vue');
@@ -37,9 +38,18 @@ export interface AppRouteMeta extends Record<string, unknown> {
 
 const routes: RouteRecordRaw[] = [
   {
-    // 首页 = 工具箱（集合页）：站内开发工具 + 第三方站点的总入口
+    // 首页 = 手册站首页（首页.md）：与手册站保持一致
     path: '/',
-    redirect: '/toolbox',
+    name: 'home',
+    component: Home,
+    meta: {
+      tool: {
+        title: '知识库首页',
+        desc: 'bestdt 低代码平台二次开发手册 · 首页',
+        icon: 'M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 21V12h6v9',
+        hideTopbar: true,
+      } satisfies ToolMeta,
+    },
   },
   {
     path: '/field-generator',
@@ -125,7 +135,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/field-generator',
+    redirect: '/',
   },
 ];
 
