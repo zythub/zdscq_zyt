@@ -120,15 +120,39 @@ python dm_sql_lint.py /c/Users/<账号> / <密码>/prp/你的脚本.sql
 | 校验 | 对应达梦报错 |
 | :--- | :--- |
 | 列名必须存在于表 | -2111 无效的列名 |
+| **列名不得重复** | **-4024 个数不匹配** |
+| **值个数 == 列个数** | **-4024 个数不匹配** |
 | 字符串 UTF-8 **字节**长度 ≤ DATA_LENGTH | -6169 列长度超出定义 |
 | TIMESTAMP/DATE 值可解析 | -6118 非法的时间日期类型 |
 | BIT 只收 0/1、INT 只收整数 | 类型错配 |
-| VALUES 值个数 == 列数 | 槽位错位 |
 | DDL 列宽不得比真实表窄 | 建表后必然 -6169 |
 
 **用法纪律**：交付 SQL **必须**先过一遍这个校验器，报"0 问题"再发出去。
 （本例：老脚本一次扫出 80 个问题——60 个 zt/rinout 超长 + 20 个无效列名，
 纯靠肉眼一个都看不出来。）
+
+### ★ -4024「个数不匹配」的经典成因：sys_org_number 拼了两次
+
+生成器里列定义**本来就带** `sys_org_number`，输出时又习惯性在 VALUES 末尾多拼一个：
+
+```sql
+-- ❌ 列清单里已有 sys_org_number，末尾又多一个 → 列名重复 → -4024
+INSERT INTO T (id, gz, cnrs, rs, sys_org_number, create_time, sys_org_number)
+VALUES ('...', '木工', 26, 37, 'DW001', '2026-10-28 18:58:00', 'DW001');
+
+-- ✅ 列清单与值严格一一对应
+INSERT INTO T (id, gz, cnrs, rs, sys_org_number, create_time)
+VALUES ('...', '木工', 26, 37, 'DW001', '2026-10-28 18:58:00');
+```
+
+**预防**：生成器里加断言，列数与值数不一致直接抛错，别等交付出去才发现。
+
+```python
+assert len(collist.split(",")) == len(values)
+```
+
+**排查手法**：把 INSERT 的列清单和值列表分别切出来，数个数、看有没有重复列名。
+⚠️ 切 SQL 字符串时 `''` 会被当成一对转义引号吃掉，检查脚本要正确处理引号。
 
 ---
 
@@ -164,6 +188,84 @@ DELETE FROM 表名 WHERE sys_org_number='DW001';
 
 `WHERE sys_org_number='DW001'` 精确；**不要**用 `sys_createtime >= '某天'` 这种粗条件，
 会误删别人的正式数据。
+
+---
+
+## 七之二、sys_api_info 的 script 字段：单引号必须转义
+
+`sys_api_info.script` 里存的是 SQL 片段，里面的字符串常量用单引号。
+**整个 script 又被包在 INSERT 的单引号字符串里** → 里面的单引号必须写成两个：
+
+```sql
+-- script 内容: select * from t where sys_deleteflag = '0' and ...
+INSERT INTO sys_api_info (..., script, ...) VALUES (
+  '...',
+  'db.plant2x.select([select * from t where sys_deleteflag = ''0'' and ...;])',  -- ★ '' 两个
+  ...);
+```
+
+**不转义的后果**：SQL 字符串提前截断 → 语法错误或写入脏数据。
+生成脚本时统一 `script.replace("'", "''")`。
+
+**验证方式**：生成后把 INSERT 的 script 字段解引号（`''` → `'`），
+跟原始 script 逐字符比对，必须完全一致。
+
+---
+
+## 七之三、模板引擎的「参数为空」怎么判断
+
+`db.plant2x.select([...])` 里 `#{参数}` 由模板引擎替换。**参数不传时塞进去的到底是
+SQL NULL 还是空字符串，不确定** —— 实测三种写法：
+
+| 写法 | 参数=NULL | 参数='' | 结论 |
+| :--- | :--- | :--- | :--- |
+| `#{p} is null` | ✅ 30 条 | ❌ 0 条 | 不可靠 |
+| `#{p} = ''` | ❌ | ✅ | 要转义双单引号，易踩坑 |
+| **`LENGTH(#{p}) IS NULL or LENGTH(#{p}) = 0`** | ✅ | ✅ | **推荐** |
+
+**可选参数的通用写法**（不传 = 不过滤）：
+
+```sql
+and (LENGTH(#{posttype}) IS NULL or LENGTH(#{posttype}) = 0 or posttype = #{posttype})
+```
+
+`LENGTH` 版不用单引号，绕开了 `''` 在 INSERT 字符串里的转义坑。**写可选参数一律用这个。**
+
+---
+
+## 七之四、接口 404 的三种典型原因（按排查顺序查）
+
+前端报 404，先分清是哪一种，别一律当成"接口没建"：
+
+1. **method 不匹配** —— 接口存在但 method 是 POST，前端发 GET → 网关匹配不上 → 404。
+   查 `sys_api_info.method` 和前端实际请求方法。
+2. **path 写错** —— 前端凭命名写死了路径，库里压根没有这个 path。
+   查老系统配置库有没有同类功能，或者前端是不是把别的接口名字写错了。
+3. **确实没建** —— 新增端点，需要建表 + 注册。
+
+**怎么快速定位**：接口路径在老系统配置表（`xt_gn_m` 等）里查得到 → 说明是老功能，查老库数据源；
+查不到 → 多半是前端新加的。
+
+**同 path 不同 method 可以共存**：网关按 path + method 匹配，
+所以"给前端补一个 GET 版"是保留原接口不动、只加一条的最省事做法。
+
+---
+
+## 七之五、接口返回字段必须跟前端契约逐字段比对
+
+前端给字段契约后，**逐字段、逐顺序**比对生成的 `select ... as "别名"` 和契约列表，
+不能只看"字段大概对"。少一个字段前端照样白屏。
+
+**比对脚本**：
+
+```python
+aliases = re.findall(r'as\s+"(\w+)"', script)   # 实际返回
+want = ['gz', 'cnrs', 'rs']                     # 前端契约
+assert aliases == want
+```
+
+⚠️ 解析 INSERT 的字段值时，**字符串要用 `''` 解引号**（`''` → `'`），
+直接看原始 token 会误判（`''` 会被当成一对转义引号吃掉）。
 
 ---
 
