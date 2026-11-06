@@ -1,5 +1,5 @@
 node_modules/
-dist/
+# dist/ 是唯一交付物，必须入库（GitHub Pages 直接部署，不再构建）
 dist-sub/
 _webroot/
 _dist_tmp/
